@@ -1,0 +1,60 @@
+---
+title: R ile fonksiyonel programlama, tapply
+author: Hakan Hekim
+date: '2020-10-16'
+slug: [r-ile-fonksiyonel-programlama-tapply]
+categories:
+  - Temel R
+tags:
+  - functional programming
+  - tapply
+description: Functional programming ögelerinden tapply fonksiyonu.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Şimdi `mtcars` verisetinde yer alan `mpg` değişkeninin (yakıt sarfiyatının) motor türüne göre ortalamasını ayrı ayrı hesaplayalım. Ortalama `mean()` fonksiyonuyla hesaplanabilir. Şöyle bir kod işimizi görecektir:
+
+```{r}
+mean(mtcars$mpg[mtcars$vs==0])
+```
+
+```{r}
+mean(mtcars$mpg[mtcars$vs==1])
+```
+
+`mpg` değişkeni yerine araçtaki karbürator sayısını gösteren `carb` değişkenini kullanacak olsaydık bu işlemi altı defa tekrarlamamız gerekecekti. Ancak `tapply()` fonksiyonuyla bu işlemi bir defada gerçekleştirmek mümkün:
+
+```{r}
+tapply(mtcars$mpg,mtcars$vs,mean)
+```
+
+Bu değerleri yeni bir değişkene atayarak bir dizi (array) oluşturabiliriz:
+
+```{r}
+mpg_by_vs <- tapply(mtcars$mpg,mtcars$vs,mean)
+mpg_by_vs
+```
+
+`tapply()` fonksiyonu, fonksiyona giren birinci değişkeni, ikinci değişkene göre gruplara ayırmakta ve herbir gruba üçüncü parametre olarak verilen fonksiyonu uygulamaktadır. Görüldüğü gibi `tapply()` fonksiyonu bir skalar modunda bir dizi (array) oluşturmaktadır. Bazı hallerde liste modunda bir dizi elde etmek isteyebiliriz. Bunu `simplify=FALSE` parametresiyle yapabiliriz:
+
+```{r}
+mpg_by_vs <- tapply(mtcars$mpg,mtcars$vs,mean, simplify = FALSE)
+mpg_by_vs
+```
+
+`tapply()` fonksiyonu diğer istatistiksel fonksiyonlarla da kullanılabilir. Mesela, `cbind()` fonksiyonuyla skalar dizileri birleştirebilir ve liste yahut dataframe üretebiliriz:
+
+```{r}
+cbind(tapply(mtcars$mpg,mtcars$vs,mean), 
+      tapply(mtcars$mpg,mtcars$vs,sd), 
+      tapply(mtcars$mpg,mtcars$vs,median))
+```
+
+Bu örnekte verisetinde bulunan araçların motor türüne göre yakıt performans değerlerinin ortalama, standart sapma ve medyen değerlerini `tapply()` fonksiyonuyla ayrı ayrı hesapladık ve `cbind()` fonksiyonuyla sütunlar halinde bir araya getirdik.

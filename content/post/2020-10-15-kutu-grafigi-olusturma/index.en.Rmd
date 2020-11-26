@@ -1,0 +1,47 @@
+---
+title: Kutu grafiği oluşturma
+author: Hakan Hekim
+date: '2020-10-15'
+slug: [kutu-grafigi-olusturma]
+categories:
+  - Temel R
+  - Grafik
+tags:
+  - boxplot
+description: Kutu grafiği (boxplot) oluşturma yöntemleri.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/boxplot_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Kutu grafikleri değişkenin dağılımını görmek, bir değişkenin farklı kategorilerini birbiriyle karşılaştırmak için kullanışlı bir grafik türüdür.
+
+R'da kutu grafiği `boxplot()` fonksiyonuyla oluşturulur. `boxplot()` fonksiyonu ilk argüman olarak numerik bir vektör yahut verisetimizde yer alan sürekli bir değişken, ikinci argüman olarak genellikle factor tipinde kategorik bir değişkene ihtiyaç duymaktadır. İki değişken arasında İngilizce'de tilde olarak adlandırılan "~" işareti bulunmaktadır.
+
+İlk örnek olarak `mtcars` verisetimizdeki araçların yakıt sarfiyatını motor tipine göre karşılaştıralım:
+
+```{r}
+boxplot(mpg~vs, data=mtcars)
+```
+
+Görüldüğü gibi iki farklı motor tipine ait iki farklı kutu grafiği üretmiş olduk. Grafikler kullandığımız kategorik değişken için belirlediğimiz etiket değerleriyle işaretlenmiş oldular. Etiket değerlerini şu şekilde değiştirerek daha anlaşılır yapmak mümkün:
+
+```{r}
+boxplot(mpg~vs, names = c("V-type","Straight"),las=2, data=mtcars)
+```
+
+Burada `names` parametresinin factor tipi değişkendeki kategori miktarınca etiket içermesi gerekmektedir. `las=2` parametresi ise etiket değerlerinin dikey olarak yazılmasını sağlamaktadır. 0 ile 4 arasında değer alabilen las=2 parametresinde 0 ve 1 yatay, 2 ve 3 dikey etiketler üretir.
+
+Önemli bir eksiğimiz `y` ekseninin neyi gösterdiğini tanımlayan bir etiketimizin olmaması. `ylab` parametresiyle bu eksiği giderebiliriz. Daha renkli bir grafik elde etmek için `col` parametresiyle kutu grafiklerini renklendirebiliriz:
+
+```{r}
+boxplot(mpg~vs, names = c("V-tipi","Normal"),las=2, col=c("red","blue"), ylab="Yakıt sarfiyatı", data=mtcars)
+```
+
+Grafiği incelediğimizde normal motorlu araçlarının yakıt performanslarının daha iyi olduğu görülecektir. Dikkat edeceğiniz gibi `boxplot()` fonksiyonu data parametresini kabul etmekte. Bu şekilde değişken isimlerini rahatlıkla kullanabildik. data parametresini kullanmadan, classA$fGender şeklinde "$" ayracını kullanarak ta değişkenlere erişmemiz mümkündür.
+

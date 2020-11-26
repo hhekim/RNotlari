@@ -1,0 +1,68 @@
+---
+title: R analiz sonuçlarını tablo şeklinde MS Word'a aktarma
+author: Hakan Hekim
+date: '2020-11-05'
+slug: r-analiz-ms-word-aktarma
+categories:
+  - Raporlama
+tags:
+  - MS Word
+description:  R ile betimleyici analiz sonuçlarını MS Word ortamına aktaran bir fonksiyon.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/msword_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+İstatistik paketlerinin ortak bir problemi. analiz sonuçlarının metin işleme programına aktarılma güçlüğü. SPSS gibi bazı programlar kendine göre tablolar üretirken, SAS, STATA ve R gibi programlar sonuçları komut satırı biçiminde sunmaktadır. Ancak her iki tür de çoğu zaman kullanışlı olmayıp sonuçları elle MS Word veya Pages gibi metin işleme programına aktarmak zorunda kalmaktayız. Bu işlem hem zaman almakta, hem de dikkat istemektedir. Bazen ne kadar dikkat gösterilse de hatalı girdiler olmaktadır.
+
+Analiz sonuçlarının otomatik olarak aktarılması için R'da pek çok paket mevcut. Örenğin `xtable` ile pek çok analiz sonucu $\LaTeX$ formatında alınabiliyor. pandoc ile pdf, html veya MS Word çıktıları üretilebiliyor. Ancak yine de "tam istediğim gibi" diyebileceğiniz bir çıktı çoğu zaman mükün değil ve illaki ince ayar yapılması gerekmekte.
+
+Bu notta betimsel analiz sonuçlarını tablo olarak MS Word çıktısı şeklinde almamızı sağlayacak bir fonksiyon paylaşacağım.
+
+```{r}
+library(officer) 
+library(flextable) 
+library(e1071) 
+apadesc <- function(x){ 
+  #betimsel istatistikleri hesaplayacak fonksiyon 
+  desc <- function(x) { 
+    funs <- c(min, max, mean, median, sd, mad, skewness, kurtosis) 
+    lapply(funs, function(f) round(f(x, na.rm = TRUE), digits = 2)) 
+  } 
+  #verisetinin sadece numerik sütunlarının seçilmesi 
+  x <- x[unlist(lapply(x, is.numeric))] 
+  #istatistiklerin hesaplanması 
+  destats <- t(sapply(x, desc)) 
+  #sütun adları 
+  dimnames(destats)[[2]] <- c("min", "max", "mean", "median", "sd", "mad", "skew", "kurtosis") 
+  #officer paketi için data frame nesnesine dönüştürme 
+  dfdestats <- as.data.frame(destats) 
+  #satır başlıkları 
+  dfdestats <- cbind(names(x),dfdestats) 
+  #flextable nesnesi 
+  ftdestats <- regulartable(data = dfdestats) 
+  ftdestats <- autofit(ftdestats) 
+  #tablonun ms word dosyasına yazılması 
+  mydoc <- read_docx() 
+  mydoc <- body_add_flextable(mydoc, value = ftdestats) 
+  print(mydoc, target = "desc.docx") 
+  print(ftdestats) 
+}
+```
+
+Fonksiyonun çalışabilmesi için harici paketlere ihtiyaç var. `flextable` paketi R'ın tablolama yeteneğini geliştirerek daha esnek tablolar üretmemizi sağlıyor. `e1071` paketini skew ve kurtosis değerlerini hesaplamak için kullandım. MS Word dosyasını oluşturmak için de `officer` paketini kullandım.
+
+`print(mydoc, target = "desc.docx")` komutu ile R'ın çalışma klasöründe *desc.docx* adlı bir dosya üretilmiş olmalı. Şayet *RStudio* kullanıyorsanız `print(ftdestats)` komutu Viewer sekmesinde `flextable` tablosunu görüntüleyecektir. R ekranında `apadesc(mtcars)` komutunu çalıştırdığımızda RStudio'da ve MS Word dosyasında aşağıdaki tabloyu görmemiz gerekiyor.
+
+```{r eval=FALSE, include=TRUE}
+apadesc(mtcars)
+```
+
+Hata ihtimalini en aza indirmek ve zamandan kazanmak için bu tip otomasyonlar hayli yararlı. `flextable` ve `officer` fonksiyonlarını biraz kurcalarsanız "tam istediğim gibi" diyebileceğiniz çıktılar üretecek fonksiyonlar yazarak işlemlerinizi otomatize edebilirsiniz.
+
+

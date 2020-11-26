@@ -1,0 +1,143 @@
+---
+title: R ile Süper Lig'in Sosyal Network Analizi
+author: Hakan Hekim
+date: '2020-11-11'
+slug: r-ile-sosyal-network-analizi
+categories:
+  - Sosyal Network
+tags:
+  - SNA
+description: R ile network analizi ve network grafiği.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/sna_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+R ile sosyal network analizi yapmamızı sağlayan iki temel paket var statnet ve igraph. Bu notta bu paketleri kullanarak bir network objesi oluşturup grafiğini çizeceğiz. Network analizi yöntemiyle incelenemiyecek şey yok gibi. Bu yazıda süper lig takımlarının 2019-2020 sezonu galibiyetlerini inceleyeceğiz. Öncelikle kullanacağımız paketleri yükleyelim:
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse) 
+library(rvest) 
+library(igraph) 
+library(statnet) 
+library(intergraph) 
+library(RColorBrewer)
+```
+
+`rvest` paketini kullanarak web scrapping yöntemiyle TFF’nin sitesinden maç sonuçlarını indireceğim ve bir data frame nesnesine çevireceğim.
+
+```{r}
+url <- "https://www.tff.org/default.aspx?pageID=198" 
+tff_page <- read_html(url) 
+tff_page %>% 
+  html_nodes("table") %>% 
+  .[[39]] %>% 
+  html_table(fill=TRUE) -> x 
+
+i <- 41 
+while(i <= 54){ 
+  tff_page %>% 
+    html_nodes("table") %>% 
+    .[[i]] %>% 
+    html_table(fill=TRUE) -> y 
+  x <- bind_rows(x,y) 
+  i <- i + 2 
+}
+#Bazı maçlar oynanmadığından 0-0 olarak elle girdim
+x$X2[x$X2 == "-"] <- "0 - 0"
+head(x,5)
+```
+
+İlk satırda müsabaka sonuçlarının yer aldığı sayfayı *url* değişkenine atıyorum. Sonra sayfayı *tff_page* değişkenine *read_html* fonksiyonunu kullanarak liste olarak indiriyorum. Son olarak sayfanın html koduna bakarak almak istediğim kısmı bulup while döngüsüyle bu kısımları dataframe’e çeviriyorum. Şayet siz bu kodu çalıştırırken sayfanın yapısı değişmişse, kodun bu kısmınının güncellenmesi gerekir.
+
+İkinci aşamada elde ettiğimiz verisetini, *edge list*’e çevireceğiz:
+
+```{r}
+x[,2] <- lapply(x$X2, function (k) k <- gsub("-","",x$X2)) 
+N <- length(x$X2) 
+xnew <- data.frame(team1=character(),
+                   team2=character(),
+                   avrg=numeric(),
+                   stringsAsFactors=FALSE) 
+
+for(i in 1:N){ 
+  a <- as.numeric(substr(x$X2[i],1,1)) 
+  b <- as.numeric(substr(x$X2[i],4,4)) 
+  if((a-b) > 0){ 
+    tempdf <- data.frame(team1=x$X1[i],
+                         team2=x$X3[i],
+                         avrg=a - b,
+                         stringsAsFactors=FALSE) 
+    xnew <- bind_rows(xnew,tempdf) 
+  }else if((a-b) < 0){ 
+    tempdf <- data.frame(team1=x$X3[i],
+                         team2=x$X1[i],
+                         avrg=b - a,
+                         stringsAsFactors=FALSE) 
+    xnew <- bind_rows(xnew,tempdf) 
+  } 
+} 
+head(xnew,5)
+```
+
+Burada yaptığımız işlem; galip takımı *team1*, malup takımı *team2* değişkenlerine ve net skoru da *avrg* değişkenine yazmak.
+
+Üçüncü aşamada, takımların isimlerini kısaltmalarıyla değiştireceğim ki grafiklerde daha kullanışlı olsun:
+
+```{r}
+teams <- data.frame(name=unique(c(xnew$team1,xnew$team2)),
+                    alias=c("FB","ALA","GÖZ","GS","FKG","ERZ","KAY","BJK",
+                            "ANT","HAT","ALA","SVS","KAS","TS","KON","MLT",
+                            "GNÇ","RİZ","BAŞ","DEN","GAN","ANK"),
+                    stringsAsFactors=FALSE) 
+for(i in 1:length(xnew$team1)){ 
+  xnew[i,1] <- teams[teams$name == xnew$team1[i],]$alias 
+  xnew[i,2] <- teams[teams$name == xnew$team2[i],]$alias 
+} 
+head(xnew,5)
+```
+
+Artık *edge list* hazır. Şimdi bunu network veri objesini çevirebiliriz.
+
+```{r}
+iplays <- graph_from_data_frame(xnew)
+netplays <- asNetwork(iplays)
+netplays
+```
+
+Bu şekilde *iplays* ile æ, *netplays* ile `statnet` objesi üretmiş olduk. Temelde ikisi de aynı içeriğe sahip fakat kendi paketleriyle işlenebiliyorlar. Ben aşağıda *netplays*’i kullanacağım.
+
+Yukarıdaki çıktıda yer alan Network attributes’e baktığımızda; 21 takımı temsil eden 21 vertex ve bu takımlar arasında oynanan ve galibiyetle sonuçlanmış 53 maçı temsil eden 53 edge görüyoruz. Network *directed* yani galip takım ile malup takım arasında tek yönlü bir ilişki var. Vertex attribute names altında sadece takımların isimleri bulunuyor, Edge attribute names altında net skoru ifade eden *avrg* değişkeni var.
+
+Şimdi network verisini bir `sociograph` ile gösterelim:
+
+```{r}
+deg <- degree(netplays, cmode = "outdegree", rescale = TRUE) 
+par(mar=c(0,0,0,0)) 
+gplot(netplays, gmode="digraph", mode="fruchtermanreingold", usearrows=TRUE, 
+      label=netplays %v% "vertex.names", displaylabels=TRUE, 
+      vertex.cex=deg*15, label.cex = deg*20, arrowhead.cex = 0.7, 
+      edge.lwd=(netplays %e% "avrg")/2, 
+      edge.col=brewer.pal(netplays %e% "avrg", name = "Reds"),jitter = TRUE)
+```
+
+Bu grafikte gplot vertex ve takım ismi büyüklüklerini takımların galibiyet miktarına göre ayarlıyor. Sıralamada yukarıda yer alan takımlar grafiğin ortasında, sonlarda yer alan takımlar kenarlarda yer almakta. Takımlar arasındaki bağlantı net skora göre açıktan koyuya doğru değişiyor. Koyu kırmızı bağlantılar farklı galibiyetleri gösteriyor.
+
+Aşağıda mode parametresini değiştirerek dairesel bir grafik oluşturdum:
+
+```{r}
+deg <- degree(netplays, cmode = "outdegree", rescale = TRUE) 
+par(mar=c(0,0,0,0)) 
+gplot(netplays, gmode="digraph", mode="circle", usearrows=TRUE, 
+      label=netplays %v% "vertex.names", displaylabels=TRUE, 
+      vertex.cex=deg*15, label.cex = deg*20, arrowhead.cex = 0.7, 
+      edge.lwd=(netplays %e% "avrg")/2, 
+      edge.col=brewer.pal(netplays %e% "avrg", name = "Reds"),jitter = TRUE)
+```
+
+*Vertex*'lere takımlarla ilgili, *edge*'lere maçlarla ilgili birçok özellik işlenerek, ligin çok farklı yönlerini görselleştiren grafikler çizmek mümkün. Bu notta sadece kitabın kapağını biraz aralayıp R ile yapabileceklerimizi bir miktar göstermek istedim.

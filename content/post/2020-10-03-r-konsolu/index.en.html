@@ -1,0 +1,41 @@
+---
+title: R Konsolu ve R İçin Editör Programları
+author: Hakan Hekim
+date: '2020-10-03'
+categories:
+  - Temel R
+tags:
+  - RStudio
+slug: r-konsolu
+description: R konsolu ve RStudio
+featured: yes
+thumbnail: /images/thumbs/rstudio_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>R’ı yükledikten sonra neymiş bu diye ilk açtığınızda belki hayal kırıklığına uğrayabilirsiniz. R çalıştığında programın versiyon bilgileri ve imlecin yanıp söndüğü bir komut giriş noktası içeren basit bir ekran karşınıza gelecektir. Kullandığınız işletim sistemine göre bazı farklılıklar içermekle birlikte aşağı yukarı aşağıda yer alan resimdekine benzer bir ekranla karşılaşacaksınız.</p>
+<div class="figure">
+<img src="/post/2020-11-25-r-konsolu/index.en_files/konsol.png" alt="" />
+<p class="caption">R Konsolu</p>
+</div>
+<p>R’da komutlar ve çıktıları aynı çalışma alanında yer alır. Çalışma alanında bazı değişiklikler yapmak mümkündür. Sisteme göre değişmekle beraber (benim kullanmakta olduğum versiyonda R menüsü altında yer alan) Preferences seçeneğine tıklayınca arayüzde değişiklik yapılabilecek seçenekler karşımıza gelecektir.</p>
+<p>R, doğrudan bu şekilde kullanılabileceği gibi üçüncü parti bir metin editör programları aracılığıyla da kullanılabilir. Editör programlarının pek çok avantajlı yanları olduğu gibi, alışanlar için R’ın kendi konsolu da kullanışlıdır. Dolayısıyla konsol mu yoksa editör mü sorusu öncelikle alışkanlığa bağlıdır.</p>
+<p>R kullanmaya konsolda başlayıp, konsolda pratik sağlayanlar herhangi bir ara programa ihtiyaç duymazken, konsolun sunduğundan daha fazlasını arayanlar için editörler ideal olabilir. Hangi editör sorusuna verilecek cevap ta yine alışkanlıklara göre değişecektir. Şahsen denediğim ve halen kullandığım tek editör <a href="https://rstudio.com/">RStudio</a> oldu. Denemenizi tavsiye ederim.</p>
+<p>R’dan çıkmak için grafik arayüzündeki seçenekler kullanılabileceği gibi</p>
+<pre class="r"><code>q()</code></pre>
+<p>komutuyla da program kapatılabilir.</p>
+<p>R kapanırken sistem size çalışma alanını kaydetmek isteyip istemediğinizi soracaktır. Çalışma alanı kaydedilince, bir sonraki açılışta bu çalışma alanını, tanımladığınız değişkenler, R içerisine aktardığınız dosyalar, o ana kadar yazmış olduğunuz kodlar belirleyeceğiniz bir klasöre kaydedilir ve böylece tekrar açtığınızda kaldığınız yerden devam edebilirsiniz.</p>
+<p>İşletim sistemine göre değişebilmekle beraber, R ilk kurulduğunda genellikle kullanıcının Home klasörünü veya Home klasörü altında oluşturacağı bir klasörü kayıt klasörü olarak atar. R ile çalışırken dosya kaydetme ihtiyacı duyarsanız, kaydettiğiniz dosyalar bu klasöre kaydedilir.</p>
+<p>R’ın dosyaları nereye kardettiğini görmek için;</p>
+<pre class="r"><code>getwd()</code></pre>
+<p>R’ın kayıt yaptığı klasörü değiştirmek için:</p>
+<pre class="r"><code>setwd(file=“C:/Kaydetmek/istediğiniz/yer”)</code></pre>
+<p>Bazı Windows sistemlerde ‘/’ yerine ‘’ kullanılması gerekebilir. Çalışma alanını kaydetmeye alternatif olarak o ana kadar çalıştırılan kodlar da ayrı bir dosya olarak kaydedilebilir. Sonraki oturumda kaydedilen kodların hepsini bir kerede çalıştırarak son bırakılan yere çabukça ulaşılabilir. Kodları ayrı bir dosya olarak kaydetmenin diğer bir faydası, benzer işlemler farklı bir veriseti üzerinde yapılacaksa, sadece veriseti ismini ve değişken isimlerini değiştirerek aynı kod tekrar kullanılabilir.</p>
+<p>Ancak çok büyük bir dosya üzerinde çalışılıyorsa ve hesaplamalar zaman alıyorsa, o zaman çalışma alanının kaydedilmesi daha mantıklı bir yaklaşım olacaktır.</p>

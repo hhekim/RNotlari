@@ -1,0 +1,122 @@
+---
+title: R ile metin analizi --kelime sıklıkları ve korelasyon
+author: Hakan Hekim
+date: '2020-10-30'
+slug: r-ile-metin-analizi-korelasyon
+categories:
+  - Metin Analizi
+  - Grafik
+tags:
+  - Metin Analizi
+  - Text Analysis
+description: R ile metin analizi, kelime sıklıklarının ve kelimeler arası korrelasyonun incelenmesi.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/text_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Önceki yazıdaki kitapta geçen kelimelerin sıklıklarını hesapladık ve örnek olarak iki kelimenin kitapın hangi kısımlarında kullanıldığını gösteren dağılım grafiklerini çizdik. Grafiklerden bazı kelimelerin kitabın belli kısımlarında yoğunlaştığını anladık. Bu yazıda aynı kitabı (<em>Told in the coffee house: Turkish tales</em>) bölümlerine ayırarak, kullanılan kelimelerin frekans değerlerini hesaplayalım ve korelasyon analizi yapalım1. Dolayısıyla öncelikli olarak kitabın bölümlerini belirlememiz gerekiyor. Önceki yazıda yaptığımız gibi kitabın metnini R’a yükleyelim ve dosyada bulunan metadata kısmından kurtulalım.</p>
+<pre class="r"><code>metin.v &lt;- scan(&quot;ttales.txt&quot;, what = &quot;character&quot;, sep = &quot;\n&quot;)
+ilk.v &lt;- which(metin.v == &quot;HOW THE HODJA SAVED ALLAH&quot;)
+son.v &lt;- which(metin.v == &quot;mézé should be immediately served.&quot;)
+kitap.satir.v &lt;- metin.v[ilk.v:son.v]
+kitap.v &lt;- paste(kitap.satir.v, collapse=&quot; &quot;)
+kitap.kh.v &lt;- tolower(kitap.v)
+kitap.kelimeler.l &lt;- strsplit(kitap.kh.v, &quot;\\W&quot;)
+kitap.kelimeler.v &lt;- unlist(kitap.kelimeler.l)</code></pre>
+<p>Kitaba göz attığımızda bölüm başlangıçlarının standart bir şeklinin olmadığını görüyoruz. Günümüzde kitaplarda “Bölüm 1” gibi başlıklarla bölümler ayrılırken, bu kitapta bölümler hikaye isimleriyle ayrılmış. Bu yüzden bölüm başlangıçlarını işaretleyebilmek için kendimize bir içindekiler vektörü oluşturmamız gerekiyor. Bunun çin kitap metnine giderek hikaye isimlerini kopyalayıp <code>c()</code> fonksiyonu yardımıyla <code>kitap.icindekiler.v</code> değişkenini aşağıdaki şekilde oluşturduk. Liste uzun olduğundan tamamını aşağıda göstermedim, .Rmd dosyasında tamamı mevcut:</p>
+<pre class="r"><code>kitap.icindekiler.v &lt;- c(&quot;HOW THE HODJA SAVED ALLAH&quot;,&quot;BETTER IS THE FOLLY OF WOMAN THAN THE WISDOM OF MAN&quot;,&quot;THE HANOUM AND THE UNJUST CADI&quot;,&quot;WHAT HAPPENED TO HADJI, A MERCHANT OF THE BEZESTAN&quot;,&quot;HOW THE JUNKMAN TRAVELLED TO FIND TREASURE IN HIS OWN YARD&quot;,&quot;HOW CHAPKIN HALID BECAME CHIEF DETECTIVE&quot;,&quot;HOW COBBLER AHMET BECAME THE CHIEF ASTROLOGER&quot;,&quot;THE WISE SON OF ALI PASHA&quot;,&quot;THE MERCIFUL KHAN&quot;,&quot;KING KARA-KUSH OF BITHYNIA&quot;,&quot;THE PRAYER RUG AND THE DISHONEST STEWARD&quot;,&quot;THE GOOSE, THE EYE, THE DAUGHTER, AND THE ARM&quot;,&quot;THE FORTY WISE MEN&quot;,&quot;HOW THE PRIEST KNEW THAT IT WOULD SNOW&quot;,&quot;WHO WAS THE THIRTEENTH SON&quot;,&quot;PARADISE SOLD BY THE YARD&quot;,&quot;JEW TURNED TURK&quot;,&quot;THE METAMORPHOSIS&quot;,&quot;THE CALIF OMAR&quot;,&quot;KALAIDJI AVRAM OF BALATA&quot;,&quot;HOW MEHMET ALI PASHA OF EGYPT ADMINISTERED JUSTICE&quot;,&quot;HOW THE FARMER LEARNED TO CURE HIS WIFE--A TURKISH ÆSOP&quot;,&quot;THE LANGUAGE OF BIRDS&quot;,&quot;THE SWALLOW&#39;S ADVICE&quot;,&quot;WE KNOW NOT WHAT THE DAWN MAY BRING FORTH&quot;,&quot;OLD MEN MADE YOUNG&quot;,&quot;THE BRIBE&quot;,&quot;HOW THE DEVIL LOST HIS WAGER&quot;,&quot;THE EFFECTS OF RAKI&quot;)</code></pre>
+<p>Bölüm başlangıçlarının yerini tespit etmek için <code>grep()</code> fonksiyonunu kullanacağız. Bunu bir while döngüsü ile yapdık. Bilindiği gibi program döngüleri belli bir koşul gerçekleştiği müddetçe belirtilen kodu çalıştıran kontrol elemanlarıdır. İlk satırda <code>bolum.baslari.v</code> isimli bir değişken üreterek değer olarak <code>NA</code> atadık. Sonra döngüde kullanacağımız <code>i</code> parametresine başlangıç değeri olarak “1” atadık. Döngüye koşul olarak içindekiler değişkenimizdeki eleman sayısınca devam etmesini söyledik. Dördüncü satırda <code>grep()</code> ile içindekilerde bulunan bölüm başlıklarını metin içerisinde aradık ve sonucu <code>bolum.baslari.v</code> değişkenine atadık. Her defasında <code>i</code> parametresine “1” ekleyerek döngünün sonlanmasını sağladık. Bu döngüyü ilk denediğimde başlık indekslerinin son 7 tanesi başarısız oldu (<code>NA</code>) çünkü 22. sırada yer alan başlık metinde biraz farklı yazılmış. Metindeki yazımı düzelttikten sonra problem çözüldü. Tabi metni baştan R’a yükleyerek buraya kadarki işlemleri tekrarlamam gerekti.</p>
+<pre class="r"><code>bolum.baslari.v &lt;- rep(&quot;NA&quot;,length(kitap.icindekiler.v))
+i &lt;- 1
+while (i &lt;= length(kitap.icindekiler.v)){
+  bolum.baslari.v[i] &lt;- grep(kitap.icindekiler.v[i], kitap.satir.v)
+  i &lt;- i+1 
+  } 
+bolum.baslari.v</code></pre>
+<pre><code>##  [1] &quot;1&quot;    &quot;179&quot;  &quot;328&quot;  &quot;402&quot;  &quot;481&quot;  &quot;595&quot;  &quot;722&quot;  &quot;910&quot;  &quot;1018&quot; &quot;1065&quot;
+## [11] &quot;1104&quot; &quot;1149&quot; &quot;1217&quot; &quot;1415&quot; &quot;1472&quot; &quot;1663&quot; &quot;1745&quot; &quot;1804&quot; &quot;1916&quot; &quot;1939&quot;
+## [21] &quot;1989&quot; &quot;2034&quot; &quot;2098&quot; &quot;2127&quot; &quot;2153&quot; &quot;2184&quot; &quot;2234&quot; &quot;2285&quot; &quot;2325&quot;</code></pre>
+<p>Böylelikle bölüm başlangıçlarını işaretlemiş olduk. Bölüm başlangıçlarının bir eksiği önceki bölümün sonu olarak kullanılabilir. Ancak son bölüm için bir bölüm sonu işareti eklemekte fayda var. Bunun için kitabın sonuna “END” ibaresini girip, önceki adımda ürettiğimiz indekse bunu da ekleyelim:</p>
+<pre class="r"><code>kitap.satir.v &lt;- c(kitap.satir.v, &quot;END&quot;)
+son.v &lt;- length(kitap.satir.v)
+bolum.baslari.v &lt;- c(bolum.baslari.v, son.v) 
+bolum.baslari.v</code></pre>
+<pre><code>##  [1] &quot;1&quot;    &quot;179&quot;  &quot;328&quot;  &quot;402&quot;  &quot;481&quot;  &quot;595&quot;  &quot;722&quot;  &quot;910&quot;  &quot;1018&quot; &quot;1065&quot;
+## [11] &quot;1104&quot; &quot;1149&quot; &quot;1217&quot; &quot;1415&quot; &quot;1472&quot; &quot;1663&quot; &quot;1745&quot; &quot;1804&quot; &quot;1916&quot; &quot;1939&quot;
+## [21] &quot;1989&quot; &quot;2034&quot; &quot;2098&quot; &quot;2127&quot; &quot;2153&quot; &quot;2184&quot; &quot;2234&quot; &quot;2285&quot; &quot;2325&quot; &quot;2360&quot;</code></pre>
+<p>Artık bölümlere göre kelimelerin frekans değerlerini hesaplayabiliriz. Bunu bir for döngüsüyle yapacağız:</p>
+<pre class="r"><code>i&lt;-1
+bolum.raws.l &lt;- list()
+bolum.freqs.l &lt;- list() 
+
+for(i in 1:length(bolum.baslari.v)){ 
+  if(i != length(bolum.baslari.v)){ 
+    bolum.basligi &lt;- kitap.satir.v[as.numeric(bolum.baslari.v)[i]] 
+    start &lt;- as.numeric(bolum.baslari.v)[i]+1 
+    end &lt;- as.numeric(bolum.baslari.v)[i+1]-1 
+    bolum.satir.v &lt;- kitap.satir.v[start:end] 
+    bolum.kelime.v &lt;- tolower(paste(bolum.satir.v, collapse=&quot; &quot;)) 
+    bolum.kelime.l &lt;- strsplit(bolum.kelime.v, &quot;\\W&quot;) 
+    bolum.kelime.v &lt;- unlist(bolum.kelime.l) 
+    bolum.kelime.v &lt;- bolum.kelime.v[which(bolum.kelime.v!=&quot;&quot;)] 
+    bolum.freqs.t &lt;- table(bolum.kelime.v) 
+    bolum.raws.l[[bolum.basligi]] &lt;- bolum.freqs.t 
+    bolum.freqs.t.rel &lt;- 100*(bolum.freqs.t/sum(bolum.freqs.t)) 
+    bolum.freqs.l[[bolum.basligi]] &lt;- bolum.freqs.t.rel 
+  } 
+}</code></pre>
+<p>Yukarıdaki kodda öncelikle <code>i</code> parametresini başlatıyoruz ve bölümlerde geçen kelime sayılarını ve frekans değerlerini tutması için liste türü iki değişken üretiyoruz. Döngüde if kısmından sonra;</p>
+<ul>
+<li>Birinci satırda bolum başlıklarını tutan bir değişken oluşturuyoruz,</li>
+<li>1 ve 3. satırlarda bölümlerin başlangıç ve bitiş satırlarını tespit ediyoruz,</li>
+<li>4 ile 8. satırlar arasında bir önceki yazıda metnin tamamına yaptığımız şekilde bölümleri noktalama işaretlerinden arındırarak küçük harflerden oluşan kelimelere çeviriyoruz.</li>
+<li>9 ile 12. satırlarda kelime sayılarını ve herbir kelimenin frekans değerini hesaplıyoruz.</li>
+</ul>
+<p>Böylelikle <code>bolum.raws.l</code> bölüm bölüm kelime sayılarını ve <code>bolum.freqs.l</code> bölüm bölüm kelimelerin frekans değerlerini tutuyor. Mesela “rich” ve “poor” kelimelerini bölümlere göre inceleyelim:</p>
+<pre class="r"><code>rich.l &lt;- cbind(lapply(bolum.freqs.l,&#39;[&#39;,&#39;rich&#39;)) 
+poor.l &lt;- cbind(lapply(bolum.freqs.l,&#39;[&#39;,&#39;poor&#39;)) 
+rich.v &lt;- unlist(rich.l) 
+poor.v &lt;- unlist(poor.l) 
+poorrich.mx &lt;- as.matrix(cbind(poor.v,rich.v)) 
+colnames(poorrich.mx) &lt;- c(&quot;Poor&quot;,&quot;Rich&quot;) 
+rownames(poorrich.mx) &lt;- rownames(poor.l) 
+opar &lt;- par(col.axis=&quot;dark red&quot;, fg=&quot;red&quot;) 
+barplot(poorrich.mx, beside = T, ylim = c(0.0,0.8))</code></pre>
+<p><img src="/post/2020-10-30-r-ile-metin-analizi-korelasyon/index.en_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>Yukarıda öncelikle “rich”" ve “poor”" kelimelerinden birer liste oluşturduk, sonra bunları vektöre çevrerek <code>poorrich.mx</code> isimli bir matrikste birleştirdik. Matriksin satır ve sütun isimleri düzenlendikten sonra sonucu grafik olarak sunduk. İki grafiği yan yana yerleştirdik. Çubukların koyu renkten açığa gitmesi grafiklerin sınırını belli ediyor. Grafiğe göre hikayeler daha çok fakir insanlarla alakalı. Zengin kelimesi sadece iki hikayede kullanılmış.</p>
+<p>Son olarak gözümüze kestirdiğimiz bazı kelimelerin korelasyon değerlerini hesaplayalım. Böylelikle bu kelimelerin bir arada kullanılıp kullanılmadığını görebiliriz. Bunun için yukarıdaki işlemleri tekrarlayarak “hodja”,“hadji”,“pasha”,“wife”,“money” kelimelerinin herbir bölüm için frekans değerlerini tutan yeni bir matriks üreteceğiz:</p>
+<pre class="r"><code>hodja.l &lt;- lapply(bolum.freqs.l,&#39;[&#39;,&#39;hodja&#39;) 
+hadji.l &lt;- lapply(bolum.freqs.l,&#39;[&#39;,&#39;hadji&#39;) 
+pasha.l &lt;- lapply(bolum.freqs.l,&#39;[&#39;,&#39;pasha&#39;) 
+wife.l &lt;- lapply(bolum.freqs.l,&#39;[&#39;,&#39;wife&#39;) 
+money.l &lt;- lapply(bolum.freqs.l,&#39;[&#39;,&#39;money&#39;) 
+hodja.v &lt;- unlist(hodja.l) 
+hadji.v &lt;- unlist(hadji.l) 
+pasha.v &lt;- unlist(pasha.l) 
+wife.v &lt;- unlist(wife.l) 
+money.v &lt;- unlist(money.l) 
+hodjagold.mx &lt;- as.matrix(cbind(hodja.v,hadji.v,pasha.v,wife.v,money.v)) 
+rownames(hodjagold.mx) &lt;- rownames(poor.l) 
+colnames(hodjagold.mx) &lt;- c(&quot;Hodja&quot;,&quot;Hadji&quot;,&quot;Pasha&quot;,&quot;Wife&quot;,&quot;Money&quot;)</code></pre>
+<p>İkinci adımda matriksteki <code>NA</code> değerleri yerine “0” rakamını atayıp korelasyon değerlerini hesapladık:</p>
+<pre class="r"><code>hodjagold.mx[which(is.na(hodjagold.mx))] &lt;- 0 
+cor(hodjagold.mx)</code></pre>
+<pre><code>##             Hodja       Hadji       Pasha       Wife       Money
+## Hodja  1.00000000 -0.09627886 -0.01223343 -0.1348489 -0.17565310
+## Hadji -0.09627886  1.00000000 -0.13389725  0.6927323 -0.06640128
+## Pasha -0.01223343 -0.13389725  1.00000000 -0.1018197  0.36553969
+## Wife  -0.13484886  0.69273227 -0.10181972  1.0000000 -0.24741774
+## Money -0.17565310 -0.06640128  0.36553969 -0.2474177  1.00000000</code></pre>
+<p>Görüldüğü gibi en güçlü pozitif korrelasyon 0,69 ile “Hadji” ve “Wife” kelimeleri arasında. Sonraki en güçlü pozitif korrelasyon 0,37 ile “Pasha” ve “Money” kelimeleri arasında. Yani bu kelimelerden birisinin metinde bulunmasi, diğerinin de bulunma olasılığını arttırıyor.</p>
+<p>En güçlü negatif korrelasyon 0,25 ile “Wife” ve “Money” kelimeleri arasında. Sonraki en güçlü negatif korrelasyon 1,75 ile “Hodja” ve “Money” kelimeleri arasında. Yani bu kelimelerin birisinin bulunması halinde diğerinin bulunma olasılığı daha az.</p>
+<p>Peki bunlar ne anlama geliyor dersek, tek başına bu kadar bilgiyle yorum yapmak hatalı olur. Belki şu tahminler yürütülebilir; hikayelerde hacı diye anılan kişi veya kişilerin aynı zamanda eşlerinden de bahsediliyor olabilir. Diğer yandan hikayelerde geçen paşaların zengin veya parayla ilgili oldukları, ancak hocaların ve eşlerin parayla çok ilgili olmadıkları düşünülebilir.</p>

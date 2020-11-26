@@ -1,0 +1,139 @@
+---
+title: R ile betimleyici (descriptive) istatistik analizi
+author: Hakan Hekim
+date: '2020-10-19'
+slug: [r-ile-betimleyici-descriptive-istatistik-analizi]
+categories:
+  - Temel R
+  - Grafik
+tags:
+  - Descriptive
+description: R ile betimleyici analiz yöntemleri.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Bir veriseti üzerinde çalışırken ilk olarak yapmamız gereken verisetini anlamaktır. Verisetini anlayabilmekse betimleyici (descriptive) istatistik analiz gerektirmektedir. Betimleyici analiz kapsamında neler yapılması gerektiği kişiye ve duruma göre farklılık arzetse de ortalama, medyen, mod standart sapma gibi değerlerin hesaplanması neredeyse standarttır.
+
+Betimleyici analiz için ilk yapılması gereken şey öncelikle verisetinin barındırdığı değişkenleri ve tiplerini incelemek olacaktır. Bu örnekte, R'da bulunan verisetlerinden mtcars veriseti kullanılacaktır.
+
+```{r}
+str(mtcars)
+```
+
+Veriseti hepsi nümerik değer içeren 11 değişken içermekte. R konsolunda `?mtcars` yazarak değişkenlerin neyi ifade ettiğine dair bilgi edinebiliriz. Çıktının ilgili kısmı şu şekilde:
+
+>[, 1] mpg Miles/(US) gallon 
+[, 2] cyl Number of cylinders 
+[, 3] disp Displacement (cu.in.) 
+[, 4] hp Gross horsepower 
+[, 5] drat Rear axle ratio 
+[, 6] wt Weight (lb/1000) 
+[, 7] qsec 1/4 mile time 
+[, 8] vs V/S 
+[, 9] am Transmission (0 = automatic, 1 = manual) 
+[,10] gear Number of forward gears 
+[,11] carb Number of carburetors
+
+Değişkenlere ilişkin temel bazı istatistikleri summary() fonksiyonuyla hesaplayabiliriz:
+
+```{r}
+summary(mtcars)
+```
+
+İhtiyacımız olan değerler burada bulunmuyorsa kendimize göre bir tablo oluşturabiliriz:
+
+```{r}
+ort <- sapply(mtcars[,0:11], FUN=mean)
+medyen <- sapply(mtcars[,0:11], FUN=median)
+varyans <- sapply(mtcars[,0:11], FUN=var)
+stsapma <- sapply(mtcars[,0:11], FUN=sd)
+min <- sapply(mtcars[,0:11], FUN=min)
+max <- sapply(mtcars[,0:11], FUN=max)
+round(cbind(min,max,ort,medyen,varyans,stsapma),digits=2)
+```
+
+Önce istediğimiz değerleri hesaplayarak herbirini ayrı bir değişkene atadık. Sonra `cbind()` fonksiyonuyla bu değişkenleri tablo haline getirdik. Burada kullandığımız `round()` fonksiyonuyla değerleri yuvarladık ve sadece iki ondalık basamak içermelerini sağladık.
+
+Her defasında bu kadar kod yazmadan da bu işlemi yapabiliriz:
+
+```{r}
+library(moments)
+func<-c("min","max","mean","median", "var","sd","skewness","kurtosis")
+desc<-matrix(nrow=11,ncol=8)
+colnames(desc) <-func
+rownames(desc) <-colnames(mtcars)
+for(i in 1:length(func)) desc[,i]<-round(sapply(mtcars[,0:11], FUN=func[i]),digits = 2)
+desc
+```
+
+Burada bir `for` döngüsü (loop) kullandık. İlk satırda kullanacağımız fonksiyonların isimlerinden oluşan bir vektör hazırladık. İkinci satırda analiz sonuçlarını depolamak için bir matrix ürettik. Üç ve dördüncü satırlarda matriksin sütun ve satır isimlerini belirledik.
+
+Beşinci satırdaysa döngümüz yer alıyor. Döngünün, yapmak istediğimiz işlem sayısınca tekrar etmesini istiyoruz. Bunun için `length(func)` parametresini kullandık. Devamında da `sapply()` fonksiyonuyla hesaplama işlemini yapıp sonucu matrikse sütun olarak kaydediyoruz. Bu kodu ayrı bir yere kaydederek data frame ile ilgili değişiklikler yaparak farklı verisetlerinde kullanabiliriz. Burada kullandığımız `skewness()` ve `kurtosis()` fonksiyonları için `moments` kütüphanesinin yüklenmesi gerekmektedir, `library(moments)`.
+
+Betimleyici istatistik amacıyla yapılan diğer bir analiz değişkenlerin histogram grafiklerini çizmek. Bunun için `hist()` fonksiyonunu kullanıyoruz:
+
+```{r}
+hist(mtcars$mpg,prob=T,main="Histogram Grafiği", xlab="Yakıt sarfiyatı",col="green")
+curve(dnorm(x, mean=mean(mtcars$mpg), sd=sd(mtcars$mpg)), add=TRUE,col="darkblue", lwd=2)
+```
+
+Yukarıdaki kodda ilk satırda histogramı oluşturduk. `hist()` fonksiyonu ilk parametre olarak histogramını üretmek istediğimiz değişkeni alıyor. `prob=TRUE` parametresi, `y` ekseninin sıklık değil ihtimal değerlerini göstermesini istiyoruz. Diğer parametrelerde grafik başlığı ve eksen etiketleri belirlenmekte.
+
+İkinci satırdaki kod ise değişkenin dağılımını gösteren eğriyi grafiğe yerleştirmemizi sağlıyor. Bu yolla değişkenin normal dağılıma sahip olup olmadığını inceleyebiliriz.
+
+Histogram çizerken `breaks` parametresiyle kesme noktalarını istediğimiz biçimde düzenleyebiliriz. Mesela yaş gruplarına göre kaza geçirme sayılarını veren bir verisetinin histogram eğrisini çizelim. Yalnız histogram sütunlarının alanları, temsil ettiği sayıyla orantılı olsun:
+
+```{r}
+mid.age <- c(2.5,7.5,13,16.5,17.5,19,22.5,44.5,70.5)
+acc.count <- c(28,46,58,20,31,64,149,316,103)
+age.acc <- rep(mid.age,acc.count)
+brk <- c(0,5,10,16,17,18,20,25,60,80)
+hist(age.acc,breaks=brk)
+```
+
+Burada öncelikle `mid.age` değişkeniyle yaş grupları için ortalama değerleri, ikinci satırda `acc.count` değişkeniyle herbir gruptaki kişi sayısını belirledik ve üçüncü satırdada ham verisetini oluşturduk. Yani `age.acc` değişkeninde 28 tane 2.5, 46 tane 7.5 vs. değerleri ürettik. Dördüncü satırda histogramın kesme noktalarını içeren `brk` vektörünü oluşturduk. Son olarakta histogramı çizdik (Peter Dalgaard, Introductory Statistics with R).
+
+Kullanacağımız değişkenin normal bir dağılıma sahip olup olmadığını incelemek için yapılabilecek hesaplamalardan birisi emprical birikimli fonksiyon (emprical cumulative function) hesaplanmasıdır:
+
+```{r}
+x<-rnorm(50)
+n<-length(x)
+plot(sort(x),(1:n)/n,type="s",ylim=c(0,1))
+```
+
+Burada öncelikle 50 tane rastgele sayıdan ibaret bir `x` vektörü oluşturuyoruz. İkinci satırda `n` değişkenine değer olarak `x` vektörünün büyüklüğünü atıyoruz. Üçüncü satırdaysa grafiği çiziyoruz. Dikkat edilirse grafiğin ilk parametresi olarak `sort()` fonksiyonuyla sıraladığımız `x` değişkenini, ikinci parametre olarak teoretik dağılımı hesapladığımız bir ifadeyi belirledik. `type=”s”` parametresiyle basamak şeklinde bir grafik çizdik ve `ylim=c(0,1)` ile de `y` eksenini düzenledik (Peter Dalgaard, Introductory Statistics with R).
+
+R ile bu işlemi `qqnorm()` grafik fonksiyonuyla daha isabetli bir biçimde yapabiliriz.
+
+```{r}
+qqnorm(x)
+```
+
+Grafikte `y` ekseni `x` değişkenini, `x` ekseni ise teoretik dağılımı ifade etmektedir. Q-Q Plot grafiğinin düzgün bir eğime sahip oluşu verinin normal dağılıma sahip olduğunu gösterir. Yukarıdaki örnekte uçlardaki düzensizlik verinin alt ve üst değerlerinin normal dağılım özelliği taşımadığını göstermektedir. Aynı biçimde yukarıda kullandığımız `mpg` değişkenine ait q-q plot grafiğini çizelim:
+
+```{r}
+qqnorm(mtcars$mpg)
+qqline(mtcars$mpg)
+```
+
+İlk satırda yer alan kod değişkenin dağılım grafiğini oluşturmakta, ikinci satırdaki kod ise değişkenin tamamen normal dağılıma sahip olması durumunda noktaların üzerinde olması gereken hattı çizmektedir. Nadiren bir değişken ikinci satırdaki kod ile çizdiğimiz hat üzerine oturacaktır. Şekildeki grafik değişkenin normal dağılıma yakın olduğunu göstermektedir.
+
+Betimleyici analiz amacıyla çizilebilecek diğer bir grafik dağılım grafiğidir. Dağılım grafiklerini daha önce incelemiştik.
+
+Son olarak, değişkenin dağılımı hakkında bilgi veren skewness ve kurtosis betimsel analizde kullanılan istatistiklerdir. Skewness dağılımın sağa veya sola yatık olup olmadığı, kurtosis ise tekdüze olup olmadığı hakkında bilgi verir. Bunları hesaplayabilmek için moments paketine ihtiyacımız var:
+
+```{r}
+library(moments)
+round(sapply(mtcars,skewness),digits=2)
+```
+
+Normal dağılıma sahip bir değişkenin skewness değerinin sıfıra yakın olması gerekmektedir. Skewness değerinin pozitif olarak artması, dağılımın sağa doğru uzayan bir kuyruğu olduğunu, negatif olarak artmasıysa sola doğru uzayan bir kuyruğu olduğunu göstermektedir. Yukarıda histogram grafiği bulunan `mpg` değişkenine baktığımızda skewness değerinin 0.64 olduğunu, bunun grafiği doğruladığını görüyoruz.
+
+Aynı şekilde normal dağılıma sahip bir değişkenin kurtosis değeri sıfıra yakın olacaktır. Kurtosis değerinin pozitif olarak artması dağılımın bir noktada zirve yaptığını, negatif olarak artması düz bir dağılımın olduğunu göstermektedir.

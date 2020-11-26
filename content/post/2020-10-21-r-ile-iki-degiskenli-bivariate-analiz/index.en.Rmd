@@ -1,0 +1,67 @@
+---
+title: R ile iki değişkenli (bivariate) analiz
+author: Hakan Hekim
+date: '2020-10-21'
+slug: [r-ile-iki-degiskenli-bivariate-analiz]
+categories:
+  - Istatistik
+tags:
+  - Istatistik
+description: R ile iki değişken arasında ilişkiyi inceleme yöntemleri.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+İki değişkenli analiz amacıyla yapılabilecek ilk analizlerden birisi dağılım grafiği (scatterplot) çizmektir. Dağılım grafiği iki değişken arasındaki ilişkiyi görsel olarak ortaya koymakta, birlikte artıp azalmalarını veya zıt bir biçimde hareket edip etmediklerini görmemizi sağlamaktadır. Dağılım grafiği çizerken değişkenleri bağımlı ve bağımsız değişken mantığıyla değerlendirebiliriz. Bu doğrultuda bağımlı değişkeni `y`, bağımsız değişkeni de `x` ekseni üzerine oturtabiliriz.
+
+Örnek olarak yine `mtcars` verisetinde bulunan değişkenleri analiz edelim. Öncelikle araçların beygir gücüyle yakıt sarfiyatı (bir milde harcadığı yakıt miktarı) arasındaki ilişkiye göz atalım:
+
+```{r}
+plot(mtcars$hp,mtcars$mpg)
+```
+
+Grafikte öncelikli olarak iki değişken arasında bir ilişki olup olmadığını, bağımlı değişkenin ve bağımsız değişkenin birlikte hareket edip etmediğini gözlemlemeliyiz. İkinci olarak ilişkinin şeklini incelememiz gerekmekte. Doğrusal bir ilişki var mı, veya verileri dönüştürerek doğrusal hale getirebilir miyiz? Bu sorular veri analizi için önem arzetmektedir. Yukarıdaki grafikte araçların beygir gücü arttıkça bir galon yakıtla gidebildiği mesafenin azaldığını, yani yakıt sarfiyatlarının arttığını görmekteyiz.
+
+İki değişken arasındaki ilişkiyi numerik olarak ölçmek için korrelasyon analizi kullanılmaktadır. İki değişken arasındaki correlasyon değerini `cor()` komutuyla hesaplamaktayız.
+
+```{r}
+cor(mtcars$hp,mtcars$mpg)
+```
+
+Korrelasyon değeri sıfır ile bir arasında değişen bir değerdir. Korrelasyon değeri sıfıra yaklaştıkça değişken arasında zayıf bir ilişki olduğu ve bire yaklaştıkça güçlü bir ilişki olduğunu söyleyebiliriz. Korrelasyon değerinin negatif olması değişkenler arasında ters bir ilişki olduğunu, yani değişkenlerden birisi artarken diğerinin azaldığını ortaya koymaktadır. Yukarıdaki analizimizde korrelasyon değerinin negatif oluşunu dağılım grafiğiyle de doğrulamak mümkün. Görüldüğü gibi araçların beygir gücü arttıkça, yakıt performansı kötüleşmektedir.
+
+İki değişken arasındaki ilişkiyi regresyon analiziyle de numerik olarak ortaya koyabiliriz. Regresyon analizi R’da `lm()` fonksiyonuyla üretilmektedir.
+
+```{r}
+reg <- lm(mtcars$mpg~mtcars$hp)
+summary(reg)
+```
+
+Regresyon analizinin detaylarını başka bir yazıya bırakarak temel istatistikleri yorumlayalım. Öncelikli olarak analiz sonuçlarını `reg` ismini verdiğimiz değişkene atadık ve `summary()` komutuyla analiz sonuçlarını ekrana getirdik. Analizde beygir gücüyle yakıt sarfiyatı arasında istatiksel olarak anlamlı ve negatif bir ilişki olduğunu görmekteyiz. (hp ile başlayan satırın sonunda yer alan üç nokta değişkenler arasında anlamlı ilişki olduğunu göstermektedir.)
+
+Regresyon analizinde gördüğümüz ilişkiyi `abline()` komutuyla görsel olarak dağılım grafiği üzerinde de görebilriiz.
+
+```{r}
+reg <- lm(mtcars$mpg~mtcars$hp)
+par(cex=.8)
+plot(mtcars$hp,mtcars$mpg)
+abline(reg)
+```
+
+Burada aynı regresyon analizini tekrar yapıyoruz. Ardından `cex` parametresiyle dağılım grafiğindeki noktaları biraz küçültüyoruz. Üçüncü satırda grafiği oluşturup, dördüncü satırda regresyon hattını grafik üzerine çiziyoruz. Regresyon hattının yönü değişkenler arasındaki negatif ilişkiyi göstermektedir.
+
+İki değişken arasındaki ilişkiyi gözlemleyebileceğimiz temel analiz çeşitlerinden birisi de iki-yönlü tablo (two-way table) üretmektir. Daha çok kategorik verilerin analizinde kullanılan bu yöntem diğer veri türlerinde de (biraz uzunca tablolar üretmekle birlikte) kullanılabilir.
+
+```{r}
+table (mtcars$cyl,mtcars$carb)
+```
+
+Yukarıdaki tabloda araçların silindir sayısıyla karbüratör sayısı arasındaki ilişki görülebilmektedir. Satırlar silindir sayısını ve sütunlar karbüratör sayısını göstermektedir. Silindir sayısı arttıkça, karbüratör miktarı da artmaktadır. `table()` yerine `ftable()` fonksiyonuyla görsel olarak biraz daha düzgün tablolar üretebiliriz.
+
+

@@ -1,0 +1,107 @@
+---
+title: Shiny ile interaktif grafikler
+author: Hakan Hekim
+date: '2020-11-07'
+slug: shiny-ile-interaktif-grafikler
+categories:
+  - Shiny
+tags:
+  - Shiny
+description: R shiny paketiyle etkileşimle web app üretimi.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/shiny_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+RStudio tarafından üretilen `Shiny` ile web üzerinde de çalışabilen interaktif grafikler üretmek mümkün. Shiny paketini diğer bütün R paketleri gibi `install.packages()` fonksiyonuyla yüklüyoruz. Şık görünümlü grafikler için `ggplot` paketini (hatta `tidyverse`'i) yüklemek te iyi bir tercih.
+
+Shiny paketini yükledikten (ve `library(shiny)`) komutunu çalıştırdıktan) sonra komut satırında `runExample("01_hello")` yazarak Shiny ile üretilebilecek sorgu ekranlarına bir örnek görebilirsiniz. `runExample()` komutunu parametresiz olarak yazarsanız paketle birlikte gelen örneklerin adları ekrana listelenir. Ekranın altında ilgili R kodu da verilmekte.
+
+Shiny uygulamaları `ui.R` ve `server.R` isimli iki dosyadan oluşmakta. Tek dosyadan ibaret te olabilir ancak kod biraz kalabalık olabilir. `ui.R` dosyasında sayfanın kullanıcı arayüzü oluşturuluyor ve `server.R` ile de verisetinde sorgulamalar yapılarak çıktı üretiliyor. Diğer bir deyişle `ui.R` dosyasında verisetine uygulanacak filtreler arayüz vasıtasıyla belirlenmekte ve `server.R` dosyasında da bu filtreler veriseti veya verisetlerine uyarlanarak çıktı üretilmekte.
+
+Örnek kodlar üzerinde çalışarak Shiny'nin işleyişi hakkında epey bilgi edinmek mümkün. Yinede bu notta küçük bir uygulamayı, kodunu açıklayarak sunmak istiyorum. Bu uygulamada tidyverse ile beraber gelen diamonds verisetindeki elmasları x ekseninde karat ve y ekseninde fiyat olacak biçimde bir dağılım grafiğini oluşturacağım. Grafikteki noktaları elmasların kesimine göre renklendireceğim. Kullanıcının grafiği elmasların rengine ve karat değerine göre değiştirebilmesine imkan vereceğim.
+
+Uygulamanın `ui.R` dosyası şu şekilde:
+
+```{r eval=FALSE, include=TRUE}
+#ui.R l
+ibrary(shiny) 
+library(tidyverse) 
+colorList <- unique(diamonds$color) 
+shinyUI(pageWithSidebar( 
+  headerPanel("Renk ve karat değerine göre elmas fiyatları"), 
+  sidebarPanel( 
+    selectInput(inputId = "renk", 
+                label = "Renk seçin", 
+                choices = colorList, 
+                selected = colorList[1] 
+                ), 
+    sliderInput(inputId = "minimumCarat", 
+                label = "Karat değeri - minimum", 
+                min = 0.2, 
+                max = 5.1, 
+                value = 0.2, step = 0.1
+                ), 
+    sliderInput(inputId = "maximumCarat", 
+                label = "Karat değeri - maximum", 
+                min = 0.2, 
+                max = 5.1, 
+                value = 5.1, 
+                step = 0.1) 
+    ), 
+  mainPanel( 
+    plotOutput("dGraph") 
+    ) 
+  ))
+```
+
+Öncelikle shiny ve tidiverse paketlerini yükledim. Ardından açılır menüde kullanacağımız renk listesini verisetinden çekerek colorList değişkenine vektör olarak atadım. Sonradan bu vektörü kullanacağız. `shinyUI` fonksiyonuna parametre olarak başka bir fonksiyon olan (`pageWithSidebar`) sayfa türünü atadım. Kullanıcı ara yüzümüzü bu fonksiyon içerisinde tanımlayacağım. `headerPanel` fonskiyonuyla sayfaya başlık belirledim.
+
+`sidebarPanel` fonksiyonunda sayfada olmasını istediğim girdi ögelerini belirledim. Burada tanımladığım bütün girdi elemanlarına sonradan `server.R` dosyasında kullanmak üzere bir isim (inputId) belirlemem gerekiyor.
+
+Öncelikle renk seçimi yapılacak olan açılır listeyi `selectInput` fonksiyonuyla tanımladım. Açılır liste elemanları olarak az önce ürettiğim `colorList` vektörünü atadım. Etiket ve seçili ögeyi de belirledim. Daha sonra iki ayrı `slideInput` fonksiyonuyla sürükleme çubukları tanımladım. Bu çubuklar vasıtasıyla grafiğini istediği elmasların karat aralığını tanımlayabileceğim. Çubukların etiketlerini, min-max değerlerini, seçili öge değerlerini ve arttırım miktarlarını belirledim ve sidebarPanel fonksiyonunu sonlandırdım.
+
+`mainPanel` çıktıyı alacağım bölüm olacak. Sadece grafik çıktı alacağım için burada plotOutput fonksiyonunu kullandım ve grafiğime bir isim verdim. Son olarak parantezleri kapatıp fonksiyonları tamamladım.
+
+Gelelim server.R dosyasına:
+
+```{r eval=FALSE, include=TRUE}
+#server.R 
+library(shiny) 
+shinyServer(function(input, output) { 
+  filtre <- reactive({ 
+    diamonds <- diamonds[diamonds$color %in% input$renk,] 
+    
+    diamonds = as.numeric(input$minimumCarat) & diamonds$carat <= as.numeric(input$maximumCarat),] 
+diamonds }) 
+  
+  output$dGraph <- renderPlot({ 
+    graphData <- filtre() 
+    theGraph <- ggplot(graphData, aes(x = carat, y = price)) + 
+      geom_point(aes(color = cut)) + xlim(input$minimumCarat, input$maximumCarat) +
+      xlab("Karat") + ylab("Fiyat") 
+    print(theGraph) }) })
+```
+
+Yukarıda belirttiğim gibi `server.R` dosyası girdi elemanlarından gelen parametreler doğrultusunda verisetini filtreleyen ve istenilen çıktıyı hazırlayan kısım. Bu dosyaya da shiny paketini yükleyerek başlamak iyi bir alışkanlık. Ardından ana fonksiyon olan `shinyServer` tanımladım. `shinyServer`, `ui.R` ile toplanan girdileri işlemek üzere tanımlanan fonksiyonları barındırmakta. Dolayısıyla aldığı parametre de fonksiyon türünde. `shinyServer` yapacağımız uygulama açıldığında, yahut ilgili web sayfası yüklendiğinde çalıştırılacaktır.
+
+`shinyServer` fonksiyonunda ilk olarak verisetini filtrelemek üzere `reactive` fonksiyonu tanımlıyoruz. `reactive` fonksiyonu normal R ifadelerinden oluşur. En önemli özelliği ifadelerin sonuçlarının değişmesi halinde (ki kullanıcı arayüzündeki girdi ögeleriyle bunu yapmayı amaçlamaktayız) bu değişikliklere göre bu örnekte verisetini tekrar filtrelemesidir. `reactive` fonksiyonda bulunan değerlerden herhangi birisi değiştiğinde, ilgili ifadeler "geçersiz" olarak işaretlenmekte ve yeniden çalıştırılmaktadır. Bu sayede verisetine arayüzde seçilen filtreleri uygulayabiliyoruz.
+
+`reactive` fonksiyonundaki ilk ifade verisetini renge göre, ikinci ifade karata göre filtrelemekte. Üçüncü ifade filtrelenmiş verisetini çıktı olarak sunmakta. reactive fonksiyonunun sonucunu filtre değişkenine atıyoruz.
+
+`output$dGraph` ile de grafik çıktısını belirliyoruz. Dikkat edilirse "dgraph" `ui.R` dosyasında tanımladığımız grafik çıktısına verdiğimiz isim. `renderPlot` fonksiyonuyla `filtre()` objesinde bulunan verisetini `graphData` değişkenine atadım. Sonrasındaysa `ggplot` ile grafiği çizerek çıktı olarak gönderdim.
+
+![Shiny app görünümü](/post/2020-11-07-shiny-ile-interaktif-grafikler/index.en_files/shiny.png)
+
+Sonuç olarak yukarıdaki resimdeki ekranı elde ediyoruz. Soldaki girdileri değiştirdiğimizde grafik yenileniyor.
+
+Siz de gerekli paketleri yükledikten sonra yukarıdaki kodları kopyalayarak deneyebilirsiniz. İki dosyayı da (`ui.R` ve `server.R`) aynı klasörde tutmayı unutmayın. Uygulamayı `runApp()` fonksiyonuyla, parametre olarak ui.R ve server.R dosyalarının bulunduğu klasörün adresini vererek çalıştırabilirsiniz. Şayet RStudio kullanıyorsanız 'Shiny Web App...' seçeneğiyle bu iki dosyayı oluşturup içlerini doldurabilir ve uygulamayı araç çubuğundan çalıştırabilirsiniz.
+
+Shiny'yi web sitesinde kullanabilmek için sunucunuza RStudio sitesinden indirebileceğiniz shiny server yazılımını kurmanız gerekiyor. Shiny server içinse Linux tabanlı bir sunucu.
+
+RStudio sitesinde shiny ile ilgili eğitim materyali mevcut. Göz atmaya değer.

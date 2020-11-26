@@ -1,0 +1,95 @@
+---
+title: Frekans, kontenjans tabloları ve dağılım grafikleri
+author: Hakan Hekim
+date: '2020-10-18'
+slug: [frekans-kontenjans-tablolari-ve-dagilim-grafikleri]
+categories:
+  - Temel R
+  - Grafik
+tags:
+  - scatter plot
+description: Frekans ve kontenjans tablosu üretme, dağılım grafiği çizme.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/scatter_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Frekans tablosu bir değişkenin frekans dağılımını incelememize yardımcı olur. Frekans tablosu `table()` fonksiyonuyla görüntülenebilir.
+
+```{r}
+table(mtcars$vs)
+```
+
+```{r}
+table(mtcars$mpg)
+```
+
+Kontenjans tablosu iki veya (yorumlaması kolay olmasa da) daha fazla değişkenin değerlerinin karşılıklı olarak incelenmesine yarayan tablolardır. R'da yine `table()` fonksiyonuyla kontenjans tabloları oluşturabiliriz:
+
+```{r}
+table(mtcars$vs,mtcars$carb)
+```
+
+Bu örnekte araçların motor tipine göre karbüratör sayıları tablolanmıştır. Tabloyu daha okunur yapmak için vs değişkenini faktör olarak yeniden tanımlayarak tablo oluşturabiliriz:
+
+```{r}
+mtcars1 <- mtcars
+mtcars1$vsFac <- factor(mtcars1$vs, levels = c(0,1), labels = c("V-type","Straight"))
+table(mtcars1$vsFac,mtcars1$carb)
+```
+
+Görüldğü gibi V tipi motorların karbüratör sayısı normal motorlardan daha fazla.
+
+Üç boyutlu bir kontenjans tablosu da üretebiliriz:
+
+```{r}
+mtcars1$amFac <- factor(mtcars1$am, levels = c(0,1), labels = c("Automatic","Manual"))
+table(mtcars1$vsFac,mtcars1$carb,mtcars1$amFac)
+```
+
+Bu örnekte önce vites türünü otomatik ve manual olmak üzere faktör haline çevirdik. Ardından üç boyutlu bir kontenjans tablosu ürettik.
+
+Şayet sonuçları bir çalışmada kullanacaksak `table()` fonksiyonunun bu çıktısı çok uygun değil. Daha güzel bir tabloyu `ftable()` fonksiyonuyla elde edebiliriz. `ftable()` fonksiyonu `table()` fonksiyonuyla aynı işi yapmakla beraber, daha düz bir çıktı vermektedir.
+
+```{r}
+ftable(mtcars1$vsFac,mtcars1$carb,mtcars1$amFac)
+```
+
+Böylelikle biraz daha derli toplu bir tablo elde etmiş olduk.
+
+Şimdi değişkenleri grafik şeklinde sunalım. `plot()` fonksiyonuyla çizilebilen dağılım grafiği bu iş için uygundur:
+
+```{r}
+plot(mtcars1$mpg, main="Dağılım Grafiği",ylab="Yakıt Performansı")
+```
+
+Grafikte yakıt performansı değişkeninin dağılımını görebiliyoruz.
+
+Dağılım grafiğinin daha kullanışlı olduğu yer, kontenjans tablolarında olduğu gibi iki değişkenin birbirleriyle ilişkisini incelenmesidir.
+
+```{r}
+plot(mtcars$wt,mtcars$mpg,main="Dağılım Grafiği",xlab="Aracın ağırlığı", ylab="Yakıt Performansı",pch=20,col=c("red","blue"))
+```
+
+`plot()` komutuyla grafiği çizdik. `main` parametresiyle grafik başlığı `xlab` ve `ylab` parametreleriyle `x` ve `y` eksen etiketlerini isimlendirdik.
+
+Dağılım grafiğine değişkenler arasındaki ilişkiyi daha net görmemizi sağlayacak regresyon hattı da ekleyebiliriz:
+
+```{r}
+plot(mtcars$wt,mtcars$mpg,main="Dağılım Grafiği",xlab="Aracın ağırlığı", ylab="Yakıt Performansı",pch=20,col=c("red","blue"))
+abline(lm(mtcars$mpg~mtcars$wt), col="green")
+lines(lowess(mtcars$wt,mtcars$mpg), col="purple")
+```
+
+Bu grafikte önce yeşil ile *doğrusal* modeli, ikinci olarak mor ile *lowess* modelini görmekteyiz. Doğrusal regresyon modelini grafik üzerine `abline()` fonksiyonu ile yerleştirdik. `abline()` fonksiyonu parametre olarak intercept yani doğrunun `y` eksenini kestiği noktanın değerini ve doğrunun eğimini almaktadır. `lm(mpg~wt)` fonksiyonu da birisi intercept diğeri eğim olmak üzere iki değer döndürmektedir.
+
+Buna karşın `lines()` fonksiyonu parametre olarak doğrunun oluşacağı `x`,`y` koordinat değerlerini almaktadır. Nitekim `lowess(wt,mpg)` fonksiyonu da bu değerleri üretmekte ve böylelikle grafik üzerine lowess modelini yerleştirmekteyiz.
+
+Son olarak dağılım grafiğinde kullandığımız `pch` parametresiyle grafikteki değişkenlerin dağılımını gösterecek işaretin türünü seçtik. `pch` parametresinin alabileceği değerler ve karşılıkları olan semboller aşağıda yer almaktadır. Tabloda bu işaretler renkli olarak gösterilmiş olsa da grafiği çizerken `col` parametresiyle renklendirilmemesi halinde renksiz görüneceklerdir.
+
+![Semboller](/post/2020-10-18-frekans-kontenjans-tablolari-ve-dagilim-grafikleri/index.en_files/pchsymbols.png)

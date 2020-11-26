@@ -1,0 +1,117 @@
+---
+title: Olasılık Hesapları ve İstitistiksel Dağılımlar
+author: Hakan Hekim
+date: '2020-10-26'
+slug: olasilik-hesaplari-ve-istitistiksel-dagilimlar
+categories:
+  - Istatistik
+tags:
+  - Olasılık
+  - Olasılık Dağılımları
+description: Yaygın kullanlan istatistiksel dağılımlara yönelik hesaplamalar.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/probdist_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>İstatistiksel hesaplamaların pek çoğu verinin rastgele dağılıma sahip olduğu varsayımına dayanır. Ancak gerçek hayatta, özellikle sosyal bilimlerde rastgele dağılıma sahip veri bulabilmek güçtür. İstatistiksel paketler rastgele dağılıma yakın veri üretmemize imkan verir. R ile rastgele dağılıma sahip bir set üretmek içiin <code>sample()</code> fonksiyonu kullanılabilir.</p>
+<pre class="r"><code>sample(0:100, 10)</code></pre>
+<pre><code>##  [1] 61 98 50 13 23 66  5 75 10 71</code></pre>
+<p><code>sample()</code> fonksiyonuna giren ilk değer rastgele üretilecek sayı aralığını ifade eden vektör, ikincisi ise kaç sayı üretileceğini ifade eden değerdir. Yukarıdaki örnekte aynı sayının birden fazla örneklemde bulunması engellenmiştir. Bazı durumlarda aynı değerin birden fazla bulunabilmesi gerekebilir. Mesela, yazı-tura sonuçlarına ilişkin bir rastgele dizide iki değer olmalıdır:</p>
+<pre class="r"><code>sample(c(&quot;Y&quot;,&quot;T&quot;), 10, replace = T)</code></pre>
+<pre><code>##  [1] &quot;T&quot; &quot;Y&quot; &quot;Y&quot; &quot;T&quot; &quot;Y&quot; &quot;T&quot; &quot;Y&quot; &quot;Y&quot; &quot;Y&quot; &quot;T&quot;</code></pre>
+<p>Burada <code>replace=T</code> ile aynı değerin tekrar etmesini sağlıyoruz. Buna ilaveten <code>sample()</code> fonksiyonunda dizide bulunacak değerlerin ihtimallerini de belirleyebiliz. Mesela yazı tura attığımız parada bir dengesizlik var ve yazı gelme ihtimali 0.8 ve tura gelme ihtimali 0.2 ise;</p>
+<pre class="r"><code>sample(c(&quot;Y&quot;,&quot;T&quot;), 10, prob = c(.8,.2), replace = T)</code></pre>
+<pre><code>##  [1] &quot;T&quot; &quot;Y&quot; &quot;Y&quot; &quot;Y&quot; &quot;Y&quot; &quot;Y&quot; &quot;Y&quot; &quot;Y&quot; &quot;T&quot; &quot;Y&quot;</code></pre>
+<p>Yahut 10 kişilik örneklem alacağımız bir grupta erkeklerin oranı 0.65, kadınların oranı 0.35 ise ve buna uygun bir örneklem almak istiyorsak;</p>
+<pre class="r"><code>sample(c(&quot;E&quot;,&quot;K&quot;), 10, prob = c(.65,.35), replace = T)</code></pre>
+<pre><code>##  [1] &quot;E&quot; &quot;K&quot; &quot;E&quot; &quot;K&quot; &quot;E&quot; &quot;K&quot; &quot;E&quot; &quot;E&quot; &quot;K&quot; &quot;E&quot;</code></pre>
+<div id="olasılık-hesapları-ve-kombinasyon" class="section level2">
+<h2>Olasılık Hesapları ve Kombinasyon</h2>
+<p><code>sample()</code> fonksiyonuna ilişkin yukarıda verdiğimiz ilk örneğe (<code>sample(0:100, 10)</code>) geri dönelim.Aynı sayının birden fazla defa çıkma ihtimali olmadığından herhangi bir sayının ilk olma ihtimali 1/100, ikinci olma ihtimali 1/99, üçüncü olma ihtimali 1/98 şeklinde devam etmektedir. Bu durumda elde edeceğimiz örneklem 1/(100 x 99 x 98 x … x 90) olasılığa sahiptir. R ile bunu hesaplamak için <code>prod()</code> fonksiyonunu kullanabiliriz:</p>
+<pre class="r"><code>1/prod(100:91)</code></pre>
+<pre><code>## [1] 1.59196e-20</code></pre>
+<p>Bu örnekte örneklemdeki değerlerin sıralamasını önemsemedik. Şayet sıralamayı da göz önüne almamız gerekiyorsa ihtimal hesabını aşağıdaki gibi yapabiliriz;</p>
+<pre class="r"><code>prod(10:1)/prod(100:91)</code></pre>
+<pre><code>## [1] 5.776904e-14</code></pre>
+<p>R ile istatistiksel dağılımlara ilişkin <strong>1)</strong> yoğunluk (density), <strong>2)</strong> birikimli olasılık dağılım fonksiyonu (cumulated probability distribution function), <strong>3)</strong> quantile ve <strong>4)</strong> rastgele sayı (pseudo-random numbers) hesaplamaları yapılabilir. Şimdi kısaca bunlara bakalım.</p>
+<div id="yoğunluk-density" class="section level3">
+<h3>Yoğunluk (density)</h3>
+<p>Sürekli dağılımlar için yoğunluk, <code>x</code> değerine yakın bir değer elde etme olasılığı olarak ifade edilebilir. Belli bir aralıkta bir değer elde etme ihtimali eğrinin o aralığın altında kalan kısmıdır. Kesikli (discrete) dağılımlar için yoğunluk tam olarak <code>x</code>değerini elde etme ihtimalidir. Normal dağılıma ait yoğunluk fonksiyonu <code>dnorm()</code> ile hesaplanabilir. Mesela <code>dnorm()</code> fonksiyonunu çan eğrisi şeklindeki normal dağılım eğrisini elde etmek için kullanabiliriz:</p>
+<pre class="r"><code>x &lt;- seq(-4,4,.1)
+plot(x, dnorm(x), type=&quot;l&quot;)</code></pre>
+<p><img src="/post/2020-10-26-olasilik-hesaplari-ve-istitistiksel-dagilimlar/index.en_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><code>plot()</code> fonksiyonunda kullandığımız <code>type=l</code> (küçük L harfi) çizgi şeklinde bir grafik elde etmemizi sağlar. Aynı grafiği <code>curve()</code> fonksiyonu kullanarak ta çizebiliriz:</p>
+<pre class="r"><code>curve(dnorm(x), from=-4, to=4)</code></pre>
+<p><img src="/post/2020-10-26-olasilik-hesaplari-ve-istitistiksel-dagilimlar/index.en_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Kesikli dağılımlardan olan binomyal dağılım için yoğunluk, <code>dbinom()</code> ile hesaplanabilir.:</p>
+<pre class="r"><code>x &lt;- 0:50
+plot(x, dbinom(x, size = 50, prob = .33),type = &quot;h&quot;)</code></pre>
+<p><img src="/post/2020-10-26-olasilik-hesaplari-ve-istitistiksel-dagilimlar/index.en_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Bu örnekte olduğu gibi <code>dbinom()</code> fonksiyonunda <code>x</code>’e ilaveten <code>n</code>, yani örneklem büyüklüğü ve <code>p</code>, yani olasılık değeri belirtilmelidir. Bu arada <code>x &lt;- 0:50</code> ifadesi <code>x &lt;- seq(0,50,1)</code> ifadesinin kısa şeklidir, <code>type=”h”</code> parametresi çubuk grafik çizmemizi sağlar.</p>
+</div>
+<div id="birikimli-cumulative-yoğunluk-fonksiyonu" class="section level3">
+<h3>Birikimli (cumulative) yoğunluk fonksiyonu</h3>
+<p>Birikimli yoğunluk fonksiyonu <code>x</code> veya <code>x</code>’den daha küçük bir değer elde etme ihtimalini verir. Birikimli yoğunluk fonksiyonunu grafik olarak göstermek pek faydalı değildir. Bunun yerine sayı olarak ifadesi daha doğru bilgi verir. Mesela, suça maruz kalmış kişilerin haftalık olarak evleri dışında geçirdikleri saat ortalamasının 48, standart sapmasının 3 olduğunu düşünürsek, şayet bir kişi haftada ortalama olarak 57 saatini dışarıda geçiriyorsa pnorm() fonksiyonuyla;</p>
+<pre class="r"><code>1-pnorm(57,mean = 48,sd = 3)</code></pre>
+<pre><code>## [1] 0.001349898</code></pre>
+<p>örneklemin sadece %0.1’inin bu kişiyle aynı veya daha yüksek bir değere sahip olduğunu bulabiliriz. Görüldüğü gibi <code>pnorm()</code> fonksiyonu, fonksiyona giren ilk değerden daha düşük bir değer elde etme ihtimalini vermektedir. Bunu birden çıkarttığımızdaysa fonksiyona giren ilk değere eşit veya daha yüksek değerlerin ihtimalini elde ederiz.</p>
+<p>Birikimli yoğunluk fonksiyonu genellikle istatistiksel testlerde kullanılabilir. Örnek olarak iki farklı tedavi (A ve B) uygulanan 20 hastadan 16’sının A tedavisini tercih ettiğini varsayalım. Acaba bu sonuç B tedavisinin daha isabetli olduğunu ispatlar mı yoksa bu sonuç şans eseri olabilr mi? Şayet iki tedavi şekli arasında bir fark yoksa A tedavisini tercih eden hastaların p=0.5 ihtimalli bir binomyal dağılıma sahip olmaları gerekir. Yukarıdaki sonucun ne ölçüde mümkün olduğunu birikimli yoğunluk fonksiyonuyla hesaplayabiliriz:</p>
+<pre class="r"><code>1-pbinom(15, size = 20, prob = .5)</code></pre>
+<pre><code>## [1] 0.005908966</code></pre>
+<p>16 kişi A tedavisini tercih etmesine rağmen <code>pbinom()</code> fonksiyonunda 15 değerini kullandık çünkü bu sayede 16 değerinden daha küçük değerlerin yoğunluk fonksiyonunu hesaplamış olduk. Dolayısıyla bu sonucun şans eseri çıkma ihtimalinin %0.5 olduğunu görüyoruz. Eğer iki yönlü test yapacaksak, yani A mı yoksa B mi daha fazla tercih edildi bilmiyorsak;</p>
+<pre class="r"><code>1-pbinom(15, size = 20, prob = .5) + pbinom(4, size = 20, prob = .5)</code></pre>
+<pre><code>## [1] 0.01181793</code></pre>
+<p>Burada artı işaretinden sonraki kısımda ilk kısmın tam tersi durumun ihtimalini yani 16 kişinin B tedavisini tercih etme durumunu hesaplamış olduk. Bu durumda şans eseri böyle bir sonuç alma ihtimali %1.2 olmakta. Son iki hesaplama için R’da binom.test() isimli özel bir fonksiyon bulunmaktadır:</p>
+<pre class="r"><code>binom.test(16,20,.5,alternative = &quot;greater&quot;)</code></pre>
+<pre><code>## 
+##  Exact binomial test
+## 
+## data:  16 and 20
+## number of successes = 16, number of trials = 20, p-value = 0.005909
+## alternative hypothesis: true probability of success is greater than 0.5
+## 95 percent confidence interval:
+##  0.5989719 1.0000000
+## sample estimates:
+## probability of success 
+##                    0.8</code></pre>
+<p>Burada <code>alternative</code> parametresiyle testin yönünü belirleyebiliyoruz, ayrıca <code>conf.level</code> parametresi ile istediğimiz bir güven aralığı da belirleyebiliriz.</p>
+<p>###Quantile</p>
+<p>Quantile fonksiyonu birikimli yoğunluk fonksiyonunun tersini verir. Birikimli yoğunluk fonksiyonuyla belli bir değerin veya bu değerden daha düşük bir değerin elde edilme ihtimalini bulabiliyorduk. Quantile fonksiyonuyla ise belli bir ihtimalin hangi değere isabet ettiğini bulabiliriz.</p>
+<pre class="r"><code>qnorm(.025); qnorm(.975)</code></pre>
+<pre><code>## [1] -1.959964</code></pre>
+<pre><code>## [1] 1.959964</code></pre>
+<p>Yani normal dağılım eğrisinin solundaki %2.5’luk kısım -1.95 değerine, sağındaki %2.5’luk kısım ise 1.95 değerine denk düşmektedir. Bu değerleri kullanarak haftalık ev dışında geçirdikleri saat ortalaması 48, standart sapması 3 olan 10 kişiye ait %95 güven aralığını şu şekilde bulabiliriz:</p>
+<pre class="r"><code>sem &lt;- 3/10
+48 + sem * qnorm(.025)</code></pre>
+<pre><code>## [1] 47.41201</code></pre>
+<pre class="r"><code>48 + sem * qnorm(.975)</code></pre>
+<pre><code>## [1] 48.58799</code></pre>
+<p>Bu örnekte ilk önce ortalamanın standart hatasını (standart error of mean – sem) hesapladık. Daha sonra bunu kullanarak dağılım eğrisinin her iki ucundaki %2.5’luk kısmın hangi değere isabet ettiğini bulduk. Dolayısıyla örneklemin %95’i, 47.41 ile 48.59 arasında bulunuyor, yani gayet sık bir veriseti.</p>
+</div>
+<div id="rastgele-sayılar" class="section level3">
+<h3>Rastgele Sayılar</h3>
+<p>R ile farklı istatistiksel dağılımlara sahip rastgele sayılar üretmek mümkündür. Yalnız bilgisayar yardımıyla üretilen sayıların tam anlamıyla rastgele sayı olmayacağı akıldan çıkartılmamalıdır. Bu yüzden bunlara ‘pseudo-random’ yani ‘rastgele gibi’ sayılar diyoruz. Rastgele sayılar simülasyon çalışmalarında kullanılmaktadır. En sık kullanılan dağılım türü olan normal dağılıma sahip rastgele sayılar üretmek için <code>rnorm()</code> fonksiyonu kullanılır. Bir önceki örnekte kullandığımız ortalaması 48, standart sapması 3 olan 10 tane rastgele sayı üretip histogram grafiğini çizelim:</p>
+<pre class="r"><code>x &lt;- rnorm(10, mean = 48, sd = 3)
+hist(x, xlim = c(35,65))</code></pre>
+<p><img src="/post/2020-10-26-olasilik-hesaplari-ve-istitistiksel-dagilimlar/index.en_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p>Aynı şekilde binomyal dağılım elde etmek istiyorsak <code>rbinom()</code> fonksiyonu kullanabiliriz:</p>
+<pre class="r"><code>rbinom(10, size = 20, prob = .3)</code></pre>
+<pre><code>##  [1] 7 7 5 5 6 5 5 7 4 5</code></pre>
+<pre class="r"><code>rbinom(10, size = 20, prob = .5)</code></pre>
+<pre><code>##  [1] 11  7 10 10  8  6  9  8 12  7</code></pre>
+<pre class="r"><code>rbinom(10, size = 20, prob = .8)</code></pre>
+<pre><code>##  [1] 14 16 19 14 16 17 15 18 18 17</code></pre>
+<p>Farklı olasılık değerlerinde rastgele sayıların da değiştiğini gözlemleyebiliriz.</p>
+<p><em>Bu yazıda Peter Dalgaard’ın “Introductory Statistics with R” isimli kitabından faydalandım.</em></p>
+</div>
+</div>

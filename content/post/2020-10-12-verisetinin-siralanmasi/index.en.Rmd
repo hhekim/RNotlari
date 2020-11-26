@@ -1,0 +1,47 @@
+---
+title: Verisetinin sıralanması
+author: Hakan Hekim
+date: '2020-10-12'
+slug: [verisetinin-siralanmasi]
+categories:
+  - Temel R
+tags:
+  - dataframe
+description: order fonksiyonuyla dataframe sıralanması.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Data frame nesnesi olarak oluşturulan bir verisetini belli bir değişkene göre sıralamada `order()` fonksiyonu kullanılabilir;
+
+```{r}
+mtcars1 <- mtcars[order(mtcars$mpg),]
+```
+
+Burada verisetini `mpg` değişkenine göre sıralayarak yeni bir veriseti oluşturmuş olduk. `order()` fonksiyonu verisetini küçükten büyüğe doğru sılarayacaktır. Bunun tersini yapmak için sıralama kriteri olan değişkenin başına "-" işareti koymamız yeterli:
+
+```{r}
+mtcars1 <- mtcars[order(-mtcars$mpg),]
+```
+
+Alternatif olarak decreasing parametresini de kullanabiliriz:
+
+```{r}
+mtcars1 <- mtcars[order(mtcars$mpg, decreasing=TRUE),]
+```
+
+Sıralamayı birden fazla değişkene göre de yapabiliriz:
+
+```{r}
+mtcars1 <- mtcars[order(mtcars$vs, -mtcars$mpg),]
+```
+
+Bu durumda veriseti öncelikli olarak motor tipine göre sıralanacak, aynı motor tipine sahip araçlar kendi içinde yakıt tüketimine göre büyükten küçüğe doğru sıralanacaktır.
+
+`order()` fonksiyonunda bulunan diğer bir kullanışlı parametre de `na.last`. Bu parametreye TRUE değeri atamamız halinde sıralama kriteri olarak kullandığımız değişkende yer alan eksik değerler en sona yerleştirilecek, `FALSE` değeri atamamız halinde başa alınacak ve `NA` değeri atamamız halinde bu gözlemler yeni verisetinde yer almayacaktır.

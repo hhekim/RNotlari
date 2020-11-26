@@ -1,0 +1,68 @@
+---
+title: R analiz sonuçlarını LaTeX'e çevirmek
+author: Hakan Hekim
+date: '2020-11-06'
+slug: r-analiz-latex-cevirmek
+categories:
+  - Raporlama
+tags:
+  - LaTeX
+description: R ile betimleyici analiz sonuçlarını LATEX ortamına aktaran bir fonksiyon.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/LaTeX_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Bu notta (bir okuyucunun talebi üzerine) R analiz sonuçlarının `LaTeX` formatına çevrilmesini ele alacağım. Bu işlem için hazırlanmış pek çok R paketi mevcut. En bilinenlerden birisi `xtable`. Bir önceki notta paylaştığım MS Word formatına aktarma işlemini gerçekleştiren fonksiyonda ufak değişiklikler yaparak `LaTeX` formatında çıktı alabiliriz:
+
+```{r warning=FALSE}
+library(e1071) 
+library(xtable) 
+apadesc <- function(x){ 
+  desc <- function(x) { 
+    funs <- c(min, max, mean, median, sd, mad, skewness, kurtosis) 
+    lapply(funs, function(f) round(f(x, na.rm = TRUE), digits = 2)) 
+  } 
+  x <- x[unlist(lapply(x, is.numeric))] 
+  destats <- t(sapply(x, desc)) 
+  dimnames(destats)[[2]] <- c("min", "max", "mean", "median", "sd", "mad", "skew", "kurtosis") 
+  dfdestats <- as.data.frame(destats) 
+  xtable(dfdestats, caption = "Betimsel İstatistikler") 
+}
+apadesc(mtcars)
+```
+
+Fonksiyonun verdiği `LaTeX` çıktısını .tex dökümanımıza yapıştırıp derlerseniz aşağıdaki tabloyu elde edersiniz:
+
+`xtable` paketinde pek fazla format seçeneği olmadığından çıktıyı istediğimiz biçime sokmak için `LaTeX` kodu üzerinde çalışmak gerekiyor.
+
+Kullanımı kolay diğer bir `LaTeX` paketi de `stargazer.` Verisetinin (data frame olmalı) betimsel istatistiklerini hesaplamak için aşağıdaki kod yeterli:
+
+```{r warning=FALSE}
+library(stargazer)
+stargazer(mtcars, title = "Betimsel İstatistikler")
+```
+
+Yine tabloyu formatlamak için `LaTeX` tarafında çalışmak gerekiyor. Diğer yandan yukarıdaki kodla tabloda verilenden farklı bir istatistik üretmemiz mümkün değil. Eğer başka istatistiklere ihtiyacımız varsa bunun için kod yazmalıyız. Mesela yukarıda kullandığımız `apadesc` fonksiyonunun son satırında yer alan `xtable(dfdestats, caption = "Betimsel İstatistikler") `yerine
+
+```{r eval=FALSE, include=TRUE}
+stargazer(dfdestats, summary = FALSE, 
+          column.labels = dimnames(destats)[[2]], rownames = TRUE)
+```
+
+yazarak aynı tabloyu üretebiliriz.
+
+Her iki paket te doğrusal regresyon modeli gibi farklı analizlerin sonuçlarını içeren nesneleri algılayarak tablo üretebilmektedir:
+
+```{r warning=FALSE}
+dmodel <- with(mtcars, lm(mpg ~ disp + wt))
+xtable(dmodel)
+stargazer(dmodel)
+```
+
+Sonuç olarak, R çıktılarını `LaTeX` formatına çeviren paketler bizi rakamları teker teker aktarmak zahmetinden kurtarmakta. Ancak "tam da istediğimiz gibi" tablolar oluşturmak için bu sefer de elimizi `LaTeX` koduna bulaştırmamız gerekiyor.

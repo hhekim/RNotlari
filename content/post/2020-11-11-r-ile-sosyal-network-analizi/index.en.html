@@ -1,0 +1,158 @@
+---
+title: R ile Süper Lig'in Sosyal Network Analizi
+author: Hakan Hekim
+date: '2020-11-11'
+slug: r-ile-sosyal-network-analizi
+categories:
+  - Sosyal Network
+tags:
+  - SNA
+description: R ile network analizi ve network grafiği.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/sna_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>R ile sosyal network analizi yapmamızı sağlayan iki temel paket var statnet ve igraph. Bu notta bu paketleri kullanarak bir network objesi oluşturup grafiğini çizeceğiz. Network analizi yöntemiyle incelenemiyecek şey yok gibi. Bu yazıda süper lig takımlarının 2019-2020 sezonu galibiyetlerini inceleyeceğiz. Öncelikle kullanacağımız paketleri yükleyelim:</p>
+<pre class="r"><code>library(tidyverse) 
+library(rvest) 
+library(igraph) 
+library(statnet) 
+library(intergraph) 
+library(RColorBrewer)</code></pre>
+<p><code>rvest</code> paketini kullanarak web scrapping yöntemiyle TFF’nin sitesinden maç sonuçlarını indireceğim ve bir data frame nesnesine çevireceğim.</p>
+<pre class="r"><code>url &lt;- &quot;https://www.tff.org/default.aspx?pageID=198&quot; 
+tff_page &lt;- read_html(url) 
+tff_page %&gt;% 
+  html_nodes(&quot;table&quot;) %&gt;% 
+  .[[39]] %&gt;% 
+  html_table(fill=TRUE) -&gt; x 
+
+i &lt;- 41 
+while(i &lt;= 54){ 
+  tff_page %&gt;% 
+    html_nodes(&quot;table&quot;) %&gt;% 
+    .[[i]] %&gt;% 
+    html_table(fill=TRUE) -&gt; y 
+  x &lt;- bind_rows(x,y) 
+  i &lt;- i + 2 
+}
+#Bazı maçlar oynanmadığından 0-0 olarak elle girdim
+x$X2[x$X2 == &quot;-&quot;] &lt;- &quot;0 - 0&quot;
+head(x,5)</code></pre>
+<pre><code>##                      X1    X2                           X3
+## 1  ÇAYKUR RİZESPOR A.Ş. 1 - 2              FENERBAHÇE A.Ş.
+## 2  DEMİR GRUP SİVASSPOR 0 - 2                   ALANYASPOR
+## 3          GÖZTEPE A.Ş. 5 - 1          YUKATEL DENİZLİSPOR
+## 4      GALATASARAY A.Ş. 3 - 1 GAZİANTEP FUTBOL KULÜBÜ A.Ş.
+## 5 FATİH KARAGÜMRÜK A.Ş. 3 - 0             YENİ MALATYASPOR</code></pre>
+<p>İlk satırda müsabaka sonuçlarının yer aldığı sayfayı <em>url</em> değişkenine atıyorum. Sonra sayfayı <em>tff_page</em> değişkenine <em>read_html</em> fonksiyonunu kullanarak liste olarak indiriyorum. Son olarak sayfanın html koduna bakarak almak istediğim kısmı bulup while döngüsüyle bu kısımları dataframe’e çeviriyorum. Şayet siz bu kodu çalıştırırken sayfanın yapısı değişmişse, kodun bu kısmınının güncellenmesi gerekir.</p>
+<p>İkinci aşamada elde ettiğimiz verisetini, <em>edge list</em>’e çevireceğiz:</p>
+<pre class="r"><code>x[,2] &lt;- lapply(x$X2, function (k) k &lt;- gsub(&quot;-&quot;,&quot;&quot;,x$X2)) </code></pre>
+<pre><code>## Warning in `[&lt;-.data.frame`(`*tmp*`, , 2, value = list(c(&quot;1 2&quot;, &quot;0 2&quot;, :
+## provided 80 variables to replace 1 variables</code></pre>
+<pre class="r"><code>N &lt;- length(x$X2) 
+xnew &lt;- data.frame(team1=character(),
+                   team2=character(),
+                   avrg=numeric(),
+                   stringsAsFactors=FALSE) 
+
+for(i in 1:N){ 
+  a &lt;- as.numeric(substr(x$X2[i],1,1)) 
+  b &lt;- as.numeric(substr(x$X2[i],4,4)) 
+  if((a-b) &gt; 0){ 
+    tempdf &lt;- data.frame(team1=x$X1[i],
+                         team2=x$X3[i],
+                         avrg=a - b,
+                         stringsAsFactors=FALSE) 
+    xnew &lt;- bind_rows(xnew,tempdf) 
+  }else if((a-b) &lt; 0){ 
+    tempdf &lt;- data.frame(team1=x$X3[i],
+                         team2=x$X1[i],
+                         avrg=b - a,
+                         stringsAsFactors=FALSE) 
+    xnew &lt;- bind_rows(xnew,tempdf) 
+  } 
+} 
+head(xnew,5)</code></pre>
+<pre><code>##                   team1                        team2 avrg
+## 1       FENERBAHÇE A.Ş.         ÇAYKUR RİZESPOR A.Ş.    1
+## 2            ALANYASPOR         DEMİR GRUP SİVASSPOR    2
+## 3          GÖZTEPE A.Ş.          YUKATEL DENİZLİSPOR    4
+## 4      GALATASARAY A.Ş. GAZİANTEP FUTBOL KULÜBÜ A.Ş.    2
+## 5 FATİH KARAGÜMRÜK A.Ş.             YENİ MALATYASPOR    3</code></pre>
+<p>Burada yaptığımız işlem; galip takımı <em>team1</em>, malup takımı <em>team2</em> değişkenlerine ve net skoru da <em>avrg</em> değişkenine yazmak.</p>
+<p>Üçüncü aşamada, takımların isimlerini kısaltmalarıyla değiştireceğim ki grafiklerde daha kullanışlı olsun:</p>
+<pre class="r"><code>teams &lt;- data.frame(name=unique(c(xnew$team1,xnew$team2)),
+                    alias=c(&quot;FB&quot;,&quot;ALA&quot;,&quot;GÖZ&quot;,&quot;GS&quot;,&quot;FKG&quot;,&quot;ERZ&quot;,&quot;KAY&quot;,&quot;BJK&quot;,
+                            &quot;ANT&quot;,&quot;HAT&quot;,&quot;ALA&quot;,&quot;SVS&quot;,&quot;KAS&quot;,&quot;TS&quot;,&quot;KON&quot;,&quot;MLT&quot;,
+                            &quot;GNÇ&quot;,&quot;RİZ&quot;,&quot;BAŞ&quot;,&quot;DEN&quot;,&quot;GAN&quot;,&quot;ANK&quot;),
+                    stringsAsFactors=FALSE) 
+for(i in 1:length(xnew$team1)){ 
+  xnew[i,1] &lt;- teams[teams$name == xnew$team1[i],]$alias 
+  xnew[i,2] &lt;- teams[teams$name == xnew$team2[i],]$alias 
+} 
+head(xnew,5)</code></pre>
+<pre><code>##   team1 team2 avrg
+## 1    FB   RİZ    1
+## 2   ALA   SVS    2
+## 3   GÖZ   DEN    4
+## 4    GS   GAN    2
+## 5   FKG   MLT    3</code></pre>
+<p>Artık <em>edge list</em> hazır. Şimdi bunu network veri objesini çevirebiliriz.</p>
+<pre class="r"><code>iplays &lt;- graph_from_data_frame(xnew)
+netplays &lt;- asNetwork(iplays)
+netplays</code></pre>
+<pre><code>##  Network attributes:
+##   vertices = 21 
+##   directed = TRUE 
+##   hyper = FALSE 
+##   loops = FALSE 
+##   multiple = FALSE 
+##   bipartite = FALSE 
+##   total edges= 53 
+##     missing edges= 0 
+##     non-missing edges= 53 
+## 
+##  Vertex attribute names: 
+##     vertex.names 
+## 
+##  Edge attribute names: 
+##     avrg</code></pre>
+<p>Bu şekilde <em>iplays</em> ile æ, <em>netplays</em> ile <code>statnet</code> objesi üretmiş olduk. Temelde ikisi de aynı içeriğe sahip fakat kendi paketleriyle işlenebiliyorlar. Ben aşağıda <em>netplays</em>’i kullanacağım.</p>
+<p>Yukarıdaki çıktıda yer alan Network attributes’e baktığımızda; 21 takımı temsil eden 21 vertex ve bu takımlar arasında oynanan ve galibiyetle sonuçlanmış 53 maçı temsil eden 53 edge görüyoruz. Network <em>directed</em> yani galip takım ile malup takım arasında tek yönlü bir ilişki var. Vertex attribute names altında sadece takımların isimleri bulunuyor, Edge attribute names altında net skoru ifade eden <em>avrg</em> değişkeni var.</p>
+<p>Şimdi network verisini bir <code>sociograph</code> ile gösterelim:</p>
+<pre class="r"><code>deg &lt;- degree(netplays, cmode = &quot;outdegree&quot;, rescale = TRUE) 
+par(mar=c(0,0,0,0)) 
+gplot(netplays, gmode=&quot;digraph&quot;, mode=&quot;fruchtermanreingold&quot;, usearrows=TRUE, 
+      label=netplays %v% &quot;vertex.names&quot;, displaylabels=TRUE, 
+      vertex.cex=deg*15, label.cex = deg*20, arrowhead.cex = 0.7, 
+      edge.lwd=(netplays %e% &quot;avrg&quot;)/2, 
+      edge.col=brewer.pal(netplays %e% &quot;avrg&quot;, name = &quot;Reds&quot;),jitter = TRUE)</code></pre>
+<pre><code>## Warning in if (n &lt; 3) {: the condition has length &gt; 1 and only the first element
+## will be used</code></pre>
+<pre><code>## Warning in brewer.pal(netplays %e% &quot;avrg&quot;, name = &quot;Reds&quot;): minimal value for n is 3, returning requested palette with 3 different levels</code></pre>
+<p><img src="/post/2020-11-11-r-ile-sosyal-network-analizi/index.en_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>Bu grafikte gplot vertex ve takım ismi büyüklüklerini takımların galibiyet miktarına göre ayarlıyor. Sıralamada yukarıda yer alan takımlar grafiğin ortasında, sonlarda yer alan takımlar kenarlarda yer almakta. Takımlar arasındaki bağlantı net skora göre açıktan koyuya doğru değişiyor. Koyu kırmızı bağlantılar farklı galibiyetleri gösteriyor.</p>
+<p>Aşağıda mode parametresini değiştirerek dairesel bir grafik oluşturdum:</p>
+<pre class="r"><code>deg &lt;- degree(netplays, cmode = &quot;outdegree&quot;, rescale = TRUE) 
+par(mar=c(0,0,0,0)) 
+gplot(netplays, gmode=&quot;digraph&quot;, mode=&quot;circle&quot;, usearrows=TRUE, 
+      label=netplays %v% &quot;vertex.names&quot;, displaylabels=TRUE, 
+      vertex.cex=deg*15, label.cex = deg*20, arrowhead.cex = 0.7, 
+      edge.lwd=(netplays %e% &quot;avrg&quot;)/2, 
+      edge.col=brewer.pal(netplays %e% &quot;avrg&quot;, name = &quot;Reds&quot;),jitter = TRUE)</code></pre>
+<pre><code>## Warning in if (n &lt; 3) {: the condition has length &gt; 1 and only the first element
+## will be used</code></pre>
+<pre><code>## Warning in brewer.pal(netplays %e% &quot;avrg&quot;, name = &quot;Reds&quot;): minimal value for n is 3, returning requested palette with 3 different levels</code></pre>
+<p><img src="/post/2020-11-11-r-ile-sosyal-network-analizi/index.en_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><em>Vertex</em>’lere takımlarla ilgili, <em>edge</em>’lere maçlarla ilgili birçok özellik işlenerek, ligin çok farklı yönlerini görselleştiren grafikler çizmek mümkün. Bu notta sadece kitabın kapağını biraz aralayıp R ile yapabileceklerimizi bir miktar göstermek istedim.</p>

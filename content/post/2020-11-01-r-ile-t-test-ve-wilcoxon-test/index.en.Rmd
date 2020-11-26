@@ -1,0 +1,83 @@
+---
+title: R ile t-test ve Wilcoxon test
+author: Hakan Hekim
+date: '2020-11-01'
+slug: r-ile-t-test-ve-wilcoxon-test
+categories:
+  - Istatistik
+tags:
+  - t-test
+  - wilcoxon
+description: R ile t-test ve Wilcoxon test uygulaması.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/tdist_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Pek çok istatistiksel test değişken ortalamalarının belli bir değerden (tek örneklem) yahut başka bir değişken ortalamasından (iki örneklem) farklı olup olmadığını hesaplar. En sık kullanılan testlerden birisi olan *t-testi* iki ortalamayi karşılaştırmak veya bir değişkenin ortalamasının bilinen bir sayıdan farklı olup olmadığını test etmek için kullanılır.
+
+### Tek Örneklem
+
+Mesela, `mtcars` verisetinde yer alan `mpg` değişkeninin ortalamasının belli bir değerden farklı olup olmadığına bakalım. Bunun için önce `mpg` değişkenine ait temel istatistikleri hesaplayalım:
+
+```{r message=FALSE, warning=FALSE}
+attach(mtcars)
+mean(mpg); sd(mpg); quantile(mpg)
+```
+
+T-testi ile ortalaması 30 olan bir başka değişkenin mpg değişkeninden farklı olup olmadığına bakalım:
+
+```{r}
+t.test(mpg, mu=30)
+```
+
+Test çıktısı test adını içeren başlıkla başlıyor; tek örneklem t-testi. İlk satırda kullandığımız verinin/değişkenin adını görüyoruz, `mpg`. İkinci satırda test sonucu olarak `t` değeri, `df` yani degrees of freedom ve `p` değeri yer alıyor. Sonucu yorumlamak için t tablosuna bakmamıza gerek yok. `p` değeri 0,05'den hatta 0,01'den de küçük olduğundan ortalamanın 30'dan farklı olduğunu söyleyebiliriz. Üçüncü satırda alternatif hipotez belirtilmiş. Hemen altta %95 güven aralığı gösterilmiş. Buna göre null hipotezin geçerliliğini koruyabilmesi için diğer ortalamanın 17,92 ile 22,26 arasında bir değer olması gerekiyor. En sondaysa `mpg` değişkeninin ortalaması verilmiş.
+
+`t.test()` fonksiyonu pek çok argüman alabilir. Bunlardan birisi olan `mu` yukarıda kullanıldı. `conf.level` ile güven aralığını belirleyebiliriz. Mesela, `conf.level = 0.99` ile güven aralığını %99 olarak ayarlayabiliriz. Diğer bir argüman olan `alternative="greater"` ve `alternative="less"` ile tek yönlü test seçeneklerinden birisini seçebiliriz.
+
+Bilindiği gibi parametrik testler verinin normal dağılıma sahip olduğunu varsayar. Nanparametrik testlerde bu varsayım aranmaz ve bu sayede az sayıda değer/gözlem içeren değişkenlere uygulanabilir. Nanparametrik testlerden olan Wilcoxon testi için R paketinde `wilcox.test()` fonksiyonu bulunmaktadır. Örnek olması amacıyla yukarıdaki aynı değişken ile Wilcoxon testi yapalım:
+
+```{r}
+wilcox.test(mpg, mu=30)
+```
+
+Görüldüğü gibi test çıktısında fazla bilgi yok. Nonparametrik testlerde parametre tahmini olmadığından sonuçta bir güven aralığı da bulunmuyor. Wilcoxon test signed-rank test olarak adlandırılan gruba girdiğinden aynı değeri içeren gözlemler test için problem teşkil etmektedir. `mpg` değişkeninde altı tane mükerrer gözlem bulunmaktadır. Bu durum  uyarı mesajı olarak belirtilmiştir. Test çıktısında yer alan `V` değeri pozitif değerlerin toplamıdır.
+
+### İki örneklem
+
+İki örneklemin aynı ortalamaya sahip olup olmadığını test etmek için kullanılır. `?mtcars` komutuyla mtcars verisetini incelersek, araçların motor tipini gösteren `vs` değişkeninin olduğunu görebiliriz. `table(vs)` komutu araçlarının 18'inin 0 yani V tipi, 14'ünün 1 yani normal motorlu olduğunu görebiliriz. T-test ile araçların yakıt sarfiyatlarının motor türüne göre farklılaşıp farklılaşmadığını test edebiliriz:
+
+```{r}
+t.test(mpg ~ vs)
+```
+
+İki örneklem t-testinde değişkenleri tilde (~) ile ayırdık. Test çıktısı tek örneklem t-testiyle aynı.` p` değeri araçların yakıt sarfiyatlarının motor türüne göre farklı olduğunu gösteriyor. Güven aralığının sıfır değeri içermemesi de iki araç türünün ortalama yakıt sarfiyatlarının farklı olduğunu göstermekte. En altta yer verilen `mpg` değeri ortalamaları, sıfır ile gösterilen V tip motorlu araçların bir galon yakıtla daha az mesafe aldığını gösteriyor.
+
+R paketinde standart olarak bulunan t-testi (diğer istatistik paketlerinden farklı olarak) örneklemler arasında eşit varyans olduğu varsayımını taşımayan *Welch* metodunu uygular. Eşit varyans varsayımının geçerli olduğunnu düşünüyorsak komuta `var.equal=T` argümanını ekleyebiliriz.
+
+```{r}
+t.test(mpg ~ vs, var.equal=T)
+```
+
+İlk testten farklı olarak `df` (degrees of freedom) değerinin arttığını, `p` değerinin azaldığını görüyoruz. 
+
+Örneklemlerin varyans değerlerinin eşit olup olmadığını `var.test()` ile F dağılımını hesaplayarak analiz edebiliriz:
+
+```{r}
+var.test(mpg ~ vs)
+```
+
+`p` değeri istatistiksel olarak anlamlı olmaadığı için iki örneklemin varyanslarının farklı olduğunu iddia eden alternatif hipotezi reddediyoruz. Dolayısıyla ilk t-testi daha sağlıklı. R paketinde varyansları karşılaştıran başka testlerde bulunmaktadır. Bu testlerin hepsinin kendisine göre varsayımları bulunmaktadır. Bu arada F testi grupların bağımsız olduklarını varsayar ve eş gruplara (paired sample) uygulanmaz.
+
+İki örneklem t-testinin nanparametrik alternatifi tek örneklemdeki gibi yine Wilcoxon testi:
+
+```{r}
+wilcox.test(mpg ~ vs)
+```
+
+Eş grupların, yani ilk-test, son-test (pre ve post test) sonuçlarını karşılaştırmak için `t.test(pre, post, paired = T)` ve `wilcox.test(pre, post, paired = T)` komutları kullanılır. Komutlarda geçen `pre` ve `post` ifadeleri yerine ilk ve son test değerlerini içeren değişkenlerin adları girilir. Test çıktısı diğer t-test ve Wilcoxon test çıktısıyla aynı biçimde yorumlanır.

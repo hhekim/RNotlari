@@ -1,0 +1,58 @@
+---
+title: Liste nesnesi ve list() fonksiyonu
+author: Hakan Hekim
+date: '2020-10-09'
+slug: liste-nesnesi-ve-list-fonksiyonu
+categories:
+  - Temel R
+tags:
+  - Liste
+  - list()
+description: Listeleri ve list fonksiyonu kullanarak liste üretilmesini anlatır.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Buraya kadar saydığımız veri nesneleri içinde en az kısıtlama içereni listelerdir. Liste nesnesi içerisine farklı türlerde ve farklı boyutlarda değişkenleri depolayabiliriz. Aşağıdaki örnekte öncelikle <code>a</code>, <code>b</code>, <code>c</code>, ve <code>d</code> adında dört değişken tanımlanacak ve bu değişkenler <code>list()</code> fonksiyonu kullanılarak <code>z</code> adında bir listede toplanacaktır:</p>
+<pre class="r"><code>a &lt;- c(1,2,3)
+b &lt;- c(&quot;k&quot;,&quot;l&quot;,&quot;m&quot;,&quot;n&quot;)
+c &lt;- 8
+d &lt;- matrix(1:9, nrow = 3, ncol = 3)
+z &lt;- list(a=a,b=b,c=c,d=d)
+z</code></pre>
+<pre><code>## $a
+## [1] 1 2 3
+## 
+## $b
+## [1] &quot;k&quot; &quot;l&quot; &quot;m&quot; &quot;n&quot;
+## 
+## $c
+## [1] 8
+## 
+## $d
+##      [,1] [,2] [,3]
+## [1,]    1    4    7
+## [2,]    2    5    8
+## [3,]    3    6    9</code></pre>
+<p>Herhangi bir ögeyi seçmek için matriks veya dataframe’deki notasyon kullanılır:</p>
+<pre class="r"><code>z$b </code></pre>
+<pre><code>## [1] &quot;k&quot; &quot;l&quot; &quot;m&quot; &quot;n&quot;</code></pre>
+<pre class="r"><code>z$b[4]</code></pre>
+<pre><code>## [1] &quot;n&quot;</code></pre>
+<pre class="r"><code>z$d[2,]</code></pre>
+<pre><code>## [1] 2 5 8</code></pre>
+<p>Listede hangi değişkenlerin bulunduğu names() fonksiyonuyla sorgulanabilir:</p>
+<pre class="r"><code>names(z)</code></pre>
+<pre><code>## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot;</code></pre>
+<p>Tabi liste oluştururken daha anlaşılır değişken isimleri kullanmak işi kolaylaştıracaktır.</p>
+<p>R, t-test, regresyon gibi hemen bütün istatistiksel analizlerin sonuçlarını liste şeklinde sunmaktadır. Bu analiz sonuçları üzerinde işlem yapabilmek için liste nesnesi ve liste içerisindeki ögelere nasıl erişileceği önemlidir.</p>

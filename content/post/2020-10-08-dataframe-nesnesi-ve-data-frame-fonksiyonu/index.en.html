@@ -1,0 +1,73 @@
+---
+title: Dataframe nesnesi ve data.frame fonksiyonu
+author: Hakan Hekim
+date: '2020-10-08'
+slug: [dataframe-nesnesi-ve-data-frame-fonksiyonu]
+categories:
+  - Temel R
+tags:
+  - dataframe
+  - data.frame()
+description: R'ın temel veri birimlerinden dataframe oluşturulması ve kullanımı.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Eşit uzunluktaki değişkenleri bir dataframe içerisinde toplayabiliriz. Data frame, <code>as.matrix()</code> veya <code>cbind()</code> fonksiyonlarına benzemekle beraber, data frame nesnesi daha kullanışlı özellikler barındırmaktadır. Boy, kilo ve yas değişkenlerinden <code>data.frame()</code> fonksiyonunu kullanarak bir dataframe nesnesi oluşturabiliriz;</p>
+<pre class="r"><code>boy &lt;- c(1.80, 1.65, 1.85, 1.90, 1.70, 1.67)
+kilo &lt;- c(70, 75, 80, 95, 65, 63)
+yas &lt;- c(45, 37, 23, 54, 27, 44)
+bkydfrm &lt;- data.frame(BOY=boy, KILO=kilo, YAS=yas)</code></pre>
+<p><code>data.frame()</code> fonksiyonuyla tamamen bağımsız bir veri nesnesi oluşturmaktayız. Sadece numerik değil karakter ve faktör tipinde değişkenleri de dataframe içerisine kaydedebiliriz.</p>
+<p>Data frame içerisinde herhangi bir sütuna farklı şekillerde ulaşılabilir;</p>
+<pre class="r"><code>bkydfrm$BOY</code></pre>
+<pre><code>## [1] 1.80 1.65 1.85 1.90 1.70 1.67</code></pre>
+<pre class="r"><code>bkydfrm[,1]</code></pre>
+<pre><code>## [1] 1.80 1.65 1.85 1.90 1.70 1.67</code></pre>
+<pre class="r"><code>bkydfrm[[1]]</code></pre>
+<pre><code>## [1] 1.80 1.65 1.85 1.90 1.70 1.67</code></pre>
+<p>Bu yöntemleri kullanarak vektör olarak çıktı almış oluyoruz. Çıktının yine dataframe olması için aşağıdaki yöntemi kullanabiliriz:</p>
+<pre class="r"><code>bkydfrm[1]</code></pre>
+<pre><code>##    BOY
+## 1 1.80
+## 2 1.65
+## 3 1.85
+## 4 1.90
+## 5 1.70
+## 6 1.67</code></pre>
+<p>Birden fazla sütun seçebiliriz:</p>
+<pre class="r"><code>bkydfrm[1:2]</code></pre>
+<pre><code>##    BOY KILO
+## 1 1.80   70
+## 2 1.65   75
+## 3 1.85   80
+## 4 1.90   95
+## 5 1.70   65
+## 6 1.67   63</code></pre>
+<p>Vektör vermesi gereken <code>bkydfrm[,1]</code> yönteminde birden fazla sütun belirlersek çıktı dataframe olacaktır:</p>
+<pre class="r"><code>bkydfrm[,c(1,3)]</code></pre>
+<pre><code>##    BOY YAS
+## 1 1.80  45
+## 2 1.65  37
+## 3 1.85  23
+## 4 1.90  54
+## 5 1.70  27
+## 6 1.67  44</code></pre>
+<p>Satır seçme işlemi de matrikslerdeki gibidir. Mesela ikinci satırı seçelim:</p>
+<pre class="r"><code>bkydfrm[2,]</code></pre>
+<pre><code>##    BOY KILO YAS
+## 2 1.65   75  37</code></pre>
+<p>Çıktı dataframe olarak gelmektedir. Çünkü bir dataframe’de sütunlar farklı veri tipinde olabilir. Bir vektör ise farklı veri tipleri barındıramaz. Bütün sütunlar numerikse ve vektör olarak çıktı almak istiyorsak aşağıdaki ifadeyi kullanabiliriz:</p>
+<pre class="r"><code>as.numeric(as.vector(bkydfrm[2,]))</code></pre>
+<pre><code>## [1]  1.65 75.00 37.00</code></pre>
+<p>Veri tipleri farklıysa sonuç arzu ettiğimiz gibi olmayacaktır:</p>

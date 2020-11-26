@@ -1,0 +1,65 @@
+---
+title: Verisetinin alt verisetlerine bölünmesi
+author: Hakan Hekim
+date: '2020-10-12'
+slug: [verisetinin-alt-verisetlerine-bolunmesi]
+categories:
+  - Temel R
+tags:
+  - dataframe
+description: Dataframe nesnesinden altkümeler seçme işlemleri.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Şimdi belli özelliklere sahip verilerin nasıl seçileceğine bakalım. Hatırlanacağı üzere `mtcars` R'ın standart verisetlerinden birisiydi. 
+
+Önce `mtcars` verisetindeki değişkenleri tekrar hatırlayalım:
+
+```{r}
+str(mtcars)
+```
+
+Şidi motor türünü gösteren `vs` değişkeninde kaç farklı değer olduğuna bakalım:
+
+```{r}
+unique(mtcars$vs)
+```
+
+Görüldüğü üzere `vs` değişkeninde 0 ve 1 olmak üzere iki değer bulunmakta. `unique()` fonksiyonu bu şekilde değişkenlerin içerdiği her bir özgün değeri görmemizi sağlar.
+
+`vs` değişkeninde 0 V tipi motor ve 1 normal motoru temsil etmektedir. Sadece V tipi motora sahip araçların verisine ulaşmak için şöyle bir yöntem kullanılabilir:
+
+```{r}
+Vtype <- mtcars[mtcars$vs == 0,]
+str(Vtype)
+```
+
+Görüldüğü gibi `mtcars` verisetindeki `vs` değişkenine göre filtreden geçirerek sadece V tipi motorlardan  oluşan `Vtype` isimli yeni bir veriseti (dataframe nesnesi) oluşturduk.
+
+Filtreleme işlemini yaparken kullandığımız karşılaştırma operatörlerinin sayısını arttırıp işleme daha fazla koşul ekleyebiliriz. Mesela hem V tipi motoru olan hem de otomatik vitesli araçları listeleyebiliriz:
+
+```{r}
+mtcars[mtcars$vs == 0 & mtcars$am == 0,]
+```
+
+Burada `mtcars$vs == 0` ile `mtcars$am == 0` parametreleri arasında yer alan "&" işareti "ve" mantıksal operatörüdür. Burada "ve" operatörü V tipi motoru hem de otomatik vitesli araçların seçimini sağlamaktadır.
+
+Değere bağlı alt-küme seçme işleminde veya başka işlemlerde kullanılabilecek mantıksal operatörler şunlardır:
+
+
+| Operatör | Kullanımı |
+|:-:|:-:|
+| ! | Mantıksal 'değil' |
+| & | Elemanlara şamil mantıksal 've' |
+| && | Mantıksal 've' |
+| \| | Elemanlara şamil mantıksal 'veya' |
+| \|\| | Mantıksal 'veya' |
+
+İngilizce 'element-wise' kelimesini 'elemanlara şamil' olarak çevirdim. Mesela iki vektörün bütün elemanlarını teker teker karşılaştırmak için bunları kullanıyoruz.

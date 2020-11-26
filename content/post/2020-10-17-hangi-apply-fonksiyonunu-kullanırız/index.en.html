@@ -1,0 +1,104 @@
+---
+title: Hangi apply fonksiyonunu, nasıl kullanırız?
+author: Hakan Hekim
+date: '2020-10-17'
+slug: [hangi-apply-fonksiyonunu-kullanırız]
+categories:
+  - Temel R
+tags:
+  - functional programming
+description: R ile functional programming ögelerinin tanıtımı.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Bir önceki yazıda <code>tapply()</code> fonksiyonunun kullanımına ilişkin örnekler sunmuştum. Aslında R’da apply fonksiyonları olarak adlandırılan başka fonksiyonlar da bulunmakta. Bunların yaptığı iş hemen hemen <code>tapply()</code> fonksiyonuna benzer olmakla birlikte genellikle girdi ve çıktıları farklılık göstermektedir.</p>
+<p>Şimdi kısaca bunları tanıtayım:</p>
+<ol style="list-style-type: decimal">
+<li><code>apply()</code> fonksiyonu matrix tipi verilerde kullanışlıdır:</li>
+</ol>
+<pre class="r"><code>M &lt;- matrix(sample(1:100,16,replace = TRUE), nrow = 4, ncol = 4)
+apply(M, 1, sum)</code></pre>
+<pre><code>## [1] 270 217 265 262</code></pre>
+<pre class="r"><code>apply(M, 2, sum)</code></pre>
+<pre><code>## [1] 251 308 253 202</code></pre>
+<pre class="r"><code>apply(M,c(1,2),sqrt)</code></pre>
+<pre><code>##          [,1]     [,2]     [,3]     [,4]
+## [1,] 7.141428 7.810250 8.124038 9.591663
+## [2,] 7.000000 7.681146 9.746794 3.741657
+## [3,] 8.831761 9.848858 4.358899 8.426150
+## [4,] 8.544004 9.539392 8.544004 5.000000</code></pre>
+<p>Bu örnekte M adını verdiğimiz 4 satır ve sütundan oluşan bir matrix oluşturduk. Matriksin içini <code>sample()</code> fonksiyonunu kullanarak rastgele verilerle doldurduk. Daha sonra <code>apply()</code> fonksiyonunu kullanarak önce satırların sonra sütunların toplamlarını hesapladık.</p>
+<p>Son işlemdeyse <code>sqrt()</code> fonksiyonuyla matrikste bulunan bütün değerlerin karekökünü hesapladık. Dikkat ederseniz burada satır ve sütunları <code>c(1,2)</code> şeklinde bir vektör ile ifade ettik.</p>
+<ol start="2" style="list-style-type: decimal">
+<li><code>lapply()</code> fonksiyonu liste türü verilerde kullanılır ve fonksiyonun çıktısı da yine bir liste şeklinde olur:</li>
+</ol>
+<pre class="r"><code>alist &lt;- list(A=sample(1:30,10), 
+              B=c(&quot;a&quot;,&quot;b&quot;,&quot;c&quot;,&quot;d&quot;,&quot;e&quot;),
+              C=c(&quot;şu&quot;,&quot;köşe&quot;,&quot;yaz&quot;,&quot;köşesi&quot;))
+lapply(alist,FUN=length)</code></pre>
+<pre><code>## $A
+## [1] 10
+## 
+## $B
+## [1] 5
+## 
+## $C
+## [1] 4</code></pre>
+<pre class="r"><code>lapply(alist,FUN=mean)</code></pre>
+<pre><code>## Warning in mean.default(X[[i]], ...): argument is not numeric or logical:
+## returning NA
+
+## Warning in mean.default(X[[i]], ...): argument is not numeric or logical:
+## returning NA</code></pre>
+<pre><code>## $A
+## [1] 13.2
+## 
+## $B
+## [1] NA
+## 
+## $C
+## [1] NA</code></pre>
+<p>Bu örnekte ilki numerik, ikincisi karakter ve üçüncüsü string şeklinde üç eleman içeren bir liste oluşturduk ve <code>lapply()</code> fonksiyonu ile listedeki herbir ögenin kaç eleman içerdiğini sorguladık. Görüldüğü gibi fonksiyonun çıktısı da liste şeklinde oldu.</p>
+<p><code>lapply()</code> fonksiyonunu ikinci kullanımımızda sadece numerik değerler üzerinde çalışabilecek ortalama yani <code>mean()</code> fonksiyonunu kulandık. Listenin ilk ögesinin ortalaması hesaplanırken, iki ve üçüncü ögeler hesaplanamamış ve çıktının sonunda ortalama fonksiyonunun numerik olmayan değerlere uygulanamayacağına ilişkin hata mesajı görüntülenmiştir.</p>
+<ol start="3" style="list-style-type: decimal">
+<li><code>sapply()</code> fonksiyonunu da liste türü verilere uygulanır ancak çıktı tipi vektördür. Örnek olarak az önce oluşturduğumuz alist isimli listenin elemanlarının uzunluğunu bu sefer sapply() fonksiyonuyla hesaplayalım:</li>
+</ol>
+<pre class="r"><code>sapply(alist,FUN=length)</code></pre>
+<pre><code>##  A  B  C 
+## 10  5  4</code></pre>
+<pre class="r"><code>sapply(alist,FUN=mean)</code></pre>
+<pre><code>## Warning in mean.default(X[[i]], ...): argument is not numeric or logical:
+## returning NA
+
+## Warning in mean.default(X[[i]], ...): argument is not numeric or logical:
+## returning NA</code></pre>
+<pre><code>##    A    B    C 
+## 13.2   NA   NA</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li><p><code>vapply()</code> fonksiyonu <code>sapply()</code> gibi girdi olarak liste tipi verileri almakta ve çıktısı ise vektör tipi veriler olmaktadır. <code>vapply()</code> fonksiyonunun farkı, istenilen işlemi daha hızlı gerçekleştirmesidir. Büyük verisetleri üzerinde çalışmamız durumuda <code>vapply()</code> fonksiyonu yazdığımız koda hız katabilir.</p></li>
+<li><p><code>mapply()</code> fonksiyonununun farklı yanı, istenilen işlemi veri yapılarının ilk önce birinci sıradaki elemanlara, sonra ikinci, sonra üçüncü olmak üzere bütün elemanlarına sırasıyla uygulamasıdır. Bunu bir örnekle daha iyi anlayabiliriz:</p></li>
+</ol>
+<pre class="r"><code>mapply(sum,10:20,100:110,1000:1010)</code></pre>
+<pre><code>##  [1] 1110 1113 1116 1119 1122 1125 1128 1131 1134 1137 1140</code></pre>
+<p>Bu örnekte <code>mapply()</code> fonksiyonu içerisinde üç farklı veri yapısı tanımlanmakta ve bunlar üzerinde toplama işlemi yapılması istenmektedir. İlk işlem 10+100+1000=1110, ikinci işlem 11+101+1001=1113, üçüncü işlem 12+102+1002=1116 olarak yapılmaktadır. Toplama işlemi bu şekilde sırasıyla herbir dizinin bütün sayılarına uygulanmıştır.</p>
+<ol start="6" style="list-style-type: decimal">
+<li>Bir önceki yazıda incelediğimiz <code>tapply()</code> fonksiyonu bir vektörün alt grupları üzerinde işlem yapmamızı sağlar. Bu alt gruplar da genellikle bir faktör tarafından belirlenir. Hatırlayacak olursak buna örnek olarak <code>mtcars</code> verisetinde farklı motor tipine sahip iki araç grubunun yakıt sarfiyatı üzerinde işlem yapmıştık:</li>
+</ol>
+<pre class="r"><code>tapply(mtcars$mpg,mtcars$vs,mean)</code></pre>
+<pre><code>##        0        1 
+## 16.61667 24.55714</code></pre>
+<ol start="7" style="list-style-type: decimal">
+<li><code>mapply()</code> fonksiyonu, kullanıcı tarafından tanımlanan özel bir fonksiyonun bir listede bulunan veri tiplerinin tamamına sırayla uygulanmasını sağlar.</li>
+</ol>
+<p>Daha fazla bilgi için burada verilen fonksiyonların yardım dosyalarına ve bu yazıyı hazırlarken de faydalandığım R Grouping functions: sapply vs. lapply vs. apply. vs. tapply vs. by vs. aggregate başlıklı stackoverflow <a href="https://stackoverflow.com/questions/3505701/grouping-functions-tapply-by-aggregate-and-the-apply-family">girdisine</a> göz atılabilir.</p>

@@ -1,0 +1,110 @@
+---
+title: 'R Temel Veri Tipi: Vektör'
+author: Hakan Hekim
+date: '2020-10-06'
+categories:
+  - Temel R
+tags:
+  - vector
+slug:
+  - r-temel-veri-tipi-vektor
+description: Article description.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/r-vector_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+R’da veriseti oluşturmak amacıyla verileri doğrudan elle girebiliriz. Küçük verisetlerinde uygulanabilecek olan bu yöntem büyük verisetleri için neredeyse imkansızdır. Mesela;
+
+```{r}
+boy <- 1.80
+kilo <- 70
+yas <- 35
+```
+
+örneklerinde boy, kilo ve yas değişkenlerine değer atanmaktadır. Değer atama işlemi ters ok şeklindeki operatör vasıtasıyla yapılmaktadır. Ters ok yerine eşittir (=) işareti de kullanılabilir, ancak eşittir işaretinin kullanımı pek yaygın değildir.
+
+Bu arada belirtilmesi gereken önemli bir husus Türkçe karakterlerin kullanımında dikkatli olunması gereğidir. Türkçe karakterleri kullanmayı hepimiz seviyoruz, ama kullandığımız programlar pek sevmiyor maalesef. Millet olarak bilişim tüketiciliğinden üretici konuma geçene kadar da bu böyle devam edecek gibi görünüyor. O yüzden değişken ismi belirlerken mümkün mertebe Türkçe karakterlerden kaçınmanızı tavsiye ederim.
+
+Tek bir değerin atandığı bir değişken istatistiksel analiz açısından pek bir işe yaramayacaktır. Bir değişkene onlarca değerin tek tek atanması ise vakit alacaktır. Neyse ki bir değişkene birden fazla değeri bir kerede atamamız mümkün. Bunu `c()` fonksiyonu ile yapabiliriz:
+
+```{r}
+boy <- c(1.80, 1.65, 1.85, 1.90, 1.70, 1.67)
+```
+
+İngilizce *concatenate* yani birleştirme kelimesini ifade eden `c()` fonksiyonu aracılığıyla R’ın en basit veri birimi olan **vektör** oluşturmuş olduk. 
+
+Vektörler R'ın en temel veri birimidir. Vektörler tek tip veri içerebilir, numeric, character veya logical. Farklı veri tiplerini bir vektörde toplamaya çalışırsak bazı değerlerin tipinin değiştiğini göreceğiz. 
+
+Vektörün içerdiği değerleri görebilmek için `boy` yazmak ve enter tuşuna basmak yeterli olacaktır;
+
+```{r}
+boy
+```
+
+Vektörün herhangi bir değerine *vektöradı*[*sıra no*] ifadesiyle erişilebilir. Mesela;
+
+```{r}
+boy[2]
+```
+
+örneğinde vektörün ikinci sırasındaki değer sorgulanmaktadır.
+
+Belli bir aralığı sorgulamak için;
+
+```{r}
+boy[2:5]
+```
+
+ve belli bir sıradaki değeri hariç tutmak için;
+
+```{r}
+boy[-3]
+```
+
+şeklinde eksi (-) işareti kullanılabilir.
+
+R’ı, istatistik için cazip kılan özelliklerden birisi birçok matematiksel fonksiyonun tanımlı olmasıdır. En temel seviyede `sum()`, `min()`, `max()`, `mean()`, `median()`, `var()` ve `sd()` sık kullanılan fonksiyonlardandır. Mesela boy değişkeninin içerdiği değerlerin toplamı kolayca hesaplanabilir:
+
+```{r}
+sum(boy)
+```
+
+Yahut bu toplam yeni bir değişkene atanabilir:
+
+```{r}
+tboy <- sum(boy)
+tboy
+```
+
+Çoğu zaman üzerinde çalıştığınız verisetinde boş bırakılmış değerler bulunacaktır. Mesela, boy değişkeninin sonuna boş bir değer ekleyelim. R'da boş veya eksik (missing) değerler NA ile gösterilir:
+
+```{r}
+boy <- c(boy,NA)
+boy
+```
+
+Az önce gerçekleştirdiğimiz toplama işini şimdi tekrarladığımızda program farklı bir sonuç verecektir:
+
+```{r}
+sum(boy)
+```
+
+Şayet değişkende boş bırakılmış bir değer bulunuyorsa, pek çok fonksiyon benzer bir sonuç verecektir. Bunun sebebini öğrenmek için `?sum` komutuyla `sum()` fonksiyonunun yardım dosyasına ulaşabiliriz. Yardım dosyasında yer alan aşağıdaki satır problemin kaynağını göstermektedir:
+
+>If na.rm is FALSE an `NA` or `NaN` value in any of the arguments will cause a value of `NA` or `NaN` to be returned, otherwise `NA` and `NaN` values are ignored.
+
+Burada değişken içerisinde NA yani boş bir değer olması halinde sonuç olarak ta `NA` değeri çıkacağı söylenmektedir. Bu durumdan kaçınmak ve `sum()` fonksiyonunun boş değerleri gözardı etmesini sağlamak için komuta bir ekleme yapmak gerekmektedir:
+
+```{r}
+sum(boy, na.rm=TRUE)
+```
+
+`na.rm=TRUE` ibaresi `sum()` fonksiyonunun eksik değerleri gözardı etmesini sağlamaktadır. Bu özellik fonksiyonların pek çoğunda bulunmaktadır.
+
+Boş veya eksik değerler içeren değişkenler pek çok fonksiyonda problem teşkil edebilmektedir. Bu yüzden beklenmedik bir problemle karşılaştığımızda öncelikli olarak verisetimizde `NA` değerlerinin olup olmadığını ve kullandığımız fonksiyonun `NA` değerlerine nasıl muamele ettiğini araştırmakta fayda vardır.

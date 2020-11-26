@@ -1,0 +1,111 @@
+---
+title: ggplot2 ile şık grafikler
+author: Hakan Hekim
+date: '2020-11-02'
+slug: ggplot2-ile-grafikler
+categories:
+  - Grafik
+tags:
+  - ggplot2
+description: ggplot ile grafik çizimine başlangıç.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/ggplot_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Bu yazıda Hadley Wickham'ın `ggplot2` paketiyle grafik çiziminden bahsedeceğim. `ggplot2`'nin bütün yönleriyle anlatımı koca bir kitaba ancak sığar. Wickham'ın *ggplot2: Elegant Graphics for Data Analysis* kitabı [github.com](https://github.com/hadley/ggplot2-book)'dan ücretsiz temin edilebilir. Teknik kitapların iyi tarafı mükemmel bir yabancı dil gerektirmemesi. Biraz İngilizce biliyorsanız ve R kodunu okuyabiliyorsanız kitabın faydalı olacağına inanıyorum.
+
+ggplot2 için öncelikle `install.packages("ggplot2")` komutuyla paketi indirmeniz ve yüklemeniz gerekmekte.
+
+Grafik nesneleri katmanlardan ibarettir. R sistemindeki standart grafik araçlarıyla bunu bir nebze görebiliriz. Hatırlarsanız grafik ortamını ayarladıktan sonra koordinat düzlemini, değişkenleri, başlık, etiket gibi görsel ögeleri ilave katmanlar halinde grafiğe ekleyebiliyorduk. `ggplot2`'yi kullanırken bu katmanlı yapıyı daha net görebiliyoruz. Görsel ögeleri içeren katmanlara `ggplot2`'de `geom` ismini vermekteyiz. Ne tür bir grafik istediğimizi geom katmanıyla belirtmekteyiz. Herbir geom'un kendisine has estetik (kısaca `aes()`) fonksiyonu bulunmaktadır. Estetik özellikler plotun tamamı için topluca tanımlanabileceği gibi herbir geom için ayrı ayrı da tanımlanabilir. Aşağıdaki listede sık kullanılan geomlar bulunmaktadır:
+
+* `geom_bar()`: Çubuk grafiği çizer.
+* `geom_point()`: Dağılım grafiğinde olduğu gibi gözlemlerin nokta veya şekillerle ifade edildiği nokta grafiği çizer. 
+* `geom_line()`: Gözlemlerin çizgilerle birleştirildiği çizgi grafiği çizer.
+* `geom_smooth()`: Regresyon çizgisi gibi, verideki trendi özetlemeyi sağlar.*
+* `geom_histogram()`: Histogram grafiği çizer.
+* `geom_boxplot()`: Kutu grafiği çizer.
+* `geom_text()`: Metin eklememizi sağlar.
+* `geom_density()`: Yoğunluk grafiği çizer.
+
+Haliyle bunların dışında birçok geom bulunmaktadır. Her geom farklı estetik ögeler almaktadır. Bu sebeple `ggplot2` paketini yükledikten sonra yardım dosyalarına mutlaka göz atmalısınız.
+
+Herbir geom, grafiği çizebilmek için veride bir kısım hesaplamalar yapmaktadır. Mesela çubuk grafiği verilen değişkenin sayısını hesaplamaktadır. geomların bu standart özelliklerini stat fonksiyonuyla değiştirebiliriz. Bu şekilde mesela histogram grafiğinin sayı değil de yoğunluk (density) hesaplaması yapmasını sağlayabiliriz. Herbir geom'un stat fonksiyonu da farklılıklar göstermektedir. Bu sebeple mutlaka yardım dosyalarına müracaat edilmelidir.
+
+Bu kısa (ve mutlaka yetersiz) anlatımdan sonra örneklere geçelim. Ne de olsa suya girmeden yüzme öğrenilmez. Neye benzediğini görürsek nasıl çalıştığını daha iyi akledebiliriz. Öncelikle `mpg` verisetinde bulunan araçların motor hacimleriyle şehirler arası yolculuktaki yakıt performanslarına ilişkin dağılım grafiğini çizelim. Önce `mpg` verisetinde neyin ne olduğunu hatırlamak için `?mpg` ile yardım dosyasına bir göz atmakta fayda var:
+
+```{r warning=FALSE}
+library(ggplot2)
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+Görüldüğü gibi `ggplot` komutunun ardından kullanacağımız verisetini belirledik. Daha sonra kullanacağımız geom katmanını '+' ile ekledik. `ggplot2`'de ilave katmanlar bu şekilde '+' işareti ile grafiğe dahil edilmektedir. Şimdi grafiğe bir değişken daha ekleyerek otomobil sınıflarını da farklı renkler olarak grafikte gösterelim:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class))
+```
+
+Renkle beraber noktaların şeklini de değiştirebiliriz:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class, shape = class))
+
+```
+
+Yahut dördüncü bir değişkeni de şekil olarak atayabiliriz:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class, shape = drv))
+
+
+```
+
+Şimdi grafiğe bir katman daha ilave ederek ilişkideki trendi görelim:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class)) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+
+Görüldüğü gibi yeni bir katman eklemek gayet kolay. Eklediğimiz bu trendi de dördüncü bir değişkene göre parçalara ayırabiliriz:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class)) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy, color = drv))
+```
+
+Bu grafikte üç farklı vites türünün trend hatlarını ayrı ayrı göstermiş olduk. Trend hatlarının etrafindaki gri alanlar güven aralıklarını göstermektedir ve `se = FALSE` ile kaldırılabilir. Hatları çizmekte kullanılan metod `method` parametresi ile değiştirilebilir.
+
+Verisetimizde çok fazla miktarda gözlem varsa hepsini aynı koordinat düzleminde görmek faydalı olmayabilir. Böyle durumlarda gözlemleri istenen bir değiişkene göre ayrı ayrı grafiklemek gerekebilir. ggplot2'de bu işlem facet yardımıyla yapılabilir:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class)) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy), se = FALSE) + 
+  facet_wrap(~ drv)
+```
+
+Grafiği bir değişkene göre parçalara ayıracaksak facet_wrap() yeterliyken, iki değişkene göre ayıracaksak facet_grid() kullanılmalıdır:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid(drv ~ cyl)
+```
+
+Bu grafikte veriyi vites türü ve silindir sayısına göre farklı grafiklerde gösterdik.
+
+`ggplot2` çok zengin ve ilk başta karmaşık görünen bir konu. Kolları sıvayıp işin içine girdiğinizde temel seviyede grafikler çizmenin çok kolay olduğunu göreceksiniz. Detaylara hükmetmek için yardım dosyaları ve Wickham'ın yukarıdaki kitabıyla epey vakit geçirmek gerekiyor.
+
+İleriki notlarda `ggplot2`'nin diğer özelliklerine değinmeye çalışacağım.

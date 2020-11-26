@@ -1,0 +1,116 @@
+---
+title: R ile metin analizi
+author: Hakan Hekim
+date: '2020-10-29'
+slug: r-ile-metin-analizi
+categories:
+  - Metin Analizi
+  - Grafik
+tags:
+  - Metin Analizi
+  - Text Analysis
+description: R ile metin analizine başlangıç.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/text_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Bu yazıda R ile metin analizi yapmaya çalışacağız. Bunun için öncelikle Project Gutenberg sitesinden uygun bir .txt dosyası indirdim. Aslında Türkçe bir metin olsa daha faydalı olurdu ancak yeterli büyüklükte Türkçe bir metin bulmanın zorluğundan dolayı, 1898 tarihli <a href="http://www.gutenberg.org/cache/epub/30577/pg30577.txt">Told in the coffee house: Turkish tales</a> başlıklı, Türkiyeyle alakalı bir kitap üzerinde çalışalım diye düşündüm. Bu kitabı daha önce okumadım. Bakalım yapacağımız analizler kitap hakkında bize nasıl bir fikir verecek. Buradaki analizleri <strong>Matthew J. Jockers</strong>’ın <em>Text Analysis with R for Students of Literature</em> adlı kitabından kısmen değiştirerek aldım.</p>
+<p>Öncelikle metni R’a aktarmamız gerekiyor. Metni <code>metin.v</code> adını verdiğimiz bir vektöre aktaralım ve vektörün ilk veri nesnesini sorgulayalım. Aşağıdaki kodda yer alan <code>sep= "n"</code> ibaresi herbir satırın vektörümüzde ayrı bir veri nesnesi olmasını sağlıyor:</p>
+<pre class="r"><code>metin.v &lt;- scan(&quot;ttales.txt&quot;, what = &quot;character&quot;, sep = &quot;\n&quot;)
+metin.v[1]</code></pre>
+<pre><code>## [1] &quot;Project Gutenberg&#39;s Told in the Coffee House, by Cyrus Adler and Allan Ramsay&quot;</code></pre>
+<p>Görüldüğü üzere <code>metin.v</code> vektörümüzde toplam 2830 veri nesnesi veya satır var ve ilk veri nesnesi kitabın ve yazarlarının adı. Project Gutenberg’de yer alan kitabların başında ve sonuda kitaba ilişkin metadata bulunduğundan doğru bir analiz için kitabın başlangıç ve bitiş satırlarını işaretlememiz gerekiyor. Bunun için metne bakarak ilk ve son satırları tespit edip R ile işaretledik. Aşağıda görüleceği gibi kitap 96. satırda başlayıp, 2454. satırda bitiyor Son olarak metadatasız sadece kitap metninden müteşekkil, 2359 veri nesnesi veya satır içeren yeni bir vektör üretiyoruz:</p>
+<pre class="r"><code>ilk.v &lt;- which(metin.v == &quot;HOW THE HODJA SAVED ALLAH&quot;)
+son.v &lt;- which(metin.v == &quot;mézé should be immediately served.&quot;)
+ilk.v; son.v</code></pre>
+<pre><code>## [1] 96</code></pre>
+<pre><code>## [1] 2454</code></pre>
+<pre class="r"><code>length(kitap.satir.v &lt;- metin.v[ilk.v:son.v])</code></pre>
+<pre><code>## [1] 2359</code></pre>
+<p>Veri üzerinde analize başlamadan önce yapmamız gereken son işlem kitapta yer alan herbir kelimenin ayrı ayrı birer nesne olduğu bir kelime vektörü oluşturmak. Bunun için öncelikle elimizdeki metni satırlardan oluşan bir vektör olmaktan çıkartacağız. Aşağıdaki kodda öncelikle <code>paste()</code> fonksiyonuyla <code>kitap.satir.v</code> değişkeninde yer alan nesneleri aralarına boşluk yerleştirerek <code>(collapse=" ")</code> birleştirdik ve tek bir veri nesnesinden oluşan bir vektör elde ettik. İkinci olarak kitaptaki harflerin tamamını küçük harfe çevirdik:</p>
+<pre class="r"><code>kitap.v &lt;- paste(kitap.satir.v, collapse=&quot; &quot;)
+kitap.kh.v &lt;- tolower(kitap.v)
+kitap.kelimeler.l &lt;- strsplit(kitap.kh.v, &quot;\\W&quot;)
+kitap.kelimeler.v &lt;- unlist(kitap.kelimeler.l)</code></pre>
+<p>Üçüncü adımda <code>strsplit()</code> fonksiyonuyla noktalama işaretlerinden kurtulduk. <code>strsplit()</code> fonksiyonu ilk parametre olarak küçük harflerden oluşan vektörümüzü, ikinci olarak kurtulmak istediğimiz karakteri aldı. \W regular expression olarak adlandırılan ve belli ibareleri ifade etmeye yarayan karakterlerdir. Buradaki karakter kelime olmayan herşeyi ifade etmektedir. <code>strsplit()</code> fonksiyonunun çıktısı liste olduğundan yeni değişkenimizi <code>kitap.kelimeler.l</code> olarak adlandırdık. Lakin bize lazim olan vektör türü veri olduğundan son adımda eldeki listeyi tekrar vektöre çevirdik. Şimdi ürettiğimiz kelime vektörüne bir göz atalım:</p>
+<pre class="r"><code>kitap.kelimeler.v[1:50]</code></pre>
+<pre><code>##  [1] &quot;how&quot;         &quot;the&quot;         &quot;hodja&quot;       &quot;saved&quot;       &quot;allah&quot;      
+##  [6] &quot;not&quot;         &quot;far&quot;         &quot;from&quot;        &quot;the&quot;         &quot;famous&quot;     
+## [11] &quot;mosque&quot;      &quot;bayezid&quot;     &quot;an&quot;          &quot;old&quot;         &quot;hodja&quot;      
+## [16] &quot;kept&quot;        &quot;a&quot;           &quot;school&quot;      &quot;&quot;            &quot;and&quot;        
+## [21] &quot;very&quot;        &quot;skilfully&quot;   &quot;he&quot;          &quot;taught&quot;      &quot;the&quot;        
+## [26] &quot;rising&quot;      &quot;generation&quot;  &quot;the&quot;         &quot;everlasting&quot; &quot;lesson&quot;     
+## [31] &quot;from&quot;        &quot;the&quot;         &quot;book&quot;        &quot;of&quot;          &quot;books&quot;      
+## [36] &quot;&quot;            &quot;such&quot;        &quot;knowledge&quot;   &quot;had&quot;         &quot;he&quot;         
+## [41] &quot;of&quot;          &quot;human&quot;       &quot;nature&quot;      &quot;that&quot;        &quot;by&quot;         
+## [46] &quot;a&quot;           &quot;glance&quot;      &quot;at&quot;          &quot;his&quot;         &quot;pupil&quot;</code></pre>
+<p>Çıktıya baktığımızda 19 ve 36. karakterlerin boş olduğunu görüyoruz. Bunlar yukarıda kendilerinden kurtulduğumuz noktalama işaretleri. <code>strsplit()</code> fonksiyonu kelime dışındaki herşeyi ortadan kaldırdı ancak onların yerini boşluk olarak bıraktı. Bunlardan da kurtulmak için önce <code>which()</code> fonksiyonuyla <code>kitap.kelimeler.v</code> vektöründeki kelimelerin indeks bilgilerini tutan <code>bosluk.degil.v</code> vektörünü oluşturduk. İkinci satırda ilk bu vektördeki ilk 20 indeks değerine baktığımızda 19 numaralı indeksin olmadığını yani burada bir kelime olmadığını görüyoruz. Son satırdaysa önceki aşamada ürettiğimiz kitap.kelimeler.v vektörünü boşluklardan kurtarıyoruz. İlk 50 kelimeye tekrar bakarsak boşlukların gittiğini görürüz:</p>
+<pre class="r"><code>bosluk.degil.v &lt;- which(kitap.kelimeler.v != &quot;&quot;)
+kitap.kelimeler.v &lt;- kitap.kelimeler.v[bosluk.degil.v]</code></pre>
+<p>Kitap metnini incelenebilir bir hale getirdiğimize göre artık analize başlayabiliriz. Öncelikle kitapın 26.852 kelimeden ibaret olduğunu ve bunun da 3.575 farklı kelime içerdiğini görüyoruz.</p>
+<pre class="r"><code>length(kitap.kelimeler.v)</code></pre>
+<pre><code>## [1] 26852</code></pre>
+<pre class="r"><code>length(unique(kitap.kelimeler.v))</code></pre>
+<pre><code>## [1] 3575</code></pre>
+<p>Sonra en sık kullanılan kelimelere bakalım. Öncelikle <code>table()</code> fonksiyonunu kullanarak <code>kitap.kelimeler.v</code> vektöründe yer alan kelimelerin frekans değerlerini bulduk. İkinci aşamada bu değerleri büyükten küçüğe sıraladık ve son olarak en çok kullanılan 100 kelimeyi listeledik:</p>
+<pre class="r"><code>kitap.freqs.t &lt;- table(kitap.kelimeler.v)
+kitap.freqs.t &lt;- sort(kitap.freqs.t, decreasing = TRUE)
+kitap.freqs.t[1:100]</code></pre>
+<pre><code>## kitap.kelimeler.v
+##      the      and       to       of       he      his        a     that 
+##     2220     1039      938      754      573      527      522      413 
+##       in      was      had        i       it      you      for      him 
+##      409      372      258      244      229      226      216      207 
+##       as       at      not     this     with       be       on      but 
+##      166      163      162      162      154      144      143      141 
+##      one       is     said     have    would      man       my        s 
+##      137      136      128      121      111      108      106      105 
+##       so     will       by     your     were     what       no     from 
+##       97       95       93       92       90       89       82       79 
+##     been      her     when    ahmet       if      who       an    pasha 
+##       78       78       78       77       77       77       75       72 
+##     they     them       me      all      out      jew     then      day 
+##       72       71       70       68       63       62       62       61 
+##    their    which     wife      now    there       do    hodja       or 
+##       61       61       60       58       56       54       51       51 
+##    asked     into     time      did   father      see     went     came 
+##       50       50       50       49       48       48       48       47 
+##    hadji      she     told    after      are     come    great    money 
+##       47       47       47       46       46       45       45       45 
+##  dervish       go    could      men     much     cadi      eye      old 
+##       44       44       43       42       42       41       41       40 
+##      put    again     give piasters     poor       up     very     long 
+##       40       39       38       38       37       37       37       36 
+##     thou      has    allah  brought 
+##       36       35       34       34</code></pre>
+<p>Listenin en başında İngilizce gramerine has kelimeler ve zamirler görüyoruz. Zamirler içerisinde erkekleri ifade eden he ve his 573 ve 527 defa kullanılırken, kadınları ifade eden she ve her kelimeleri 47 ve 78 defa kullanılmış. Aşağıda görüldüğü gibi he zamiri she zamirine göre 12 kat daha fazla kullanılmış:</p>
+<pre class="r"><code>kitap.freqs.t[&quot;he&quot;] / kitap.freqs.t[&quot;she&quot;]</code></pre>
+<pre><code>##       he 
+## 12.19149</code></pre>
+<p>Dolayısıyla kitapta yer alan hikayelerin daha çok erkeklerle ilgili olduğunu anlıyoruz. Metinde 60 defa geçen wife kelimesi kadınlardan daha çok eş olarak bahsedildiği fikrini veriyor. Dini anlam ifade eden kelimeler; hodja 70, hadji 47, dervish 44 ve Allah 34 defa metinde geçmiş. İlginçtir ki Yahudi anlamına gelen Jew kelimesi metinde 62 defa geçmiş. Dolayısıyla hikayelerde o dönemlerde içiçe yaşadığımız Yahudilerle ilgili konuların da olduğu anlaşılıyor.</p>
+<p>Son olarak herhangi bir kelimenin kitap boyunca dağılımını grafik olarak görelim. Bunun için öncelikle kitapta geçen kelime sayısınca indeks değer içeren bir vektör oluşturalım. İkinci olarak incelemek istediğimiz bir kelimenin mesela Jew kelimesinin indeks numaralarını tutan ikinci bir değişken oluşturalım. Üçüncü satırda kitaptaki kelime sayısınca NA değeri olan bir değişken oluşturduk ve dördüncü Jew kelimesinin indeks değerlerine “1” değerini atadık ve son olarak graği oluşturduk. Aynı incelemeyi hodja kelimesi için de yaptık ve iki grafiği alt alta ürettik:</p>
+<pre class="r"><code>indeks.v &lt;- seq(1:length(kitap.kelimeler.v))
+jew.v &lt;- which(kitap.kelimeler.v == &quot;jew&quot;)
+j.sayi.v &lt;- rep(NA,length(indeks.v))
+j.sayi.v [jew.v] &lt;- 1
+par(mfrow=c(2,1))
+plot(j.sayi.v, main=&quot;&#39;Jew&#39; kelimesine ait dağılım grafiği&quot;, 
+     xlab=&quot;Kitaptaki yeri&quot;, ylab=&quot;Jew&quot;, type=&quot;h&quot;, ylim=c(0,1), yaxt=&#39;n&#39;)
+indeks.v &lt;- seq(1:length(kitap.kelimeler.v))
+hodja.v &lt;- which(kitap.kelimeler.v == &quot;hodja&quot;)
+h.sayi.v &lt;- rep(NA,length(indeks.v))
+h.sayi.v [hodja.v] &lt;- 1
+plot(h.sayi.v, main=&quot;&#39;Hodja&#39; kelimesine ait dağılım grafiği&quot;, 
+     xlab=&quot;Kitaptaki yeri&quot;, ylab=&quot;Hodja&quot;, type=&quot;h&quot;, ylim=c(0,1), yaxt=&#39;n&#39;)</code></pre>
+<p><img src="/post/2020-10-29-r-ile-metin-analizi/index.en_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Yukarıdaki grafikte de görüldüğü gibi <strong>Jew</strong> kelimesi yoğun olarak kitabın son kısmında kullanılmış. Buna karşın <strong>hodja</strong> kelimesi ağırlıkla başlarda kullanılmış. Dolayısıyla kitapta isimleri yerine “Yahudi” ve “Hoca” şeklinde anılan kişilerden bahsedildiğini anlıyoruz. Diğer kelimelerin de dağılım grafiklerini üreterek belli bir hikayeye has mı yoksa kitabın genelinde mi kullanıldığını görebiliriz.</p>

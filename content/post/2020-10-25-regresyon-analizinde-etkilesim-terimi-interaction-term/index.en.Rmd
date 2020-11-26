@@ -1,0 +1,83 @@
+---
+title: Regresyon analizinde etkileşim terimi veya interaction term
+author: Hakan Hekim
+date: '2020-10-25'
+slug: regresyon-analizinde-etkilesim-terimi-interaction-term
+categories:
+  - Istatistik
+tags:
+  - Linear Regression
+  - Interaction Term
+description: Regresyon analizinde interaction term nedir, ne zaman kullanılır, nasıl yorumlanır?
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/interaction_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Bir önceki yazıda çok değişkenli regresyon modelini inceledik. Örnek olarak çocukların IQ skorlarıyla, annelerinin IQ skoru ve lise mezuniyet durumları arasındaki ilişkiye baktık. Regresyon hattının annenin lise mezuniyet durumuna göre farklılaştığını gözlemledik. Bu gözlem bize annenin IQ seviyesinin çocuğun IQ skoru üzerinde olan etkisinin, annenin lise bitirme durumuna göre farklılaşabileceğini gösterdi. Bu durumu aşağıda yer alan dağılım grafiğiyle gösterdik (Grafiğin R kodunu bir önceki yazıda bulabilirisiniz).
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(foreign)
+kidiq <- read.dta("kidiq.dta")
+attach(kidiq)
+fit.2 <- lm (kid_score ~ mom_hs + mom_iq)
+plot(mom_iq,kid_score, xlab="Mother IQ score", ylab="Child test score",pch=20, xaxt="n", yaxt="n", type="n")
+curve (coef(fit.2)[1] + coef(fit.2)[2] + coef(fit.2)[3]*x, add=TRUE, col="blue") 
+curve (coef(fit.2)[1] + coef(fit.2)[3]*x, add=TRUE, col="red")
+points (mom_iq[mom_hs==0], kid_score[mom_hs==0], col="red", pch=19)
+points (mom_iq[mom_hs==1], kid_score[mom_hs==1], col="blue", pch=19)
+axis (1, c(80,100,120,140))
+axis (2, c(20,60,100,140))
+```
+
+Şekilde de görüldüğü üzere regresyon analizi, bütün alt-nüfuslar için eşit eğime sahip bir regresyon hattını hesaplamaktadır. Dolayısıyla bahsedilen farklılıkların regresyon hattına bakılarak incelenmesi mümkün olamamaktadır. Yani annenin IQ skorunun çocuğun IQ puanı üzerindeki etkisinin annenin lise mezuniyet durumuna göre farklılaşıp farklılaşmadığını basit regresyon analizinde göremiyoruz. Bu farkı görebilmek için etkileşim terimi (interaction term) olarak adlandırdığımız özel bir değişkenin analize eklenmesi gerekmektedir.
+
+Etkileşim terimine örnek olarak yine (bir önceki yazıda kullandığımız), A. German ve J. Hill’in, "Data Analysis Using Regression and Multilevel/Hierarchical Models" kitabının üçüncü bölümünde yer alan, çocukların IQ skorları ve annelerine ait bazı değişkenlerin ilişkisini inceleyen kidiq verisetini kullanalım.
+
+Etkileşim terimi, aralarında yukarıda bahsedilen türden ilişki olduğunu düşündüğünüz değişkenlerin çarpımıyla oluşturulan yeni değişkendir. Yani bizim örneğimizde annenin IQ skoru ile annenin lise mezuniyet durumunu gösteren değişkenlerin çarpımıyla oluşturulacak. Etkileşim değişkeni için sözkonusu iki değişkeni çarparak yeni bir değişken oluşturabileceğimiz gibi R’da bulunan kestirme bir yöntem de kullanabiliriz:
+
+```{r message=FALSE, warning=FALSE}
+library(foreign)
+kidiq <- read.dta( "kidiq.dta") 
+attach(kidiq)
+fit <- lm (kid_score ~ mom_hs + mom_iq + mom_hs:mom_iq)
+fit
+```
+
+Öncelikli olarak ilgli verisetini R ortamına aktardık. Daha sonra regresyon modelimizi hesaplayarak `fit` değişkenine atadık. Modeldeki son parametre etkileşim terimi. Görüldüğü gibi etkileşim terimi için etkileşim içerisinde olduğunu düşündüğümüz değişkenleri, aralarına üst üste iki nokta işareti koyarak yazmamız yeterli. Daha detaylı sonuç için `summary()` fonksiyonunu kullanalım:
+
+```{r}
+summary(fit)
+```
+
+Görüldüğü gibi bütün değişkenler istatistiksel olarak anlamlı. Modeli şu şekilde formülüze edebiliriz:
+
+>Çocuğun IQ Skoru = -11,48 + 51,27 Annenin lise durumu + 0,97 Annenin IQ skoru + (-0,48) Annenin lise durumu x Annenin IQ skoru
+
+Kesim noktası bu analizde (pek anlamlı olmamakla birlikte), annesi lise bitirmemiş ve IQ seviyesi 0 puan olan çocuğun IQ skorunun -11,48 olacağını gösteriyor. İkinci regresyon katsayısı, anneleri aynı IQ seviyesine sahip çocukları karşılaştırdığımızda, anneleri lise bitirmiş çocukların IQ skorlarının yaklaşık 51 puan daha yukarıda olduğunu göstermekte. Üçüncü katsayı, anneleri lise bitirme açısından aynı durumda olan çocuklar arasında, annenin IQ skorunun bir birim artışının çocuğun IQ skoruna sadece bir puan (0,97) kadar bir etki yaptığını göstermekte.
+
+Son olarak etkileşim terimi, annenin IQ seviyesinin çocuğun IQ skoruna etkisinin yine annenin lise mezuniyet durumuna göre farklılaştığını; annesi lise bitirmemiş çocuklarda annenin IQ seviyesinin yüksek olmasının çocuğun IQ skoruna daha fazla olumlu etki yaptığını gösteriyor.
+
+Hatırlanacağı üzere annenin lise bitirme durumunu gösteren mom_hs değişkeninde 0 değeri annenin lise mezunu olmadığını, 1 değeriyse lise mezunu olduğunu göstermekteydi. Etkileşim teriminin regresyon katsayısının negatif olması, mom_hs değişkenindeki artışın, çocuğun test skorunu olumsuz etkilediğini göstermekte. Dolayısıyla, annenin IQ seviyesi, anneleri lise bitirmemiş çocukların test skorlarına daha fazla etki yapmakta, anneleri lise bitirmiş çocuklarda bu etki azalmakta.
+
+Bu durumu aşağıdaki grafikte görmek mümkün. Yine yukarıdakine benzer bir grafik çizeceğiz. Grafiği üreten kodların açıklamasını bir önceki yazıda bulabilirsiniz:
+
+```{r}
+plot (mom_iq, kid_score, xlab="Annenin IQ skoru", ylab="Çocuğun IQ skoru", pch=20, xaxt="n", yaxt="n", type="n")
+curve (coef(fit)[1] + coef(fit)[2] +(coef(fit)[3] + coef(fit)[4])*x, add=T, col="gray")
+curve (coef(fit)[1] + coef(fit)[3]*x, add=T) 
+points (mom_iq[mom_hs==0], kid_score[mom_hs==0], pch=20) 
+points (mom_iq[mom_hs==1], kid_score[mom_hs==1], col="gray",pch=20) 
+axis (1, c(80,100,120,140)) 
+axis (2, c(20,60,100,140))
+```
+
+Grafikte siyah noktalar annesi lise mezunu olmayan çocukları, gri noktalarsa annesi lise mezunu olan çocukları temsil etmekte. Yine siyah çizgi annesi lise mezunu olmayan çocuklar için regresyon hattını verirken, gri çizgi ennesi lise mezunu olan çocuklar için regresyon hattını göstermektedir. Görüldüğü üzere annesi lise mezunu olmayan çocuklara ait regresyon hattının eğimi daha fazla. Bu durum annesi lise mezunu olmayan çocukların IQ test skoru açısından annenin IQ puanının daha önemli olduğunu göstermekte.
+
+Peki etkileşim terimi hangi durumlarda analize dahil edilmelidir? Öncelikle değişkenler arasında buradaki gibi bir ilişki olacağını öngörüyorsak etkileşimi analize dahil edebiliriz. Bunun yanı sıra, şayet bir değişkenin regresyon katsayısı çok yüksek bir değer olarak çıkıyorsa, o değişkenin diğer değişkenlerle etkileşim içersinde olma ihtimali de yüksektir. Böyle bir durumda da etkileşimi incelemekte fayda vardır.
+

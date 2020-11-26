@@ -1,0 +1,37 @@
+---
+title: Paketler
+author: Hakan Hekim
+date: '2020-10-05'
+slug: paketler
+categories:
+  - Temel R
+tags: []
+description: Article description.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>İlk R kurulumu, yani base versiyonu temel paketleri içermektedir. Base versiyonda bulunmayan paketlerin internetten indirilip yüklenilmeleri gerekmektedir. Bu paketler dünyanın dört bir yanındaki R geliştiricileri tarafından üretilmektedir ve genellikle ücretsiz olarak dağıtılmaktadır. Base versiyonda bulunan paketlerin tamamı R’ı çalıştırdığınızda kullanılabilir durumda olmayacaktır.</p>
+<p>Kullanmak istediğimiz paketi çağırmamız gerekmektedir. Bu işlem <code>library</code> komutuyla yapılmaktadır.</p>
+<p>Aşağıdaki örnekte <code>MASS</code> isimli paket çağrılmaktadır:</p>
+<pre class="r"><code>library(MASS)</code></pre>
+<p>Paket çağrıldıktan sonra, paketin içinde bulunan fonksiyonlar kullanılabilir hale gelecektir. R paketleri hakkında r-project.org sitesinde bilgi bulunabileceği gibi, aşağıdaki kod yardımıyla yardım dosyası görüntülenebilir:</p>
+<pre class="r"><code>library(help=MASS)</code></pre>
+<p>Aşağıdaki komut R sisteminizde yüklü paketlerin listesini verecektir.</p>
+<pre class="r"><code>installed.packages()</code></pre>
+<p>Diğer yandan yüklenebilecek paketlerin listesi için;</p>
+<pre class="r"><code>available.packages()</code></pre>
+<p>komutu çalıştırılabilir. Yalnız bu komut çok uzun bir liste getireceğinden R konsolu dışında bir dosyaya aktarılmadıkça pek kullanışlı olduğu söylenemez.</p>
+<p>Base versiyonda yer almayan paketler internetten indirilerek veya R’ın Packages menüsü kullanılarak yüklenebilir. Aynı şekilde aşağıdaki ilk satırda yer alan komutla istenilen bir paket yüklenebilir ve ikinci satırda yer alan komutla da kaldırılabilir.</p>
+<pre class="r"><code>install.packages(“paket adı”)
+remove.packages(“paket adı”)</code></pre>

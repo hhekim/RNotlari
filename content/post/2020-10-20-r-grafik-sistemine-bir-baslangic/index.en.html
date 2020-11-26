@@ -1,0 +1,426 @@
+---
+title: R grafik sistemine bir başlangıç
+author: Hakan Hekim
+date: '2020-10-20'
+slug: r-grafik-sistemine-bir-baslangic
+categories:
+  - Grafik
+tags:
+  - Grafik
+description: R'ın standart grafik sisteminin temel özellikleri.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/rgraphs_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>R’da, “graphics” ve “grid” olmak üzere iki farklı grafik sistemi ve bu iki farklı sistem üzerinde çalışan grafik paketleri bulunmaktadır. Mesela R’ın standart grafik fonksiyonları “graphics” sistemini kullanmakta, ayrı bir paket olan “lattice” grid sistemini kullanmaktadır. Bu paketlerden hangisinin tercih edileceği zevke ve ihtiyaçlara göre değişir. Ancak her paket farklı imkanlar sunarken aynı zamanda paketlerin dilleri de farklıdır.</p>
+<p>R grafik fonksiyonları high-level ve low-level fonksiyonlar olarak ikiye ayrılabilir. High-level fonksiyonlar temel özellikleri barındıran bir grafik çizmemizi sağlarken, low-level fonksiyonlar bu grafiğe daha fazla detay eklememize imkan verir. R’da grafiklerin özelliklerini ayarlayabileceğimiz görsel bir arayüz bulunmamaktadır. Dolayısıyla grafikleri komut satırından gireceğimiz fonksiyonlarla oluştururuz. Grafik fonksiyonları jenerik bir yapıya sahiptir, kullanıldığı yere, değişkenlere göre farklı sonuçlar verebilir. Aynı zamanda farklı fonksiyonlarla aynı sonuca da ulaşılabilir. Mesela, <code>plot()</code> fonksiyonuna sürekli bir değişken atanmasıyla kategorik (faktör) değişken atanması farklı grafikler netice verecektir:</p>
+<pre class="r"><code>attach (mtcars) 
+par(mfrow=c(1,2)) 
+new.vs &lt;- as.factor(vs) 
+plot(vs,mpg) 
+plot(new.vs,mpg)</code></pre>
+<p><img src="/post/2020-10-20-r-grafik-sistemine-bir-baslangic/index.en_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>Burada öncelikle <code>par(mfrow=c(1,2))</code> ile grafik alanını tek satır iki sütun olacak şekilde düzenledik. Daha sonra R’da bulunan <code>mtcars</code> verisetine ait iki değerli bir değişkenin (<code>vs</code>) türünü faktöre (<code>new.vs</code>) çevirdik. Daha sonra aynı grafik fonksiyonunu iki farklı değişkenle ayrı ayrı çalıştırdık. Görüldüğü gibi iki farklı grafik elde ettik. Bu durum R’a yeni başlayanlar için normal olarak kafa karışıklıklarına sebebiyet vermektedir.</p>
+<p><code>par()</code> fonksiyonu, grafik özelliklerini düzenleyebileceğimiz veya sorgulayabileceğimiz sık kullanılan bir fonksiyondur. <code>par()</code> fonksiyonuyla birlikte yukarıdaki örnekte kullandığımız <code>mfrow</code> gibi çok sayıda grafik parametresi düzenlenebilir. Bu parametrelerin bazıları grafik fonksiyonlarınca düzenlenebilirken, bazıları sadece <code>par()</code> fonksiyonu ile düzenlenip sorgulanabilir. R’ın standart paketlerinin ötesine geçebilmek için bu parametrelerin öğrenilmesi zaruridir. Aşağıdaki tablolarda bu parametreleri bulabilirsiniz. Tablolarda sadece fikir vermek amacıyla kısa bir açıklama yaptım ancak güzel görünümlü grafikler için bu parametrelerin yardım dosyaları ve örnek grafikler incelenmeli, pratik yapılmalı.</p>
+<p><em>Tablo: Hem <code>par()</code> fonksiyonu hem de grafik fonksiyonuyla düzenlenebilip sorgulanabilen high-level grafik parametreleri</em></p>
+<table>
+<thead>
+<tr class="header">
+<th>Parametre</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>adj</td>
+<td>metin konumunun (sağ, sol, orta) ayarlanması</td>
+</tr>
+<tr class="even">
+<td>ann</td>
+<td>grafik etiketleri ve başlığı yazılsın mı?</td>
+</tr>
+<tr class="odd">
+<td>bg</td>
+<td>grafik alanının tamamı için arka alan renk</td>
+</tr>
+<tr class="even">
+<td>bty</td>
+<td>grafik etrafına çizilen kutunun şekli</td>
+</tr>
+<tr class="odd">
+<td>cex</td>
+<td>grafikte yer alan sembol ve metin büyüklüğü</td>
+</tr>
+<tr class="even">
+<td>cex.axis</td>
+<td>koordinat eksenlerindeki metinlerin büyüklüğü</td>
+</tr>
+<tr class="odd">
+<td>cex.lab</td>
+<td>koordinat eksen etiketlerinin büyüklüğü</td>
+</tr>
+<tr class="even">
+<td>cex.main</td>
+<td>grafik başlığının büyüklüğü</td>
+</tr>
+<tr class="odd">
+<td>cex.sub</td>
+<td>altbaşlığın büyüklüğü</td>
+</tr>
+<tr class="even">
+<td>col</td>
+<td>çizgi ve veri işaretlerinin rengi</td>
+</tr>
+<tr class="odd">
+<td>col.axis</td>
+<td>koordinat eksenlerindeki metinlerin rengi</td>
+</tr>
+<tr class="even">
+<td>col.lab</td>
+<td>koordinat eksen etiketlerinin rengi</td>
+</tr>
+<tr class="odd">
+<td>col.main</td>
+<td>grafik başlığının rengi</td>
+</tr>
+<tr class="even">
+<td>col.sub</td>
+<td>altbaşlığın rengi</td>
+</tr>
+<tr class="odd">
+<td>fg</td>
+<td>koordinat ekseni, kutu gibi grafik ögelerinin rengi</td>
+</tr>
+<tr class="even">
+<td>font</td>
+<td>metin ögelerinin font face (kalın, italik gibi) özellikleri</td>
+</tr>
+<tr class="odd">
+<td>font.axis</td>
+<td>koordinat eksenlerindeki metinler için font face özellikleri</td>
+</tr>
+<tr class="even">
+<td>font.lab</td>
+<td>koordinat eksen etiketleri için font face özellikleri</td>
+</tr>
+<tr class="odd">
+<td>font.main</td>
+<td>grafik başlığı için font face özellikleri</td>
+</tr>
+<tr class="even">
+<td>font.sub</td>
+<td>altbaşlık için font face özellikleri</td>
+</tr>
+<tr class="odd">
+<td>gamma</td>
+<td>renkler için gamma düzeltme</td>
+</tr>
+<tr class="even">
+<td>lab</td>
+<td>koordinat eksenlerindeki tik sayısı</td>
+</tr>
+<tr class="odd">
+<td>las</td>
+<td>metnin yönü</td>
+</tr>
+<tr class="even">
+<td>lty</td>
+<td>çizgi türü (düz, noktalı, kesikli gibi)</td>
+</tr>
+<tr class="odd">
+<td>lwd</td>
+<td>öizgi genişliği</td>
+</tr>
+<tr class="even">
+<td>mgp</td>
+<td>koordinat eksen tikleri ve tik etiketlerinin konumu</td>
+</tr>
+<tr class="odd">
+<td>pch</td>
+<td>grafikte kullanılacak veri sembol türü</td>
+</tr>
+<tr class="even">
+<td>srt</td>
+<td>grafik alanındaki metnin yönü</td>
+</tr>
+<tr class="odd">
+<td>tck</td>
+<td>koordinat eksen tiklerinin grafiğe göre uzunluğu</td>
+</tr>
+<tr class="even">
+<td>tcl</td>
+<td>koordinat eksen tiklerinin metne göre uzunluğu</td>
+</tr>
+<tr class="odd">
+<td>tmag</td>
+<td>grafik başlığının diğer etiketlere göre büyüklüğü</td>
+</tr>
+<tr class="even">
+<td>type</td>
+<td>grafik türü (nokta, çizgi gibi)</td>
+</tr>
+<tr class="odd">
+<td>xaxp</td>
+<td>x ekseni üzerindeki tik sayısı</td>
+</tr>
+<tr class="even">
+<td>xaxs</td>
+<td>x eksenindeki ölçek aralığı</td>
+</tr>
+<tr class="odd">
+<td>xaxt</td>
+<td>x için ekseni türü (standart, eksensiz)</td>
+</tr>
+<tr class="even">
+<td>xpd</td>
+<td>grafiğin grafik veya figür alanına sığdırılması</td>
+</tr>
+<tr class="odd">
+<td>yaxp</td>
+<td>y ekseni üzerindeki tik sayısı</td>
+</tr>
+<tr class="even">
+<td>yaxs</td>
+<td>y eksenindeki ölçek aralığı</td>
+</tr>
+<tr class="odd">
+<td>yaxt</td>
+<td>y için ekseni türü (standart, eksensiz)</td>
+</tr>
+</tbody>
+</table>
+<p><em>Tablo: Sadece <code>par()</code> fonksiyonuyla düzenlenip sorgulanabilen low-level grafik parametreleri</em></p>
+<table>
+<thead>
+<tr class="header">
+<th>Parametre</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>adj</td>
+<td>metin konumunun (sağ, sol, orta) ayarlanması</td>
+</tr>
+<tr class="even">
+<td>ann</td>
+<td>grafik etiketleri ve başlığı yazılsın mı?</td>
+</tr>
+<tr class="odd">
+<td>bg</td>
+<td>grafik alanının tamamı için arka alan renk</td>
+</tr>
+<tr class="even">
+<td>bty</td>
+<td>grafik etrafına çizilen kutunun şekli</td>
+</tr>
+<tr class="odd">
+<td>cex</td>
+<td>grafikte yer alan sembol ve metin büyüklüğü</td>
+</tr>
+<tr class="even">
+<td>cex.axis</td>
+<td>koordinat eksenlerindeki metinlerin büyüklüğü</td>
+</tr>
+<tr class="odd">
+<td>cex.lab</td>
+<td>koordinat eksen etiketlerinin büyüklüğü</td>
+</tr>
+<tr class="even">
+<td>cex.main</td>
+<td>grafik başlığının büyüklüğü</td>
+</tr>
+<tr class="odd">
+<td>cex.sub</td>
+<td>altbaşlığın büyüklüğü</td>
+</tr>
+<tr class="even">
+<td>col</td>
+<td>çizgi ve veri işaretlerinin rengi</td>
+</tr>
+<tr class="odd">
+<td>col.axis</td>
+<td>koordinat eksenlerindeki metinlerin rengi</td>
+</tr>
+<tr class="even">
+<td>col.lab</td>
+<td>koordinat eksen etiketlerinin rengi</td>
+</tr>
+<tr class="odd">
+<td>col.main</td>
+<td>grafik başlığının rengi</td>
+</tr>
+<tr class="even">
+<td>col.sub</td>
+<td>altbaşlığın rengi</td>
+</tr>
+<tr class="odd">
+<td>fg</td>
+<td>koordinat ekseni, kutu gibi grafik ögelerinin rengi</td>
+</tr>
+<tr class="even">
+<td>font</td>
+<td>metin ögelerinin font face (kalın, italik gibi) özellikleri</td>
+</tr>
+<tr class="odd">
+<td>font.axis</td>
+<td>koordinat eksenlerindeki metinler için font face özellikleri</td>
+</tr>
+<tr class="even">
+<td>font.lab</td>
+<td>koordinat eksen etiketleri için font face özellikleri</td>
+</tr>
+<tr class="odd">
+<td>font.main</td>
+<td>grafik başlığı için font face özellikleri</td>
+</tr>
+<tr class="even">
+<td>font.sub</td>
+<td>altbaşlık için font face özellikleri</td>
+</tr>
+<tr class="odd">
+<td>gamma</td>
+<td>renkler için gamma düzeltme</td>
+</tr>
+<tr class="even">
+<td>lab</td>
+<td>koordinat eksenlerindeki tik sayısı</td>
+</tr>
+<tr class="odd">
+<td>las</td>
+<td>metnin yönü</td>
+</tr>
+<tr class="even">
+<td>lty</td>
+<td>çizgi türü (düz, noktalı, kesikli gibi)</td>
+</tr>
+<tr class="odd">
+<td>lwd</td>
+<td>öizgi genişliği</td>
+</tr>
+<tr class="even">
+<td>mgp</td>
+<td>koordinat eksen tikleri ve tik etiketlerinin konumu</td>
+</tr>
+<tr class="odd">
+<td>pch</td>
+<td>grafikte kullanılacak veri sembol türü</td>
+</tr>
+<tr class="even">
+<td>srt</td>
+<td>grafik alanındaki metnin yönü</td>
+</tr>
+<tr class="odd">
+<td>tck</td>
+<td>koordinat eksen tiklerinin grafiğe göre uzunluğu</td>
+</tr>
+<tr class="even">
+<td>tcl</td>
+<td>koordinat eksen tiklerinin metne göre uzunluğu</td>
+</tr>
+<tr class="odd">
+<td>tmag</td>
+<td>grafik başlığının diğer etiketlere göre büyüklüğü</td>
+</tr>
+<tr class="even">
+<td>type</td>
+<td>grafik türü (nokta, çizgi gibi)</td>
+</tr>
+<tr class="odd">
+<td>xaxp</td>
+<td>x ekseni üzerindeki tik sayısı</td>
+</tr>
+<tr class="even">
+<td>xaxs</td>
+<td>x eksenindeki ölçek aralığı</td>
+</tr>
+<tr class="odd">
+<td>xaxt</td>
+<td>x için ekseni türü (standart, eksensiz)</td>
+</tr>
+<tr class="even">
+<td>xpd</td>
+<td>grafiğin grafik veya figür alanına sığdırılması</td>
+</tr>
+<tr class="odd">
+<td>yaxp</td>
+<td>y ekseni üzerindeki tik sayısı</td>
+</tr>
+<tr class="even">
+<td>yaxs</td>
+<td>y eksenindeki ölçek aralığı</td>
+</tr>
+<tr class="odd">
+<td>yaxt</td>
+<td>y için ekseni türü (standart, eksensiz)</td>
+</tr>
+</tbody>
+</table>
+<p><em>Tablo: <code>par()</code> fonksiyonuyla sorgulanabilen ancak düzenlenemeyen grafik parametreleri</em></p>
+<table>
+<thead>
+<tr class="header">
+<th>Parametre</th>
+<th>Açıklama</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cin</td>
+<td>karakter boyutu (inç olarak)</td>
+</tr>
+<tr class="even">
+<td>cra</td>
+<td>karakter boyutu (piksel olarak)</td>
+</tr>
+<tr class="odd">
+<td>cxy</td>
+<td>karakter boyutu (kullanıcıya göre)</td>
+</tr>
+<tr class="even">
+<td>din</td>
+<td>grafik aygıtının boyutları (inç olarak)</td>
+</tr>
+</tbody>
+</table>
+<p>Unutulmaması gereken önemli bir husus; <em>grafik fonksiyonlarıyla düzenlenen grafik özelliklerinin sonraki grafiklere aktarılmamasına karşın, <code>par()</code> fonksiyonuyla düzenlenen grafik özellikleri kalıcı olur</em> ve sonraki grafikler de aynı özellikleri taşıyarak oluşturulur. Grafik aygıtını eski haline getirmek için <code>dev.off()</code> komutu kullanılabilir.</p>
+<p>Bunlara ilaveten bazı paketler standart grafik fonksiyonlarını farklılaştırır. Mesela <code>cluster</code> paketinin kullanıldığı aşağıdaki kod <code>plot()</code> fonksiyonuyla farklı grafikler üretmekte. Burada <code>agnes()</code> fonksiyonuyla üretilen liste türü veri <code>plot()</code> fonksiyonuna girince aşağıdaki grafikler ortaya çıkıyor:</p>
+<pre class="r"><code>library(cluster) 
+subset &lt;- sample(1:150, 20) 
+cS &lt;- as.character(Sp &lt;- iris$Species[subset]) 
+cS[Sp == &quot;setosa&quot;] &lt;- &quot;S&quot; 
+cS[Sp == &quot;versicolor&quot;] &lt;- &quot;V&quot; 
+cS[Sp == &quot;virginica&quot;] &lt;- &quot;g&quot; 
+ai &lt;- agnes(iris[subset, 1:4]) 
+plot(ai, labels = cS)</code></pre>
+<p><img src="/post/2020-10-20-r-grafik-sistemine-bir-baslangic/index.en_files/figure-html/unnamed-chunk-2-1.png" width="672" /><img src="/post/2020-10-20-r-grafik-sistemine-bir-baslangic/index.en_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+<p>Bunun başka bir örneği de regresyon analizi. Aşağıdaki örnekte araçların yakıt sarfiyatına etki edebileceğini düşündüğümüz beygir gücü ve ağırlık değişkenlerini doğrusal regresyon testine soktuk ve sonucu <code>mpg.lm</code> ögesine atadık. <code>str(mpg.lm)</code> komutu <code>mpg.lm</code> değişkeninin 12 veri objesi barındıran liste türü bir değişken olduğunu gösteriyor. Daha sonra <code>mpg.lm</code> ögesinin <code>plot()</code> fonksiyonuyla grafiğini oluşturduk. Görüldüğü gibi regresyon sonuçlarını değerlendirmemizi (regression diagnostics) sağlayacak dört farklı grafik elde etmiş olduk.</p>
+<pre class="r"><code>mpg.lm &lt;- lm(mpg ~ hp + wt) 
+par (mfrow=c(2,2)) 
+plot(mpg.lm)</code></pre>
+<p><img src="/post/2020-10-20-r-grafik-sistemine-bir-baslangic/index.en_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Regresyon analiz sonuçlarını tutan liste türü değişkenin grafik fonksiyonuna <code>x</code> değeri olarak girdiği gibi, diğer veri türleri de başka grafiklere <code>x</code> değeri olarak atanabilir. Mesela aşağıdaki kodda <code>mtcars</code> verisetine ait iki değişkenden oluşan <code>car.mx</code> isimli bir matriks oluşturdum ve <code>barplot()</code> fonksiyonuyla yan yana grafiklerini çizdim:</p>
+<pre class="r"><code>car.mx &lt;- as.matrix(cbind(mpg,wt)) 
+par(mfrow=c(2,3)) 
+barplot(car.mx,beside = TRUE,col=rainbow(32), main = &quot;rainbow&quot;) 
+barplot(car.mx,beside = TRUE,col=terrain.colors(32), main = &quot;terrain&quot;) 
+barplot(car.mx,beside = TRUE,col=topo.colors(32), main = &quot;topo&quot;) 
+barplot(car.mx,beside = TRUE,col=heat.colors(32), main = &quot;heat&quot;) 
+barplot(car.mx,beside = TRUE,col=cm.colors(32), main = &quot;cm&quot;) 
+barplot(car.mx,beside = TRUE,col=grey.colors(32), main = &quot;gray&quot;)</code></pre>
+<p><img src="/post/2020-10-20-r-grafik-sistemine-bir-baslangic/index.en_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Grafiklerde <code>col</code> parametresine, ardışık olarak renk üreten altı farklı renk fonksiyonu girerek çubukları renklendirdik. Bu arada R grafikleri standart olarak ekrana çizilirken bunların pdf, postscript veya resim dosyası olarak R dışarısına kaydedilmeleri de mümkündür.</p>
+<p>Netice olarak R grafikleri bir çok standart ve standart dışı özellik barındıran objeler. Grafik sistemini iyi anlamak için başkalarının kodlarını incelemeli, detaylara dikkat etmeli ve bol pratik yapmalı. R’da grafik fonksiyonlarının örnekleri bulunmaktadır. Bu örneklere example(“grafik-fonksiyonu-adı”) şeklinde komutla ulaşılabilir. Mesela;</p>
+<pre class="r"><code>library(lattice)
+example(&quot;xyplot&quot;)</code></pre>
+<p>yazarak grid sistemi üzerinde çalışan lattice grafik örneklerini görebiliriz. <code>example()</code> fonksiyonundan önce <code>par(ask=TRUE)</code> komutu girerek grafiklerin peşisıra hızlıca değil, teker teker ekrana gelmesini sağlayabiliriz.</p>

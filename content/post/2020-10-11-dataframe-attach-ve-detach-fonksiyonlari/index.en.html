@@ -1,0 +1,69 @@
+---
+title: Dataframe ile çalışmak, attach() ve detach() fonksiyonları
+author: Hakan Hekim
+date: '2020-10-11'
+slug: [dataframe-attach-ve-detach-fonksiyonlari]
+categories:
+  - Temel R
+tags:
+  - dataframe
+description: Dataframe üzerinde işlem yapabilmek için gerekli bazı bilgiler.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Veri nesnelerinin barındırdığı değişkenleri seçmek, taşıdığı değerleri sorgulamak ve gerektiğinde değiştirmek istatistiksel programlama için gereken temel becerilerdendir. Öyle ki bazen bir verisetinin tamamı üzerinde analiz yapsak ta çoğu zaman belli bir kesiti üzerinde çalışma ihtiyacı duyarız. Bu durumda ana verisetini alt verisetlerine ayırabilmek gerekir.</p>
+<p>Bu notta dataframe üzerinde duracağım. Öncelikle verisetindeki değişkenlere nasıl erişebileceğimize bakalım. Bunun için en başta verisetinde hangi değişkenlerin olduğunu öğrenmek gerekmektedir.Data frame içerisindeki değişkenlerin isimleri ve tipleri hakkında bilgi edinmek için <code>str()</code> fonksiyonu kullanılabilir:</p>
+<pre class="r"><code>str(mtcars)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    32 obs. of  11 variables:
+##  $ mpg : num  21 21 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 ...
+##  $ cyl : num  6 6 4 6 8 6 8 4 4 6 ...
+##  $ disp: num  160 160 108 258 360 ...
+##  $ hp  : num  110 110 93 110 175 105 245 62 95 123 ...
+##  $ drat: num  3.9 3.9 3.85 3.08 3.15 2.76 3.21 3.69 3.92 3.92 ...
+##  $ wt  : num  2.62 2.88 2.32 3.21 3.44 ...
+##  $ qsec: num  16.5 17 18.6 19.4 17 ...
+##  $ vs  : num  0 0 1 1 0 1 0 1 1 1 ...
+##  $ am  : num  1 1 1 0 0 0 0 0 0 0 ...
+##  $ gear: num  4 4 4 3 3 3 3 4 4 4 ...
+##  $ carb: num  4 4 1 1 2 1 4 2 2 4 ...</code></pre>
+<p><code>mtcars</code> R ile gelen örnek bir kütüphanedir. Görüldüğü gibi <code>mtcars</code> nesnesi herbiri 32 gözlem içeren 11 değişken barındıran bir veriseti. Bir dataframe nesnesinin barındırdığı değişken üzerinde işlem yapabilmek için, bazı fonksiyonlarda bulunabilen data parametresini kullanabiliriz. Mesela:</p>
+<pre class="r"><code>reg1 &lt;- lm(mpg~factor(cyl) + factor(gear), data=mtcars)</code></pre>
+<p>Bu örnekte araçların silindir ve vites sayısının yakıt performansını nasıl etkilediğini tahmin eden bir regresyon modeli yer alıyor. Görüldüğü üzere R kodunun en sonunda yer alan data parametresinde verisetinin ismi tanımlanmış. Böylelikle R, <code>mpg</code>, <code>cyl</code> ve `gear`` değişkenlerini nerede bulacağını biliyor.</p>
+<p>Ancak bu özellik bütün fonksiyonlarda aynı şekilde çalışmamaktadır çünkü bazı fonksiyonlar data parametresini kabul etmezler. Mesela:</p>
+<pre class="r"><code>boxplot(mpg,data=mtcars)</code></pre>
+<p>Bu örnekte <code>mtcars</code> verisetinde yer alan <code>mpg</code> değişkeninin kutu grafiği çizilmeye çalışılmaktadır. Ancak hata mesajında <code>mpg</code> değişkeninin bulunamadığı belirtilmektedir çünkü <code>boxplot()</code> fonksiyonu data parametresini kabul etmemektedir. Dolayısıyla fonksiyonu kullanmadan önce yardım dosyasına göz atmakta ve fonksiyonun hangi parametreleri kabul ettiğini kontrol etmekte fayda olacaktır. Bazı durumlarda fonksiyon data parametresini kabul etse de kullanımda hata meydana gelmesi yinede mümkün olabilmektedir.</p>
+<p>Bu durumda data frame nesnesinde yer alan bir değişkeni seçmek için $ işareti veya köşeli parantez kullanılabilir:</p>
+<pre class="r"><code>boxplot(mtcars$mpg)
+boxplot(mtcars[&quot;mpg&quot;])
+boxplot(mtcars[,1])</code></pre>
+<p>Bu üç ibare de aynı sonucu verecektir. R fonksiyyonları farklı geliştiriciler tarafından kodlandığından olsa gerek, bazen bu yöntemler belli fonksiyonlarda hataya sebebiyet verebilir. Bu durumda diğer alternatifleri denemekte fayda vardır.</p>
+<p>Bunlara ek olarak <code>attach()</code> fonksiyonuyla verisetinde yer alan değişkenleri R tarfından erişilebilir yapabiliriz. <code>attach()</code> fonksiyonuyla R oturumuna iliştirdiğimiz verisetinin barındırdığı değişkenler oturum devam ettiği müddetçe erişilebilir olacaktır. Bu durumda sadece adını kullanarak istediğimiz değişkene erişebiliriz:</p>
+<pre class="r"><code>attach(mtcars)
+lm(mpg~factor(cyl) + factor(gear))</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = mpg ~ factor(cyl) + factor(gear))
+## 
+## Coefficients:
+##   (Intercept)   factor(cyl)6   factor(cyl)8  factor(gear)4  factor(gear)5  
+##        25.428         -6.656        -10.542          1.324          1.500</code></pre>
+<p>Görüldüğü gibi <code>mtcars</code> veriseti bu şekilde R ortamına iliştirilmiş oldu ve verisetinde bulunan değişkenlere kolayca erişebildik. <code>attach()</code> fonksiyonu dataframe ve liste veri tipleriyle kullanılabildiği gibi R ile oluşturulmuş veri dosyalarını iliştirmek için de kullanılabilir. <code>name</code> parametresiyle ilişkilendirdiğimiz nesneye farklı bir isim de tanımlayabiliriz.</p>
+<p>Aşırı kullanılması durumunda bu yöntem aynı anda çok fazla değişken adının R çalışma alanında depolanmasına sebep olacaktır. Böyle bir durumda aynı ismi taşıyan birden fazla değişken oluşması ve bunların birbirleriyle çakışmaları ihtimali bulunmaktadır. Bu sebeple <code>attach()</code> fonksiyonu dikkatli kullanılmalıdır.</p>
+<p>Bu şekilde <code>attach()</code> fonksiyonuyla iliştirilen bir veriseti <code>detach()</code> fonksiyonuyla tekrar kaldırılabilir:</p>
+<pre class="r"><code>detach(mtcars)</code></pre>
+<p><code>detach()</code> fonksiyonuyla ilişkilendirilmesi kaldırılan veriseti halen R tarafından kullanılabilir durumdadır. Ancak içerdiği değişkenlere doğrudan erişmemiz artık mümkün değildir. Bu değişkenlere erişebilmek için yukarıda anlatılan yöntemlerden birisini kullanmamız gerekmektedir.</p>
+<p><code>detach()</code> fonksiyonu, <code>library()</code> fonksiyonuyla R ortamına ilişkilendirilen R paketlerinin kaldırılmasında da kullanılır:</p>
+<pre class="r"><code>library(splines)
+detach(package:splines)</code></pre>
+<p>Burada <code>splines</code> paketi önce R ortamına ilişkilendiriliyor sonra kaldırılıyor.</p>

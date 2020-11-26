@@ -1,0 +1,40 @@
+---
+title: R'da kategorik değişkenler
+author: Hakan Hekim
+date: '2020-10-14'
+categories:
+  - Temel R
+tags:
+  - factor
+slug:
+  - r-da-kategorik-değiskenler
+description: Faktör türü veriler ve kullanımı.
+featured: yes
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Çoğu zaman istatistiksel analizlerde bazı değişkenleri kategorik değişken haline dönüştürme ihtiyacı duyarız. R ile yeni değişkenler oluşturmak ve mevcut değişkenleri kategorik değişken olarak kodlamak kolaylıkla yapılabilir. Şimdi bunu nasıl yapacağımızı `mtcars` veriseti üzerinden görelim. Öncelikli olarak verisetimizdeki değişkenler ve değişken tiplerini `str()` komutuyla tekrar görelim.
+
+```{r}
+str(mtcars)
+```
+
+`vs` değişkeninin numerik olarak tanımlandığını görüyoruz. Belli istatistiksel analizleri yapabilmek için değişkenlerin kategorik değişken olarak kodlanmaları gerekmektedir. Şimdi `vs` değişkenini kategorik olarak yeniden kodlayalım. R’da kategorik değişkenlerin türü faktördur. Yeni değişkenleri `factor()` fonksiyonuyla aşağıdaki şekilde üretebiliriz:
+
+```{r}
+mtcars1 <- mtcars
+mtcars1$vsFac <- factor(mtcars1$vs)
+str(mtcars1)
+```
+
+Bu işlemi yaparken veriye etiket de ekliyebiliriz;
+
+```{r}
+mtcars1$vsFac <- factor(mtcars1$vs, levels = c(0,1), labels = c("V-type","Straight"))
+str(mtcars1)
+```
+
+Burada `levels` parametresiyle hangi değerin labels parametresinde tanımlanan etiketi alacağı tanımlanıyor. Böylelikle V tipi motorlar için "V-type" ve normal motorlar için "Straight" etiketlerini kullanmış olduk. Bu etiketler grafiklerin daha anlaşılır olmasına katkı yapacaklardır.

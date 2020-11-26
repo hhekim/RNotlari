@@ -1,0 +1,72 @@
+---
+title: 'R Temel Veri Tipi: Vektör'
+author: Hakan Hekim
+date: '2020-10-06'
+categories:
+  - Temel R
+tags:
+  - vector
+slug:
+  - r-temel-veri-tipi-vektor
+description: Article description.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/r-vector_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>R’da veriseti oluşturmak amacıyla verileri doğrudan elle girebiliriz. Küçük verisetlerinde uygulanabilecek olan bu yöntem büyük verisetleri için neredeyse imkansızdır. Mesela;</p>
+<pre class="r"><code>boy &lt;- 1.80
+kilo &lt;- 70
+yas &lt;- 35</code></pre>
+<p>örneklerinde boy, kilo ve yas değişkenlerine değer atanmaktadır. Değer atama işlemi ters ok şeklindeki operatör vasıtasıyla yapılmaktadır. Ters ok yerine eşittir (=) işareti de kullanılabilir, ancak eşittir işaretinin kullanımı pek yaygın değildir.</p>
+<p>Bu arada belirtilmesi gereken önemli bir husus Türkçe karakterlerin kullanımında dikkatli olunması gereğidir. Türkçe karakterleri kullanmayı hepimiz seviyoruz, ama kullandığımız programlar pek sevmiyor maalesef. Millet olarak bilişim tüketiciliğinden üretici konuma geçene kadar da bu böyle devam edecek gibi görünüyor. O yüzden değişken ismi belirlerken mümkün mertebe Türkçe karakterlerden kaçınmanızı tavsiye ederim.</p>
+<p>Tek bir değerin atandığı bir değişken istatistiksel analiz açısından pek bir işe yaramayacaktır. Bir değişkene onlarca değerin tek tek atanması ise vakit alacaktır. Neyse ki bir değişkene birden fazla değeri bir kerede atamamız mümkün. Bunu <code>c()</code> fonksiyonu ile yapabiliriz:</p>
+<pre class="r"><code>boy &lt;- c(1.80, 1.65, 1.85, 1.90, 1.70, 1.67)</code></pre>
+<p>İngilizce <em>concatenate</em> yani birleştirme kelimesini ifade eden <code>c()</code> fonksiyonu aracılığıyla R’ın en basit veri birimi olan <strong>vektör</strong> oluşturmuş olduk.</p>
+<p>Vektörler R’ın en temel veri birimidir. Vektörler tek tip veri içerebilir, numeric, character veya logical. Farklı veri tiplerini bir vektörde toplamaya çalışırsak bazı değerlerin tipinin değiştiğini göreceğiz.</p>
+<p>Vektörün içerdiği değerleri görebilmek için <code>boy</code> yazmak ve enter tuşuna basmak yeterli olacaktır;</p>
+<pre class="r"><code>boy</code></pre>
+<pre><code>## [1] 1.80 1.65 1.85 1.90 1.70 1.67</code></pre>
+<p>Vektörün herhangi bir değerine <em>vektöradı</em>[<em>sıra no</em>] ifadesiyle erişilebilir. Mesela;</p>
+<pre class="r"><code>boy[2]</code></pre>
+<pre><code>## [1] 1.65</code></pre>
+<p>örneğinde vektörün ikinci sırasındaki değer sorgulanmaktadır.</p>
+<p>Belli bir aralığı sorgulamak için;</p>
+<pre class="r"><code>boy[2:5]</code></pre>
+<pre><code>## [1] 1.65 1.85 1.90 1.70</code></pre>
+<p>ve belli bir sıradaki değeri hariç tutmak için;</p>
+<pre class="r"><code>boy[-3]</code></pre>
+<pre><code>## [1] 1.80 1.65 1.90 1.70 1.67</code></pre>
+<p>şeklinde eksi (-) işareti kullanılabilir.</p>
+<p>R’ı, istatistik için cazip kılan özelliklerden birisi birçok matematiksel fonksiyonun tanımlı olmasıdır. En temel seviyede <code>sum()</code>, <code>min()</code>, <code>max()</code>, <code>mean()</code>, <code>median()</code>, <code>var()</code> ve <code>sd()</code> sık kullanılan fonksiyonlardandır. Mesela boy değişkeninin içerdiği değerlerin toplamı kolayca hesaplanabilir:</p>
+<pre class="r"><code>sum(boy)</code></pre>
+<pre><code>## [1] 10.57</code></pre>
+<p>Yahut bu toplam yeni bir değişkene atanabilir:</p>
+<pre class="r"><code>tboy &lt;- sum(boy)
+tboy</code></pre>
+<pre><code>## [1] 10.57</code></pre>
+<p>Çoğu zaman üzerinde çalıştığınız verisetinde boş bırakılmış değerler bulunacaktır. Mesela, boy değişkeninin sonuna boş bir değer ekleyelim. R’da boş veya eksik (missing) değerler NA ile gösterilir:</p>
+<pre class="r"><code>boy &lt;- c(boy,NA)
+boy</code></pre>
+<pre><code>## [1] 1.80 1.65 1.85 1.90 1.70 1.67   NA</code></pre>
+<p>Az önce gerçekleştirdiğimiz toplama işini şimdi tekrarladığımızda program farklı bir sonuç verecektir:</p>
+<pre class="r"><code>sum(boy)</code></pre>
+<pre><code>## [1] NA</code></pre>
+<p>Şayet değişkende boş bırakılmış bir değer bulunuyorsa, pek çok fonksiyon benzer bir sonuç verecektir. Bunun sebebini öğrenmek için <code>?sum</code> komutuyla <code>sum()</code> fonksiyonunun yardım dosyasına ulaşabiliriz. Yardım dosyasında yer alan aşağıdaki satır problemin kaynağını göstermektedir:</p>
+<blockquote>
+<p>If na.rm is FALSE an <code>NA</code> or <code>NaN</code> value in any of the arguments will cause a value of <code>NA</code> or <code>NaN</code> to be returned, otherwise <code>NA</code> and <code>NaN</code> values are ignored.</p>
+</blockquote>
+<p>Burada değişken içerisinde NA yani boş bir değer olması halinde sonuç olarak ta <code>NA</code> değeri çıkacağı söylenmektedir. Bu durumdan kaçınmak ve <code>sum()</code> fonksiyonunun boş değerleri gözardı etmesini sağlamak için komuta bir ekleme yapmak gerekmektedir:</p>
+<pre class="r"><code>sum(boy, na.rm=TRUE)</code></pre>
+<pre><code>## [1] 10.57</code></pre>
+<p><code>na.rm=TRUE</code> ibaresi <code>sum()</code> fonksiyonunun eksik değerleri gözardı etmesini sağlamaktadır. Bu özellik fonksiyonların pek çoğunda bulunmaktadır.</p>
+<p>Boş veya eksik değerler içeren değişkenler pek çok fonksiyonda problem teşkil edebilmektedir. Bu yüzden beklenmedik bir problemle karşılaştığımızda öncelikli olarak verisetimizde <code>NA</code> değerlerinin olup olmadığını ve kullandığımız fonksiyonun <code>NA</code> değerlerine nasıl muamele ettiğini araştırmakta fayda vardır.</p>

@@ -1,0 +1,27 @@
+---
+title: Covid-19 dünya haritası
+author: Hakan Hekim
+date: '2020-11-10'
+slug: covid-19-dunya-haritasi
+categories:
+  - Shiny
+  - Grafik
+tags:
+  - Shiny
+description: Covid19 verilerinin Shiny ile dünya haritası üzerinde gösterilmesi.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/covid19_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+John Hopkins Üniversitesi'nin Covid-19 verilerini `Leaflet` ile dünya haritası üzerine yerleştirdim, `shiny` ile webapp'a dönüştürdüm. Üzerine tıklanan ülkenin seçili istatistiği grafikleniyor:
+
+[https://hhekim.shinyapps.io/Covid19/](https://hhekim.shinyapps.io/Covid19/)
+
+Mobilde, küçük ekranlarda görüntü çok iyi değil.
+

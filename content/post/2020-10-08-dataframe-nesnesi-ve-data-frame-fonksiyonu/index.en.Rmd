@@ -1,0 +1,79 @@
+---
+title: Dataframe nesnesi ve data.frame fonksiyonu
+author: Hakan Hekim
+date: '2020-10-08'
+slug: [dataframe-nesnesi-ve-data-frame-fonksiyonu]
+categories:
+  - Temel R
+tags:
+  - dataframe
+  - data.frame()
+description: R'ın temel veri birimlerinden dataframe oluşturulması ve kullanımı.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Eşit uzunluktaki değişkenleri bir dataframe içerisinde toplayabiliriz. Data frame, `as.matrix()` veya `cbind()` fonksiyonlarına benzemekle beraber, data frame nesnesi daha kullanışlı özellikler barındırmaktadır. Boy, kilo ve yas değişkenlerinden `data.frame()` fonksiyonunu kullanarak bir dataframe nesnesi oluşturabiliriz;
+
+```{r}
+boy <- c(1.80, 1.65, 1.85, 1.90, 1.70, 1.67)
+kilo <- c(70, 75, 80, 95, 65, 63)
+yas <- c(45, 37, 23, 54, 27, 44)
+bkydfrm <- data.frame(BOY=boy, KILO=kilo, YAS=yas)
+```
+
+`data.frame()` fonksiyonuyla tamamen bağımsız bir veri nesnesi oluşturmaktayız. Sadece numerik değil karakter ve faktör tipinde değişkenleri de dataframe içerisine kaydedebiliriz.
+
+Data frame içerisinde herhangi bir sütuna farklı şekillerde ulaşılabilir;
+
+```{r}
+bkydfrm$BOY
+```
+
+```{r}
+bkydfrm[,1]
+```
+
+
+```{r}
+bkydfrm[[1]]
+```
+
+Bu yöntemleri kullanarak vektör olarak çıktı almış oluyoruz. Çıktının yine dataframe olması için aşağıdaki yöntemi kullanabiliriz:
+
+```{r}
+bkydfrm[1]
+```
+
+Birden fazla sütun seçebiliriz:
+
+```{r}
+bkydfrm[1:2]
+```
+
+Vektör vermesi gereken `bkydfrm[,1]` yönteminde birden fazla sütun belirlersek çıktı dataframe olacaktır:
+
+```{r}
+bkydfrm[,c(1,3)]
+```
+
+Satır seçme işlemi de matrikslerdeki gibidir. Mesela ikinci satırı seçelim:
+
+```{r}
+bkydfrm[2,]
+```
+
+Çıktı dataframe olarak gelmektedir. Çünkü bir dataframe'de sütunlar farklı veri tipinde olabilir. Bir vektör ise farklı veri tipleri barındıramaz. Bütün sütunlar numerikse ve vektör olarak çıktı almak istiyorsak aşağıdaki ifadeyi kullanabiliriz:
+
+```{r}
+as.numeric(as.vector(bkydfrm[2,]))
+```
+
+Veri tipleri farklıysa sonuç arzu ettiğimiz gibi olmayacaktır:
+

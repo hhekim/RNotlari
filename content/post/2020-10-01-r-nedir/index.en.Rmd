@@ -1,0 +1,22 @@
+---
+title: R Nedir?
+author: Hakan Hekim
+date: '2020-10-01'
+slug: r-nedir
+categories:
+  - Temel R
+tags: []
+description: R yazılımının kısa bir tarifi.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/rlogo_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+R istatistiksel programlama ve grafiklemede kullanılan bir programlama dilidir.
+
+Veri işleme, istatistiksel analiz veya veri görselleştirme için ihtiyaç duyacağınız hemen hemen her metodu R’da bulabilirsiniz. Bunun yanı sıra herhangi bir konuda yeni algoritmalar oluşturabilir, bunları yazılım paketleri haline getirerek başkalarının istifadesine de sunabilirsiniz. İngilizce de ‘R’ harfi ‘ar’ şeklinde telaffuz edildiğinden, program da 'ar' olarak anılagelmektedir.

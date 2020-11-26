@@ -1,0 +1,81 @@
+---
+title: Dataframe ile çalışmak, attach() ve detach() fonksiyonları
+author: Hakan Hekim
+date: '2020-10-11'
+slug: [dataframe-attach-ve-detach-fonksiyonlari]
+categories:
+  - Temel R
+tags:
+  - dataframe
+description: Dataframe üzerinde işlem yapabilmek için gerekli bazı bilgiler.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Veri nesnelerinin barındırdığı değişkenleri seçmek, taşıdığı değerleri sorgulamak ve gerektiğinde değiştirmek istatistiksel programlama için gereken temel becerilerdendir. Öyle ki bazen bir verisetinin tamamı üzerinde analiz yapsak ta çoğu zaman belli bir kesiti üzerinde çalışma ihtiyacı duyarız. Bu durumda ana verisetini alt verisetlerine ayırabilmek gerekir.
+
+Bu notta dataframe üzerinde duracağım. Öncelikle verisetindeki değişkenlere nasıl erişebileceğimize bakalım. Bunun için en başta verisetinde hangi değişkenlerin olduğunu öğrenmek gerekmektedir.Data frame içerisindeki değişkenlerin isimleri ve tipleri hakkında bilgi edinmek için `str()` fonksiyonu kullanılabilir:
+
+```{r}
+str(mtcars)
+```
+
+`mtcars` R ile gelen örnek bir kütüphanedir. Görüldüğü gibi `mtcars` nesnesi herbiri 32 gözlem içeren 11 değişken barındıran bir veriseti. Bir dataframe nesnesinin barındırdığı değişken üzerinde işlem yapabilmek için, bazı fonksiyonlarda bulunabilen data parametresini kullanabiliriz. Mesela:
+
+```{r}
+reg1 <- lm(mpg~factor(cyl) + factor(gear), data=mtcars)
+```
+
+Bu örnekte araçların silindir ve vites sayısının yakıt performansını nasıl etkilediğini tahmin eden bir regresyon modeli yer alıyor. Görüldüğü üzere R kodunun en sonunda yer alan data parametresinde verisetinin ismi tanımlanmış. Böylelikle R, `mpg`, `cyl` ve `gear`` değişkenlerini nerede bulacağını biliyor.
+
+Ancak bu özellik bütün fonksiyonlarda aynı şekilde çalışmamaktadır çünkü bazı fonksiyonlar data parametresini kabul etmezler. Mesela:
+
+```{r eval=FALSE, include=TRUE}
+boxplot(mpg,data=mtcars)
+```
+
+Bu örnekte `mtcars` verisetinde yer alan `mpg` değişkeninin kutu grafiği çizilmeye çalışılmaktadır. Ancak hata mesajında `mpg` değişkeninin bulunamadığı belirtilmektedir çünkü `boxplot()` fonksiyonu data parametresini kabul etmemektedir. Dolayısıyla fonksiyonu kullanmadan önce yardım dosyasına göz atmakta ve fonksiyonun hangi parametreleri kabul ettiğini kontrol etmekte fayda olacaktır. Bazı durumlarda fonksiyon data parametresini kabul etse de kullanımda hata meydana gelmesi yinede mümkün olabilmektedir.
+
+Bu durumda data frame nesnesinde yer alan bir değişkeni seçmek için $ işareti veya köşeli parantez kullanılabilir:
+
+```{r echo=TRUE, eval=FALSE}
+boxplot(mtcars$mpg)
+boxplot(mtcars["mpg"])
+boxplot(mtcars[,1])
+```
+
+Bu üç ibare de aynı sonucu verecektir. R fonksiyyonları farklı geliştiriciler tarafından kodlandığından olsa gerek, bazen bu yöntemler belli fonksiyonlarda hataya sebebiyet verebilir. Bu durumda diğer alternatifleri denemekte fayda vardır.
+
+Bunlara ek olarak `attach()` fonksiyonuyla verisetinde yer alan değişkenleri R tarfından erişilebilir yapabiliriz. `attach()` fonksiyonuyla R oturumuna iliştirdiğimiz verisetinin barındırdığı değişkenler oturum devam ettiği müddetçe erişilebilir olacaktır. Bu durumda sadece adını kullanarak istediğimiz değişkene erişebiliriz:
+
+```{r}
+attach(mtcars)
+lm(mpg~factor(cyl) + factor(gear))
+```
+
+Görüldüğü gibi `mtcars` veriseti bu şekilde R ortamına iliştirilmiş oldu ve verisetinde bulunan değişkenlere kolayca erişebildik. `attach()` fonksiyonu dataframe ve liste veri tipleriyle kullanılabildiği gibi R ile oluşturulmuş veri dosyalarını iliştirmek için de kullanılabilir. `name` parametresiyle ilişkilendirdiğimiz nesneye farklı bir isim de tanımlayabiliriz.
+
+Aşırı kullanılması durumunda bu yöntem aynı anda çok fazla değişken adının R çalışma alanında depolanmasına sebep olacaktır. Böyle bir durumda aynı ismi taşıyan birden fazla değişken oluşması ve bunların birbirleriyle çakışmaları ihtimali bulunmaktadır. Bu sebeple `attach()` fonksiyonu dikkatli kullanılmalıdır.
+
+Bu şekilde `attach()` fonksiyonuyla iliştirilen bir veriseti `detach()` fonksiyonuyla tekrar kaldırılabilir:
+
+```{r}
+detach(mtcars)
+```
+
+`detach()` fonksiyonuyla ilişkilendirilmesi kaldırılan veriseti halen R tarafından kullanılabilir durumdadır. Ancak içerdiği değişkenlere doğrudan erişmemiz artık mümkün değildir. Bu değişkenlere erişebilmek için yukarıda anlatılan yöntemlerden birisini kullanmamız gerekmektedir.
+
+`detach()` fonksiyonu, `library()` fonksiyonuyla R ortamına ilişkilendirilen R paketlerinin kaldırılmasında da kullanılır:
+
+```{r}
+library(splines)
+detach(package:splines)
+```
+
+Burada `splines` paketi önce R ortamına ilişkilendiriliyor sonra kaldırılıyor.

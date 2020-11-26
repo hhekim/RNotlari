@@ -1,0 +1,152 @@
+---
+title: R analiz sonuçlarını LaTeX'e çevirmek
+author: Hakan Hekim
+date: '2020-11-06'
+slug: r-analiz-latex-cevirmek
+categories:
+  - Raporlama
+tags:
+  - LaTeX
+description: R ile betimleyici analiz sonuçlarını LATEX ortamına aktaran bir fonksiyon.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/LaTeX_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Bu notta (bir okuyucunun talebi üzerine) R analiz sonuçlarının <code>LaTeX</code> formatına çevrilmesini ele alacağım. Bu işlem için hazırlanmış pek çok R paketi mevcut. En bilinenlerden birisi <code>xtable</code>. Bir önceki notta paylaştığım MS Word formatına aktarma işlemini gerçekleştiren fonksiyonda ufak değişiklikler yaparak <code>LaTeX</code> formatında çıktı alabiliriz:</p>
+<pre class="r"><code>library(e1071) 
+library(xtable) 
+apadesc &lt;- function(x){ 
+  desc &lt;- function(x) { 
+    funs &lt;- c(min, max, mean, median, sd, mad, skewness, kurtosis) 
+    lapply(funs, function(f) round(f(x, na.rm = TRUE), digits = 2)) 
+  } 
+  x &lt;- x[unlist(lapply(x, is.numeric))] 
+  destats &lt;- t(sapply(x, desc)) 
+  dimnames(destats)[[2]] &lt;- c(&quot;min&quot;, &quot;max&quot;, &quot;mean&quot;, &quot;median&quot;, &quot;sd&quot;, &quot;mad&quot;, &quot;skew&quot;, &quot;kurtosis&quot;) 
+  dfdestats &lt;- as.data.frame(destats) 
+  xtable(dfdestats, caption = &quot;Betimsel İstatistikler&quot;) 
+}
+apadesc(mtcars)</code></pre>
+<pre><code>## % latex table generated in R 4.0.2 by xtable 1.8-4 package
+## % Wed Nov 25 19:50:24 2020
+## \begin{table}[ht]
+## \centering
+## \begin{tabular}{rrrrrrrrr}
+##   \hline
+##  &amp; min &amp; max &amp; mean &amp; median &amp; sd &amp; mad &amp; skew &amp; kurtosis \\ 
+##   \hline
+## mpg &amp; 10.40 &amp; 33.90 &amp; 20.09 &amp; 19.20 &amp; 6.03 &amp; 5.41 &amp; 0.61 &amp; -0.37 \\ 
+##   cyl &amp; 4.00 &amp; 8.00 &amp; 6.19 &amp; 6.00 &amp; 1.79 &amp; 2.97 &amp; -0.17 &amp; -1.76 \\ 
+##   disp &amp; 71.10 &amp; 472.00 &amp; 230.72 &amp; 196.30 &amp; 123.94 &amp; 140.48 &amp; 0.38 &amp; -1.21 \\ 
+##   hp &amp; 52.00 &amp; 335.00 &amp; 146.69 &amp; 123.00 &amp; 68.56 &amp; 77.10 &amp; 0.73 &amp; -0.14 \\ 
+##   drat &amp; 2.76 &amp; 4.93 &amp; 3.60 &amp; 3.70 &amp; 0.53 &amp; 0.70 &amp; 0.27 &amp; -0.71 \\ 
+##   wt &amp; 1.51 &amp; 5.42 &amp; 3.22 &amp; 3.33 &amp; 0.98 &amp; 0.77 &amp; 0.42 &amp; -0.02 \\ 
+##   qsec &amp; 14.50 &amp; 22.90 &amp; 17.85 &amp; 17.71 &amp; 1.79 &amp; 1.42 &amp; 0.37 &amp; 0.34 \\ 
+##   vs &amp; 0.00 &amp; 1.00 &amp; 0.44 &amp; 0.00 &amp; 0.50 &amp; 0.00 &amp; 0.24 &amp; -2.00 \\ 
+##   am &amp; 0.00 &amp; 1.00 &amp; 0.41 &amp; 0.00 &amp; 0.50 &amp; 0.00 &amp; 0.36 &amp; -1.92 \\ 
+##   gear &amp; 3.00 &amp; 5.00 &amp; 3.69 &amp; 4.00 &amp; 0.74 &amp; 1.48 &amp; 0.53 &amp; -1.07 \\ 
+##   carb &amp; 1.00 &amp; 8.00 &amp; 2.81 &amp; 2.00 &amp; 1.62 &amp; 1.48 &amp; 1.05 &amp; 1.26 \\ 
+##    \hline
+## \end{tabular}
+## \caption{Betimsel İstatistikler} 
+## \end{table}</code></pre>
+<p>Fonksiyonun verdiği <code>LaTeX</code> çıktısını .tex dökümanımıza yapıştırıp derlerseniz aşağıdaki tabloyu elde edersiniz:</p>
+<p><code>xtable</code> paketinde pek fazla format seçeneği olmadığından çıktıyı istediğimiz biçime sokmak için <code>LaTeX</code> kodu üzerinde çalışmak gerekiyor.</p>
+<p>Kullanımı kolay diğer bir <code>LaTeX</code> paketi de <code>stargazer.</code> Verisetinin (data frame olmalı) betimsel istatistiklerini hesaplamak için aşağıdaki kod yeterli:</p>
+<pre class="r"><code>library(stargazer)</code></pre>
+<pre><code>## 
+## Please cite as:</code></pre>
+<pre><code>##  Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables.</code></pre>
+<pre><code>##  R package version 5.2.2. https://CRAN.R-project.org/package=stargazer</code></pre>
+<pre class="r"><code>stargazer(mtcars, title = &quot;Betimsel İstatistikler&quot;)</code></pre>
+<pre><code>## 
+## % Table created by stargazer v.5.2.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+## % Date and time: Wed, Nov 25, 2020 - 19:50:24
+## \begin{table}[!htbp] \centering 
+##   \caption{Betimsel İstatistikler} 
+##   \label{} 
+## \begin{tabular}{@{\extracolsep{5pt}}lccccccc} 
+## \\[-1.8ex]\hline 
+## \hline \\[-1.8ex] 
+## Statistic &amp; \multicolumn{1}{c}{N} &amp; \multicolumn{1}{c}{Mean} &amp; \multicolumn{1}{c}{St. Dev.} &amp; \multicolumn{1}{c}{Min} &amp; \multicolumn{1}{c}{Pctl(25)} &amp; \multicolumn{1}{c}{Pctl(75)} &amp; \multicolumn{1}{c}{Max} \\ 
+## \hline \\[-1.8ex] 
+## mpg &amp; 32 &amp; 20.091 &amp; 6.027 &amp; 10 &amp; 15.4 &amp; 22.8 &amp; 34 \\ 
+## cyl &amp; 32 &amp; 6.188 &amp; 1.786 &amp; 4 &amp; 4 &amp; 8 &amp; 8 \\ 
+## disp &amp; 32 &amp; 230.722 &amp; 123.939 &amp; 71 &amp; 120.8 &amp; 326 &amp; 472 \\ 
+## hp &amp; 32 &amp; 146.688 &amp; 68.563 &amp; 52 &amp; 96.5 &amp; 180 &amp; 335 \\ 
+## drat &amp; 32 &amp; 3.597 &amp; 0.535 &amp; 2.760 &amp; 3.080 &amp; 3.920 &amp; 4.930 \\ 
+## wt &amp; 32 &amp; 3.217 &amp; 0.978 &amp; 1.513 &amp; 2.581 &amp; 3.610 &amp; 5.424 \\ 
+## qsec &amp; 32 &amp; 17.849 &amp; 1.787 &amp; 14.500 &amp; 16.892 &amp; 18.900 &amp; 22.900 \\ 
+## vs &amp; 32 &amp; 0.438 &amp; 0.504 &amp; 0 &amp; 0 &amp; 1 &amp; 1 \\ 
+## am &amp; 32 &amp; 0.406 &amp; 0.499 &amp; 0 &amp; 0 &amp; 1 &amp; 1 \\ 
+## gear &amp; 32 &amp; 3.688 &amp; 0.738 &amp; 3 &amp; 3 &amp; 4 &amp; 5 \\ 
+## carb &amp; 32 &amp; 2.812 &amp; 1.615 &amp; 1 &amp; 2 &amp; 4 &amp; 8 \\ 
+## \hline \\[-1.8ex] 
+## \end{tabular} 
+## \end{table}</code></pre>
+<p>Yine tabloyu formatlamak için <code>LaTeX</code> tarafında çalışmak gerekiyor. Diğer yandan yukarıdaki kodla tabloda verilenden farklı bir istatistik üretmemiz mümkün değil. Eğer başka istatistiklere ihtiyacımız varsa bunun için kod yazmalıyız. Mesela yukarıda kullandığımız <code>apadesc</code> fonksiyonunun son satırında yer alan <code>xtable(dfdestats, caption = "Betimsel İstatistikler")</code>yerine</p>
+<pre class="r"><code>stargazer(dfdestats, summary = FALSE, 
+          column.labels = dimnames(destats)[[2]], rownames = TRUE)</code></pre>
+<p>yazarak aynı tabloyu üretebiliriz.</p>
+<p>Her iki paket te doğrusal regresyon modeli gibi farklı analizlerin sonuçlarını içeren nesneleri algılayarak tablo üretebilmektedir:</p>
+<pre class="r"><code>dmodel &lt;- with(mtcars, lm(mpg ~ disp + wt))
+xtable(dmodel)</code></pre>
+<pre><code>## % latex table generated in R 4.0.2 by xtable 1.8-4 package
+## % Wed Nov 25 19:50:24 2020
+## \begin{table}[ht]
+## \centering
+## \begin{tabular}{rrrrr}
+##   \hline
+##  &amp; Estimate &amp; Std. Error &amp; t value &amp; Pr($&gt;$$|$t$|$) \\ 
+##   \hline
+## (Intercept) &amp; 34.9606 &amp; 2.1645 &amp; 16.15 &amp; 0.0000 \\ 
+##   disp &amp; -0.0177 &amp; 0.0092 &amp; -1.93 &amp; 0.0636 \\ 
+##   wt &amp; -3.3508 &amp; 1.1641 &amp; -2.88 &amp; 0.0074 \\ 
+##    \hline
+## \end{tabular}
+## \end{table}</code></pre>
+<pre class="r"><code>stargazer(dmodel)</code></pre>
+<pre><code>## 
+## % Table created by stargazer v.5.2.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+## % Date and time: Wed, Nov 25, 2020 - 19:50:24
+## \begin{table}[!htbp] \centering 
+##   \caption{} 
+##   \label{} 
+## \begin{tabular}{@{\extracolsep{5pt}}lc} 
+## \\[-1.8ex]\hline 
+## \hline \\[-1.8ex] 
+##  &amp; \multicolumn{1}{c}{\textit{Dependent variable:}} \\ 
+## \cline{2-2} 
+## \\[-1.8ex] &amp; mpg \\ 
+## \hline \\[-1.8ex] 
+##  disp &amp; $-$0.018$^{*}$ \\ 
+##   &amp; (0.009) \\ 
+##   &amp; \\ 
+##  wt &amp; $-$3.351$^{***}$ \\ 
+##   &amp; (1.164) \\ 
+##   &amp; \\ 
+##  Constant &amp; 34.961$^{***}$ \\ 
+##   &amp; (2.165) \\ 
+##   &amp; \\ 
+## \hline \\[-1.8ex] 
+## Observations &amp; 32 \\ 
+## R$^{2}$ &amp; 0.781 \\ 
+## Adjusted R$^{2}$ &amp; 0.766 \\ 
+## Residual Std. Error &amp; 2.917 (df = 29) \\ 
+## F Statistic &amp; 51.689$^{***}$ (df = 2; 29) \\ 
+## \hline 
+## \hline \\[-1.8ex] 
+## \textit{Note:}  &amp; \multicolumn{1}{r}{$^{*}$p$&lt;$0.1; $^{**}$p$&lt;$0.05; $^{***}$p$&lt;$0.01} \\ 
+## \end{tabular} 
+## \end{table}</code></pre>
+<p>Sonuç olarak, R çıktılarını <code>LaTeX</code> formatına çeviren paketler bizi rakamları teker teker aktarmak zahmetinden kurtarmakta. Ancak “tam da istediğimiz gibi” tablolar oluşturmak için bu sefer de elimizi <code>LaTeX</code> koduna bulaştırmamız gerekiyor.</p>

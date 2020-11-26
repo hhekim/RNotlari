@@ -1,0 +1,56 @@
+---
+title: Paketler
+author: Hakan Hekim
+date: '2020-10-05'
+slug: paketler
+categories:
+  - Temel R
+tags: []
+description: Article description.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+İlk R kurulumu, yani base versiyonu temel paketleri içermektedir. Base versiyonda bulunmayan paketlerin internetten indirilip yüklenilmeleri gerekmektedir. Bu paketler dünyanın dört bir yanındaki R geliştiricileri tarafından üretilmektedir ve genellikle ücretsiz olarak dağıtılmaktadır. Base versiyonda bulunan paketlerin tamamı R’ı çalıştırdığınızda kullanılabilir durumda olmayacaktır.
+
+Kullanmak istediğimiz paketi çağırmamız gerekmektedir. Bu işlem `library` komutuyla yapılmaktadır.
+
+Aşağıdaki örnekte `MASS` isimli paket çağrılmaktadır:
+
+```{r  eval=FALSE, echo=TRUE}
+library(MASS)
+```
+
+Paket çağrıldıktan sonra, paketin içinde bulunan fonksiyonlar kullanılabilir hale gelecektir. R paketleri hakkında r-project.org sitesinde bilgi bulunabileceği gibi, aşağıdaki kod yardımıyla yardım dosyası görüntülenebilir:
+
+```{r  eval=FALSE, echo=TRUE}
+library(help=MASS)
+```
+
+Aşağıdaki komut R sisteminizde yüklü paketlerin listesini verecektir.
+
+```{r  eval=FALSE, echo=TRUE}
+installed.packages()
+```
+
+Diğer yandan yüklenebilecek paketlerin listesi için;
+
+```{r  eval=FALSE, echo=TRUE}
+available.packages()
+```
+
+komutu çalıştırılabilir. Yalnız bu komut çok uzun bir liste getireceğinden R konsolu dışında bir dosyaya aktarılmadıkça pek kullanışlı olduğu söylenemez.
+
+Base versiyonda yer almayan paketler internetten indirilerek veya R’ın Packages menüsü kullanılarak yüklenebilir. Aynı şekilde aşağıdaki ilk satırda yer alan komutla istenilen bir paket yüklenebilir ve ikinci satırda yer alan komutla da kaldırılabilir.
+
+```{r  eval=FALSE, echo=TRUE}
+install.packages(“paket adı”)
+remove.packages(“paket adı”)
+```
+

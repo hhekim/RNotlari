@@ -1,0 +1,181 @@
+---
+title: R grafik sistemine bir başlangıç
+author: Hakan Hekim
+date: '2020-10-20'
+slug: r-grafik-sistemine-bir-baslangic
+categories:
+  - Grafik
+tags:
+  - Grafik
+description: R'ın standart grafik sisteminin temel özellikleri.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/rgraphs_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+R’da, "graphics" ve "grid" olmak üzere iki farklı grafik sistemi ve bu iki farklı sistem üzerinde çalışan grafik paketleri bulunmaktadır. Mesela R'ın standart grafik fonksiyonları "graphics" sistemini kullanmakta, ayrı bir paket olan "lattice" grid sistemini kullanmaktadır. Bu paketlerden hangisinin tercih edileceği zevke ve ihtiyaçlara göre değişir. Ancak her paket farklı imkanlar sunarken aynı zamanda paketlerin dilleri de farklıdır.
+
+R grafik fonksiyonları high-level ve low-level fonksiyonlar olarak ikiye ayrılabilir. High-level fonksiyonlar temel özellikleri barındıran bir grafik çizmemizi sağlarken, low-level fonksiyonlar bu grafiğe daha fazla detay eklememize imkan verir. R’da grafiklerin özelliklerini ayarlayabileceğimiz görsel bir arayüz bulunmamaktadır. Dolayısıyla grafikleri komut satırından gireceğimiz fonksiyonlarla oluştururuz. Grafik fonksiyonları jenerik bir yapıya sahiptir, kullanıldığı yere, değişkenlere göre farklı sonuçlar verebilir. Aynı zamanda farklı fonksiyonlarla aynı sonuca da ulaşılabilir. Mesela, `plot()` fonksiyonuna sürekli bir değişken atanmasıyla kategorik (faktör) değişken atanması farklı grafikler netice verecektir:
+
+```{r}
+attach (mtcars) 
+par(mfrow=c(1,2)) 
+new.vs <- as.factor(vs) 
+plot(vs,mpg) 
+plot(new.vs,mpg)
+```
+
+Burada öncelikle `par(mfrow=c(1,2))` ile grafik alanını tek satır iki sütun olacak şekilde düzenledik. Daha sonra R'da bulunan `mtcars` verisetine ait iki değerli bir değişkenin (`vs`) türünü faktöre (`new.vs`) çevirdik. Daha sonra aynı grafik fonksiyonunu iki farklı değişkenle ayrı ayrı çalıştırdık. Görüldüğü gibi iki farklı grafik elde ettik. Bu durum R'a yeni başlayanlar için normal olarak kafa karışıklıklarına sebebiyet vermektedir.
+
+`par()` fonksiyonu, grafik özelliklerini düzenleyebileceğimiz veya sorgulayabileceğimiz sık kullanılan bir fonksiyondur. `par()` fonksiyonuyla birlikte yukarıdaki örnekte kullandığımız `mfrow` gibi çok sayıda grafik parametresi düzenlenebilir. Bu parametrelerin bazıları grafik fonksiyonlarınca düzenlenebilirken, bazıları sadece `par()` fonksiyonu ile düzenlenip sorgulanabilir. R'ın standart paketlerinin ötesine geçebilmek için bu parametrelerin öğrenilmesi zaruridir. Aşağıdaki tablolarda bu parametreleri bulabilirsiniz. Tablolarda sadece fikir vermek amacıyla kısa bir açıklama yaptım ancak güzel görünümlü grafikler için bu parametrelerin yardım dosyaları ve örnek grafikler incelenmeli, pratik yapılmalı.
+
+*Tablo: Hem `par()` fonksiyonu hem de grafik fonksiyonuyla düzenlenebilip sorgulanabilen high-level grafik parametreleri*
+
+| Parametre | Açıklama |
+|-|-|
+| adj | metin konumunun (sağ, sol, orta) ayarlanması |
+| ann | grafik etiketleri ve başlığı yazılsın mı? |
+| bg | grafik alanının tamamı için arka alan renk |
+| bty | grafik etrafına çizilen kutunun şekli |
+| cex | grafikte yer alan sembol ve metin büyüklüğü |
+| cex.axis | koordinat eksenlerindeki metinlerin büyüklüğü |
+| cex.lab | koordinat eksen etiketlerinin büyüklüğü |
+| cex.main | grafik başlığının büyüklüğü |
+| cex.sub | altbaşlığın büyüklüğü |
+| col | çizgi ve veri işaretlerinin rengi |
+| col.axis | koordinat eksenlerindeki metinlerin rengi |
+| col.lab | koordinat eksen etiketlerinin rengi |
+| col.main | grafik başlığının rengi |
+| col.sub | altbaşlığın rengi |
+| fg | koordinat ekseni, kutu gibi grafik ögelerinin rengi |
+| font | metin ögelerinin font face (kalın, italik gibi) özellikleri |
+| font.axis | koordinat eksenlerindeki metinler için font face özellikleri |
+| font.lab | koordinat eksen etiketleri için font face özellikleri |
+| font.main | grafik başlığı için font face özellikleri |
+| font.sub | altbaşlık için font face özellikleri |
+| gamma | renkler için gamma düzeltme |
+| lab | koordinat eksenlerindeki tik sayısı |
+| las | metnin yönü |
+| lty | çizgi türü (düz, noktalı, kesikli gibi) |
+| lwd | öizgi genişliği |
+| mgp | koordinat eksen tikleri ve tik etiketlerinin konumu |
+| pch | grafikte kullanılacak veri sembol türü |
+| srt | grafik alanındaki metnin yönü |
+| tck | koordinat eksen tiklerinin grafiğe göre uzunluğu |
+| tcl | koordinat eksen tiklerinin metne göre uzunluğu |
+| tmag | grafik başlığının diğer etiketlere göre büyüklüğü |
+| type | grafik türü (nokta, çizgi gibi) |
+| xaxp | x ekseni üzerindeki tik sayısı |
+| xaxs | x eksenindeki ölçek aralığı |
+| xaxt | x için ekseni türü (standart, eksensiz) |
+| xpd | grafiğin grafik veya figür alanına sığdırılması |
+| yaxp | y ekseni üzerindeki tik sayısı |
+| yaxs | y eksenindeki ölçek aralığı |
+| yaxt | y için ekseni türü (standart, eksensiz) |
+
+*Tablo: Sadece `par()` fonksiyonuyla düzenlenip sorgulanabilen low-level grafik parametreleri*
+
+| Parametre | Açıklama |
+|-|-|
+| adj | metin konumunun (sağ, sol, orta) ayarlanması |
+| ann | grafik etiketleri ve başlığı yazılsın mı? |
+| bg | grafik alanının tamamı için arka alan renk |
+| bty | grafik etrafına çizilen kutunun şekli |
+| cex | grafikte yer alan sembol ve metin büyüklüğü |
+| cex.axis | koordinat eksenlerindeki metinlerin büyüklüğü |
+| cex.lab | koordinat eksen etiketlerinin büyüklüğü |
+| cex.main | grafik başlığının büyüklüğü |
+| cex.sub | altbaşlığın büyüklüğü |
+| col | çizgi ve veri işaretlerinin rengi |
+| col.axis | koordinat eksenlerindeki metinlerin rengi |
+| col.lab | koordinat eksen etiketlerinin rengi |
+| col.main | grafik başlığının rengi |
+| col.sub | altbaşlığın rengi |
+| fg | koordinat ekseni, kutu gibi grafik ögelerinin rengi |
+| font | metin ögelerinin font face (kalın, italik gibi) özellikleri |
+| font.axis | koordinat eksenlerindeki metinler için font face özellikleri |
+| font.lab | koordinat eksen etiketleri için font face özellikleri |
+| font.main | grafik başlığı için font face özellikleri |
+| font.sub | altbaşlık için font face özellikleri |
+| gamma | renkler için gamma düzeltme |
+| lab | koordinat eksenlerindeki tik sayısı |
+| las | metnin yönü |
+| lty | çizgi türü (düz, noktalı, kesikli gibi) |
+| lwd | öizgi genişliği |
+| mgp | koordinat eksen tikleri ve tik etiketlerinin konumu |
+| pch | grafikte kullanılacak veri sembol türü |
+| srt | grafik alanındaki metnin yönü |
+| tck | koordinat eksen tiklerinin grafiğe göre uzunluğu |
+| tcl | koordinat eksen tiklerinin metne göre uzunluğu |
+| tmag | grafik başlığının diğer etiketlere göre büyüklüğü |
+| type | grafik türü (nokta, çizgi gibi) |
+| xaxp | x ekseni üzerindeki tik sayısı |
+| xaxs | x eksenindeki ölçek aralığı |
+| xaxt | x için ekseni türü (standart, eksensiz) |
+| xpd | grafiğin grafik veya figür alanına sığdırılması |
+| yaxp | y ekseni üzerindeki tik sayısı |
+| yaxs | y eksenindeki ölçek aralığı |
+| yaxt | y için ekseni türü (standart, eksensiz) |
+
+*Tablo: `par()` fonksiyonuyla sorgulanabilen ancak düzenlenemeyen grafik parametreleri*
+
+| Parametre | Açıklama |
+|-|-|
+| cin | karakter boyutu (inç olarak) |
+| cra | karakter boyutu (piksel olarak) |
+| cxy | karakter boyutu (kullanıcıya göre) |
+| din | grafik aygıtının boyutları (inç olarak) |
+
+Unutulmaması gereken önemli bir husus; *grafik fonksiyonlarıyla düzenlenen grafik özelliklerinin sonraki grafiklere aktarılmamasına karşın, `par()` fonksiyonuyla düzenlenen grafik özellikleri kalıcı olur* ve sonraki grafikler de aynı özellikleri taşıyarak oluşturulur. Grafik aygıtını eski haline getirmek için `dev.off()` komutu kullanılabilir.
+
+Bunlara ilaveten bazı paketler standart grafik fonksiyonlarını farklılaştırır. Mesela `cluster` paketinin kullanıldığı aşağıdaki kod `plot()` fonksiyonuyla farklı grafikler üretmekte. Burada `agnes()` fonksiyonuyla üretilen liste türü veri `plot()` fonksiyonuna girince aşağıdaki grafikler ortaya çıkıyor:
+
+```{r}
+library(cluster) 
+subset <- sample(1:150, 20) 
+cS <- as.character(Sp <- iris$Species[subset]) 
+cS[Sp == "setosa"] <- "S" 
+cS[Sp == "versicolor"] <- "V" 
+cS[Sp == "virginica"] <- "g" 
+ai <- agnes(iris[subset, 1:4]) 
+plot(ai, labels = cS)
+```
+
+Bunun başka bir örneği de regresyon analizi. Aşağıdaki örnekte araçların yakıt sarfiyatına etki edebileceğini düşündüğümüz beygir gücü ve ağırlık değişkenlerini doğrusal regresyon testine soktuk ve sonucu `mpg.lm` ögesine atadık. `str(mpg.lm)` komutu `mpg.lm` değişkeninin 12 veri objesi barındıran liste türü bir değişken olduğunu gösteriyor. Daha sonra `mpg.lm` ögesinin `plot()` fonksiyonuyla grafiğini oluşturduk. Görüldüğü gibi regresyon sonuçlarını değerlendirmemizi (regression diagnostics) sağlayacak dört farklı grafik elde etmiş olduk.
+
+```{r}
+mpg.lm <- lm(mpg ~ hp + wt) 
+par (mfrow=c(2,2)) 
+plot(mpg.lm)
+```
+
+Regresyon analiz sonuçlarını tutan liste türü değişkenin grafik fonksiyonuna `x` değeri olarak girdiği gibi, diğer veri türleri de başka grafiklere `x` değeri olarak atanabilir. Mesela aşağıdaki kodda `mtcars` verisetine ait iki değişkenden oluşan `car.mx` isimli bir matriks oluşturdum ve `barplot()` fonksiyonuyla yan yana grafiklerini çizdim:
+
+```{r}
+car.mx <- as.matrix(cbind(mpg,wt)) 
+par(mfrow=c(2,3)) 
+barplot(car.mx,beside = TRUE,col=rainbow(32), main = "rainbow") 
+barplot(car.mx,beside = TRUE,col=terrain.colors(32), main = "terrain") 
+barplot(car.mx,beside = TRUE,col=topo.colors(32), main = "topo") 
+barplot(car.mx,beside = TRUE,col=heat.colors(32), main = "heat") 
+barplot(car.mx,beside = TRUE,col=cm.colors(32), main = "cm") 
+barplot(car.mx,beside = TRUE,col=grey.colors(32), main = "gray")
+```
+
+Grafiklerde `col` parametresine, ardışık olarak renk üreten altı farklı renk fonksiyonu girerek çubukları renklendirdik. Bu arada R grafikleri standart olarak ekrana çizilirken bunların pdf, postscript veya resim dosyası olarak R dışarısına kaydedilmeleri de mümkündür.
+
+Netice olarak R grafikleri bir çok standart ve standart dışı özellik barındıran objeler. Grafik sistemini iyi anlamak için başkalarının kodlarını incelemeli, detaylara dikkat etmeli ve bol pratik yapmalı. R'da grafik fonksiyonlarının örnekleri bulunmaktadır. Bu örneklere example("grafik-fonksiyonu-adı") şeklinde komutla ulaşılabilir. Mesela;
+
+```{r eval=FALSE, include=TRUE}
+library(lattice)
+example("xyplot")
+```
+
+yazarak grid sistemi üzerinde çalışan lattice grafik örneklerini görebiliriz. `example()` fonksiyonundan önce `par(ask=TRUE)` komutu girerek grafiklerin peşisıra hızlıca değil, teker teker ekrana gelmesini sağlayabiliriz.
+
+

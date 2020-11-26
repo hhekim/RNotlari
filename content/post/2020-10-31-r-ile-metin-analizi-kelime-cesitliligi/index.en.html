@@ -1,0 +1,91 @@
+---
+title: R ile metin analizi --Kelime çeşitliliği
+author: Hakan Hekim
+date: '2020-10-31'
+slug: r-ile-metin-analizi-kelime-cesitliligi
+categories:
+  - Metin Analizi
+  - Grafik
+tags:
+  - Metin Analizi
+  - Text Analysis
+description: R ile metin analizi yaparak kelime sıklıklarının ölçülmesi.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/text_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Bu yazıda içerik analizine devam ederek ilk iki yazıda üzerinde çalıştığımız kitabımızı bu sefer de kelime zenginliği açısından ele alacağız. Kelime zenginliğini ölçmek için iki farklı ölçeğe bakacağız. Bunlar her ne kadar tartışmalı ölçekler olsa da yine de metin hakkında bize fikir verebilirler.1</p>
+<p>Analiz için önceki yazıda ürettiğimiz, bölümlerde geçen kelime sayılarını tutan <code>bolum.raws.l</code> ismini verdiğimiz liste türü değişkene ihtiyacımız olacak. Bu değikenleri elde ettiğimiz aynı işlemleri burada tekrarlamayacağım. Önceki yazıda yahut .Rmd dosyasında ilgili kodu bulabilirsiniz.</p>
+<pre class="r"><code>metin.v &lt;- scan(&quot;ttales.txt&quot;, what = &quot;character&quot;, sep = &quot;\n&quot;)
+ilk.v &lt;- which(metin.v == &quot;HOW THE HODJA SAVED ALLAH&quot;)
+son.v &lt;- which(metin.v == &quot;mézé should be immediately served.&quot;)
+kitap.satir.v &lt;- metin.v[ilk.v:son.v]
+kitap.v &lt;- paste(kitap.satir.v, collapse=&quot; &quot;)
+kitap.kh.v &lt;- tolower(kitap.v)
+kitap.kelimeler.l &lt;- strsplit(kitap.kh.v, &quot;\\W&quot;)
+kitap.kelimeler.v &lt;- unlist(kitap.kelimeler.l)
+kitap.icindekiler.v &lt;- c(&quot;HOW THE HODJA SAVED ALLAH&quot;,&quot;BETTER IS THE FOLLY OF WOMAN THAN THE WISDOM OF MAN&quot;,&quot;THE HANOUM AND THE UNJUST CADI&quot;,&quot;WHAT HAPPENED TO HADJI, A MERCHANT OF THE BEZESTAN&quot;,&quot;HOW THE JUNKMAN TRAVELLED TO FIND TREASURE IN HIS OWN YARD&quot;,&quot;HOW CHAPKIN HALID BECAME CHIEF DETECTIVE&quot;,&quot;HOW COBBLER AHMET BECAME THE CHIEF ASTROLOGER&quot;,&quot;THE WISE SON OF ALI PASHA&quot;,&quot;THE MERCIFUL KHAN&quot;,&quot;KING KARA-KUSH OF BITHYNIA&quot;,&quot;THE PRAYER RUG AND THE DISHONEST STEWARD&quot;,&quot;THE GOOSE, THE EYE, THE DAUGHTER, AND THE ARM&quot;,&quot;THE FORTY WISE MEN&quot;,&quot;HOW THE PRIEST KNEW THAT IT WOULD SNOW&quot;,&quot;WHO WAS THE THIRTEENTH SON&quot;,&quot;PARADISE SOLD BY THE YARD&quot;,&quot;JEW TURNED TURK&quot;,&quot;THE METAMORPHOSIS&quot;,&quot;THE CALIF OMAR&quot;,&quot;KALAIDJI AVRAM OF BALATA&quot;,&quot;HOW MEHMET ALI PASHA OF EGYPT ADMINISTERED JUSTICE&quot;,&quot;HOW THE FARMER LEARNED TO CURE HIS WIFE--A TURKISH ÆSOP&quot;,&quot;THE LANGUAGE OF BIRDS&quot;,&quot;THE SWALLOW&#39;S ADVICE&quot;,&quot;WE KNOW NOT WHAT THE DAWN MAY BRING FORTH&quot;,&quot;OLD MEN MADE YOUNG&quot;,&quot;THE BRIBE&quot;,&quot;HOW THE DEVIL LOST HIS WAGER&quot;,&quot;THE EFFECTS OF RAKI&quot;)
+bolum.baslari.v &lt;- rep(&quot;NA&quot;,length(kitap.icindekiler.v))
+i &lt;- 1
+while (i &lt;= length(kitap.icindekiler.v)){
+  bolum.baslari.v[i] &lt;- grep(kitap.icindekiler.v[i], kitap.satir.v)
+  i &lt;- i+1 
+} 
+kitap.satir.v &lt;- c(kitap.satir.v, &quot;END&quot;)
+son.v &lt;- length(kitap.satir.v)
+bolum.baslari.v &lt;- c(bolum.baslari.v, son.v) 
+i&lt;-1
+bolum.raws.l &lt;- list()
+bolum.freqs.l &lt;- list() 
+
+for(i in 1:length(bolum.baslari.v)){ 
+  if(i != length(bolum.baslari.v)){ 
+    bolum.basligi &lt;- kitap.satir.v[as.numeric(bolum.baslari.v)[i]] 
+    start &lt;- as.numeric(bolum.baslari.v)[i]+1 
+    end &lt;- as.numeric(bolum.baslari.v)[i+1]-1 
+    bolum.satir.v &lt;- kitap.satir.v[start:end] 
+    bolum.kelime.v &lt;- tolower(paste(bolum.satir.v, collapse=&quot; &quot;)) 
+    bolum.kelime.l &lt;- strsplit(bolum.kelime.v, &quot;\\W&quot;) 
+    bolum.kelime.v &lt;- unlist(bolum.kelime.l) 
+    bolum.kelime.v &lt;- bolum.kelime.v[which(bolum.kelime.v!=&quot;&quot;)] 
+    bolum.freqs.t &lt;- table(bolum.kelime.v) 
+    bolum.raws.l[[bolum.basligi]] &lt;- bolum.freqs.t 
+    bolum.freqs.t.rel &lt;- 100*(bolum.freqs.t/sum(bolum.freqs.t)) 
+    bolum.freqs.l[[bolum.basligi]] &lt;- bolum.freqs.t.rel 
+  } 
+}</code></pre>
+<p>Metnin kelime zenginliği edebi kalitesini gösterdiği gibi okuyucular tarafından kolay anlaşılır olmasını da belirlemektedir. Genellikle fazla sayıda farklı kelime içeren metinlerin anlaşılması daha güç olur ve yavaş okunur. Metnin kelime zenginliğini gösteren ölçeklerden birisi, herbir kelimenin ortalama ne kadar kullanıldığının hesaplanması. Bunun için <code>lapply()</code> veya <code>sapply()</code> fonksiyonlarını kullanabiliriz. Bu iki fonksiyon da aynı biçimde çalışmaktadır, tek farkları ilkinin çıktısı liste türü, ikincisinin ise vektör türü olacaktır.</p>
+<p>Aşağıdaki kodda <code>do.call()</code> fonksiyonunu kullandım. <code>do.call()</code> başka fonksiyonları girdi olarak kabul ederek işlem yapan bir fonksiyondur. Burada <code>lapply()</code> ile ortalamalar hesaplanıyor ve <code>rbind()</code> ile birlikte <code>do.call()</code> fonksiyonuna girdi olarak matriks türü bir veriye çevriliyor. Ardından elde ettiğimiz ortalamalara ait iki grafik çiziyoruz. İlkinde ortalamaların ham halini, ikincisinde <code>scale()</code> fonksiyonuyla normalize edilmiş halini çizdim. <code>scale()</code> fonksiyonu bölüm ortalamalarını, kitap ortalamasından çıkartıyor. Grafikteki “0” noktası ortalamayı gösteriyor. Eksi değerler ortalamanın altındaki, artı değerler üzerindeki bölümleri ifade ediyor:</p>
+<pre class="r"><code>ort.kelime.freq.m &lt;- do.call(rbind, lapply(bolum.raws.l,mean))
+plot(ort.kelime.freq.m, type = &quot;h&quot;)</code></pre>
+<p><img src="/post/2020-10-31-r-ile-metin-analizi-kelime-cesitliligi/index.en_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>plot(scale(ort.kelime.freq.m), type = &quot;h&quot;)</code></pre>
+<p><img src="/post/2020-10-31-r-ile-metin-analizi-kelime-cesitliligi/index.en_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+<p>Ortalama kelime sayısı kelime zenginliğinin ölçeklerinden olmasına rağmen, bölüm uzunluğu arttıkça farklı kelime kullanma ihtimali haliyle azalacağından dikkatli kullanılması gereken bir ölçektir. Bu durumu kontrol etmek için bölümlerin içerdiği toplam kelime sayılarıyla ortalama kelime sayısı değişkenimizin korelasyon değerini hesaplayabiliriz. Bunun için öncelikle bölümlerde kullanılan toplam kelime sayılarını hesapladık sonrada analizi yaptık:</p>
+<pre class="r"><code>bolum.kelime.m &lt;- do.call(rbind, lapply(bolum.raws.l, sum))
+cor(bolum.kelime.m[,1], ort.kelime.freq.m[,1])</code></pre>
+<pre><code>## [1] 0.8958854</code></pre>
+<p>Görüldüğü üzere yüksek pozitif korrelasyon var. Yani metindeki kelime sayısı arttıkça, aynı kelimelerin kullanılma oranı da artıyor, diğer bir deyişle kelime zenginliği azalıyor.</p>
+<p>Metnin kelime zenginliğini ölçmenin diğer bir yolu, <em>hapax</em> olarak adlandırılan, sadece bir kere kullanılan kelimelerin tespit edilmesi yöntemidir. Bunun için ev yapımı bir fonksiyon kullanacağız:</p>
+<pre class="r"><code>bolum.hapax.v &lt;- sapply(bolum.raws.l, function(x) sum(x == 1))</code></pre>
+<p>Burada <code>sapply()</code>içerisinde küçük bir fonksiyon tanımlıyoruz ve <code>sapply()</code> ile bölümlerde kullanılan kelime sayılarını bu fonksiyona girdi yapıyoruz. Böylelikle <code>bolum.raws.l</code> listesinde sadece bir kere kullanılmış olan kelimelerin sayısını hesaplayarak <code>bolum.hapax.v</code> vektörüne kaydediyoruz.</p>
+<p>Tek başına bu veri fazla anlam taşımadığından, bölümleri birbirleriyle karşılaştırabilmek için her bölüm için hapax değerinin toplam kelime sayısına oranını hesaplayıp grafik haline getirelim:</p>
+<pre class="r"><code>hapax.oran &lt;- bolum.hapax.v / bolum.kelime.m
+barplot(hapax.oran, space=1, beside=T,col=&quot;grey&quot;,
+        names.arg = seq(1:length(bolum.raws.l)))</code></pre>
+<p><img src="/post/2020-10-31-r-ile-metin-analizi-kelime-cesitliligi/index.en_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Yukarıda çizdiğimiz kelime ortalamalarını gösteren grafiğe yakın bir grafik elde ettik. Hapax değerlerinin de bölümlerde kullanılan kelime sayılarıyla korelasyonuna bakmakta fayda var:</p>
+<pre class="r"><code>cor(hapax.oran, ort.kelime.freq.m[,1])</code></pre>
+<pre><code>##            [,1]
+## [1,] -0.9619583</code></pre>
+<p>Görüldüğü gibi çok güçlü negatif bir korelasyon var. Dolayısıyla bölümlerin toplam farklı kelime sayısı arttıkça, bir defa kullanılan kelime sayısının azaldığını görüyoruz. Daha fazla bilgi için bu yazıda faydalandığım <strong>Matthew J. Jockers</strong>’ın <em>Text Analysis with R for Students of Literature</em> adlı kitabına başvurulabilir.</p>

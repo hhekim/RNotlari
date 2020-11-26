@@ -1,0 +1,26 @@
+---
+title: R Dilini Nasıl Öğrenebilirim?
+author: Hakan Hekim
+date: '2020-10-04'
+slug: [r-dilini-nasil-ogrenebilirim]
+categories:
+  - Temel R
+tags: []
+description: Article description.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/rlogo_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+İnternette R ile alakalı pek çok kaynak bulunabilir. R-Project web sayfasında sol şeritte bulunan Documentation başlığı altında temel R kullanımına yönelik bolca döküman mevcuttur. İngilizce bilenler bu belgelerden başlayabilir. Burada şunu belirtmeliyim; az çok İngilizce bilenler bunları anlayabilir çünkü teknik dökümanlar edebi metinler gibi değildir ve bazı terimleri kavradıktan sonra kolaylıkla okunabilir. Ayrıca bu İngilizcenizin gelişmesine de yardımcı olur.
+
+R ile ilgili Türkçe fazla kaynak bulunmamaktadır. Bu site de bu eksiği gidermeye yönelik olarak, R kullanımına ilişkin pratik bilgiler vermek amacıyla başlatılmıştır. Bulabildiğim Türkçe kaynaklara ilişkin de burada bilgi vermeye çalışacağım.
+
+Bütün programlama dillerinde olduğu gibi R dilinde ustalaşma da pratikle doğru orantılıdır. Bunun için analiz işlerinizi R üzerine taşımadıkça belli bir seviyenin üstüne çıkmayı beklemeyin. Bu sebeple R öğrenmek istiyorsanız, öncelikle R kullanmaya niyetli olmanız gerekmektedir.
+
+Burada şunu da belirtmek gerekir ki; R, dik bir öğrenme eğrisine sahiptir. Yani ilk başlayanları bir müddet zorlayacaktır. Duruma göre bu bazen saç baş yolmaya kadar da gidebilir. Ancak belli bir aşamadan sonra, temel bazı kavramlar oturunca işlerin kolaylaştığını göreceksiniz. Hayatın pek çok alanında olduğu gibi iyi bir R programcısı olmak ta azimli bir çalışma gerektirmektedir.

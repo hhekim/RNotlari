@@ -1,0 +1,105 @@
+---
+title: Frekans, kontenjans tabloları ve dağılım grafikleri
+author: Hakan Hekim
+date: '2020-10-18'
+slug: [frekans-kontenjans-tablolari-ve-dagilim-grafikleri]
+categories:
+  - Temel R
+  - Grafik
+tags:
+  - scatter plot
+description: Frekans ve kontenjans tablosu üretme, dağılım grafiği çizme.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/scatter_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Frekans tablosu bir değişkenin frekans dağılımını incelememize yardımcı olur. Frekans tablosu <code>table()</code> fonksiyonuyla görüntülenebilir.</p>
+<pre class="r"><code>table(mtcars$vs)</code></pre>
+<pre><code>## 
+##  0  1 
+## 18 14</code></pre>
+<pre class="r"><code>table(mtcars$mpg)</code></pre>
+<pre><code>## 
+## 10.4 13.3 14.3 14.7   15 15.2 15.5 15.8 16.4 17.3 17.8 18.1 18.7 19.2 19.7   21 
+##    2    1    1    1    1    2    1    1    1    1    1    1    1    2    1    2 
+## 21.4 21.5 22.8 24.4   26 27.3 30.4 32.4 33.9 
+##    2    1    2    1    1    1    2    1    1</code></pre>
+<p>Kontenjans tablosu iki veya (yorumlaması kolay olmasa da) daha fazla değişkenin değerlerinin karşılıklı olarak incelenmesine yarayan tablolardır. R’da yine <code>table()</code> fonksiyonuyla kontenjans tabloları oluşturabiliriz:</p>
+<pre class="r"><code>table(mtcars$vs,mtcars$carb)</code></pre>
+<pre><code>##    
+##     1 2 3 4 6 8
+##   0 0 5 3 8 1 1
+##   1 7 5 0 2 0 0</code></pre>
+<p>Bu örnekte araçların motor tipine göre karbüratör sayıları tablolanmıştır. Tabloyu daha okunur yapmak için vs değişkenini faktör olarak yeniden tanımlayarak tablo oluşturabiliriz:</p>
+<pre class="r"><code>mtcars1 &lt;- mtcars
+mtcars1$vsFac &lt;- factor(mtcars1$vs, levels = c(0,1), labels = c(&quot;V-type&quot;,&quot;Straight&quot;))
+table(mtcars1$vsFac,mtcars1$carb)</code></pre>
+<pre><code>##           
+##            1 2 3 4 6 8
+##   V-type   0 5 3 8 1 1
+##   Straight 7 5 0 2 0 0</code></pre>
+<p>Görüldğü gibi V tipi motorların karbüratör sayısı normal motorlardan daha fazla.</p>
+<p>Üç boyutlu bir kontenjans tablosu da üretebiliriz:</p>
+<pre class="r"><code>mtcars1$amFac &lt;- factor(mtcars1$am, levels = c(0,1), labels = c(&quot;Automatic&quot;,&quot;Manual&quot;))
+table(mtcars1$vsFac,mtcars1$carb,mtcars1$amFac)</code></pre>
+<pre><code>## , ,  = Automatic
+## 
+##           
+##            1 2 3 4 6 8
+##   V-type   0 4 3 5 0 0
+##   Straight 3 2 0 2 0 0
+## 
+## , ,  = Manual
+## 
+##           
+##            1 2 3 4 6 8
+##   V-type   0 1 0 3 1 1
+##   Straight 4 3 0 0 0 0</code></pre>
+<p>Bu örnekte önce vites türünü otomatik ve manual olmak üzere faktör haline çevirdik. Ardından üç boyutlu bir kontenjans tablosu ürettik.</p>
+<p>Şayet sonuçları bir çalışmada kullanacaksak <code>table()</code> fonksiyonunun bu çıktısı çok uygun değil. Daha güzel bir tabloyu <code>ftable()</code> fonksiyonuyla elde edebiliriz. <code>ftable()</code> fonksiyonu <code>table()</code> fonksiyonuyla aynı işi yapmakla beraber, daha düz bir çıktı vermektedir.</p>
+<pre class="r"><code>ftable(mtcars1$vsFac,mtcars1$carb,mtcars1$amFac)</code></pre>
+<pre><code>##             Automatic Manual
+##                             
+## V-type   1          0      0
+##          2          4      1
+##          3          3      0
+##          4          5      3
+##          6          0      1
+##          8          0      1
+## Straight 1          3      4
+##          2          2      3
+##          3          0      0
+##          4          2      0
+##          6          0      0
+##          8          0      0</code></pre>
+<p>Böylelikle biraz daha derli toplu bir tablo elde etmiş olduk.</p>
+<p>Şimdi değişkenleri grafik şeklinde sunalım. <code>plot()</code> fonksiyonuyla çizilebilen dağılım grafiği bu iş için uygundur:</p>
+<pre class="r"><code>plot(mtcars1$mpg, main=&quot;Dağılım Grafiği&quot;,ylab=&quot;Yakıt Performansı&quot;)</code></pre>
+<p><img src="/post/2020-10-18-frekans-kontenjans-tablolari-ve-dagilim-grafikleri/index.en_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Grafikte yakıt performansı değişkeninin dağılımını görebiliyoruz.</p>
+<p>Dağılım grafiğinin daha kullanışlı olduğu yer, kontenjans tablolarında olduğu gibi iki değişkenin birbirleriyle ilişkisini incelenmesidir.</p>
+<pre class="r"><code>plot(mtcars$wt,mtcars$mpg,main=&quot;Dağılım Grafiği&quot;,xlab=&quot;Aracın ağırlığı&quot;, ylab=&quot;Yakıt Performansı&quot;,pch=20,col=c(&quot;red&quot;,&quot;blue&quot;))</code></pre>
+<p><img src="/post/2020-10-18-frekans-kontenjans-tablolari-ve-dagilim-grafikleri/index.en_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><code>plot()</code> komutuyla grafiği çizdik. <code>main</code> parametresiyle grafik başlığı <code>xlab</code> ve <code>ylab</code> parametreleriyle <code>x</code> ve <code>y</code> eksen etiketlerini isimlendirdik.</p>
+<p>Dağılım grafiğine değişkenler arasındaki ilişkiyi daha net görmemizi sağlayacak regresyon hattı da ekleyebiliriz:</p>
+<pre class="r"><code>plot(mtcars$wt,mtcars$mpg,main=&quot;Dağılım Grafiği&quot;,xlab=&quot;Aracın ağırlığı&quot;, ylab=&quot;Yakıt Performansı&quot;,pch=20,col=c(&quot;red&quot;,&quot;blue&quot;))
+abline(lm(mtcars$mpg~mtcars$wt), col=&quot;green&quot;)
+lines(lowess(mtcars$wt,mtcars$mpg), col=&quot;purple&quot;)</code></pre>
+<p><img src="/post/2020-10-18-frekans-kontenjans-tablolari-ve-dagilim-grafikleri/index.en_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Bu grafikte önce yeşil ile <em>doğrusal</em> modeli, ikinci olarak mor ile <em>lowess</em> modelini görmekteyiz. Doğrusal regresyon modelini grafik üzerine <code>abline()</code> fonksiyonu ile yerleştirdik. <code>abline()</code> fonksiyonu parametre olarak intercept yani doğrunun <code>y</code> eksenini kestiği noktanın değerini ve doğrunun eğimini almaktadır. <code>lm(mpg~wt)</code> fonksiyonu da birisi intercept diğeri eğim olmak üzere iki değer döndürmektedir.</p>
+<p>Buna karşın <code>lines()</code> fonksiyonu parametre olarak doğrunun oluşacağı <code>x</code>,<code>y</code> koordinat değerlerini almaktadır. Nitekim <code>lowess(wt,mpg)</code> fonksiyonu da bu değerleri üretmekte ve böylelikle grafik üzerine lowess modelini yerleştirmekteyiz.</p>
+<p>Son olarak dağılım grafiğinde kullandığımız <code>pch</code> parametresiyle grafikteki değişkenlerin dağılımını gösterecek işaretin türünü seçtik. <code>pch</code> parametresinin alabileceği değerler ve karşılıkları olan semboller aşağıda yer almaktadır. Tabloda bu işaretler renkli olarak gösterilmiş olsa da grafiği çizerken <code>col</code> parametresiyle renklendirilmemesi halinde renksiz görüneceklerdir.</p>
+<div class="figure">
+<img src="/post/2020-10-18-frekans-kontenjans-tablolari-ve-dagilim-grafikleri/index.en_files/pchsymbols.png" alt="" />
+<p class="caption">Semboller</p>
+</div>

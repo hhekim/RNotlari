@@ -1,0 +1,65 @@
+---
+title: read.table(), scan() ve read.csv() fonksiyonlarıyla R ortamına dışarıdan veri
+  aktarma
+author: Hakan Hekim
+date: '2020-10-10'
+slug: [r-ortamina-disaridan-veri-aktarma]
+categories:
+  - Temel R
+tags:
+  - read.table
+  - scan
+  - read.csv
+description: R ortamına veri aktarımı.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+SPSS, STATA, SAS vb gibi farklı istatistiksel paketler de dahil olmak üzere hemen her platformda üretilmiş veri R ortamına aktarılabilir. Bunların tamamına burada örnek vermek yazıyı gereksiz yere uzatacaktır. O yüzden en sık kullanılan üç fonksiyondan bahsedeceğim.
+
+Veri girerken sütun başlığı olarak R için yasaklı olan £,$,%,^,&,*,(,),􏰗,#,?,,,.,,/,|,,,[,],{,ve } gibi karakterler kullanılmamalıdır.
+
+Örnek olarak bir sınıfta bulunan öğrencilerin matematik, fen, edebiyat, sanat notlarını ve bunların ortalamasını içeren bir excel dosyası oluşturup, bu dosyayı tab-delimited text dosyası olarak kaydettim. Şimdi bu dosyayı `read.table()` fonksiyonunu kullanarak R ortamına aktaralım:
+
+```{r}
+classA <- read.table("grades.txt", header=TRUE, dec = ",")
+classA
+```
+
+`read.table()` fonksiyonuna girdiğim ilk parametre olan `file` dosyanın disk üzerindeki yerini, `header` ise ilk satırın değişken isimleri olarak atanıp atanmayacağını bildiriyor. Yani ilk satırın değişken adı olarak atanmasını bildiriyor. Son parametre olan `dec` ondalık ayracı olarak virgül kullanıldığını bildiriyor.
+
+Bu aşamada sık yapılan hatalar; dosyanın yerinin yanlış girilmesi ve ondalık ayracının hatalı bildirilmesidir. Yine aktarılan verisetindeki değişken isimlerinde boşluk olması, verisetinde boş hücrelerin bulunması hata mesajlarına sebebiyet verecektir. Bunları gidermek için Excel dosyası değiştirilebileceği gibi, `read.table()` fonksiyonunda mevcut parametreler kullanılabilir. Bu yüzden hata yaptığınız fonksiyonların yardım dosyasını incelemek problemi gidermenize katkı sağlayacaktır.
+
+classA değişkeninin türünü öğrenmek için `class()` fonksiyonu kullanılabilir:
+
+```{r}
+class(classA)
+```
+
+görüldüğü üzere veriseti data frame olarak R içine aktarılmış.
+
+Veri aktarmada `scan()` fonksiyonu da kullanılabilir. Ancak `scan()` daha esnek bir fonksiyondur ve verileri vektör yahut liste şeklinde içeri aktarır.
+
+```{r}
+classA1 <- scan("grades.txt", what = list("ID","MATH","SCIENCE","LITR","ARTS","mean"))
+classA1
+```
+
+`scan()` fonksiyonu daha hızlı çalıştığından büyük verisetlerinde tercih edilebilir. Aksi halde `read.table()` fonksiyonu daha kullanışlıdır.
+
+Son olarak yaygın kullanılan .csv uzantılı verilerin aktarılmasına bakalım:
+
+```{r eval=FALSE, include=TRUE}
+data <-read.csv("data.csv")
+```
+
+CSV dosyası değişkenleri genellikle virgül işareti ile birbirinden ayırdığından, şayet değişkenler içerisinde virgül kullanılmışsa bu durum verinin hatalı aktarılmasına sebebiyet verecektir. Özellikle rakamlarda ondalık ayracı olarak virgül kullanmışsak sonuç hatalı olacaktır. Bu durumda `read.csv2` fonksiyonu kullanılmalıdır.
+
+Başta da belirttiğimiz gibi hemen her tür veriyi R'a aktarmak artık mümkün. R yardım dosyalarından veya internet üzerinden bu konuda destek bulabiliriz.
+

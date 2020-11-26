@@ -1,0 +1,68 @@
+---
+title: Doğrusal Regresyon (ile Regresyon Analizine Hızlı Bir Başlangıç)
+author: Hakan Hekim
+date: '2020-10-22'
+slug: doğrusal-regresyon-ile-regresyon-analizine-hızlı-bir-başlangıç
+categories:
+  - Istatistik
+tags:
+  - Dogrusal Regresyon
+  - Linear Regression
+description: R ile doğrusal doğrusal regresyon analizi yapılması ve çıktıların yorumlanması.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/lregress_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Regresyon analizi özellikle sosyal bilimlerde birden fazla bağımsız değişkenin, bağımlı değişken üzerindeki etkisini analiz etmek amacıyla yaygın olarak kullanılan bir tekniktir. Böylelikle değişkenler arasında bir ilişki olup olmadığı incelenebilmektedir. Bu arada değişkenler arasında nedensel bir ilişki olduğunu iddia edebilmemiz için başka şartların karşılanması gerektiğini de burada hatırlatmak lazım. İstatistiksel analiz paketleri bu şartların mevcudiyetini kontrol edemez.
+
+Temelde regresyon analizi, ortalama değerlerinin karşılaştırılmasından ibarettir. Bu ifadeyle ne demek istediğimiz, bağımsız değişkenin iki değere (binary) sahip olduğu aşağıdaki iki değişkenli regresyon analizi örneğiyle daha iyi anlaşılacaktır.
+
+Bu örnekte yine R paketiyle gelen `mtcars` verisetinden yararlanacağız. Bu verisetinde bulunan `am` değişkeni aracın vites türünü (automatic=0 veya manual=1), `mpg` ise yakıt performansını (miles per gallon) göstermektedir. İlk modelimiz aracın yakıt performansının, otomatik veya manuel vitese sahip oluşuna göre tahmin edilebilirliğini incelemektedir:
+
+```{r}
+reg1 <- lm(mtcars$mpg~mtcars$am)
+reg1
+```
+
+Doğrusal regresyon analizini gerçekleştiren `lm()` fonksiyonu ilk olarak bağımlı değişkeni, ardından bağımsız değişkenleri parametre olarak almaktadır. Bağımlı değişkenden sonra tilda (~) işareti, birden fazla bağımsız değişkenimiz varsa değişkenlerin arasına artı (+) işareti konulması unutulmamalıdır. Yukarıdaki sonuca göre regresyon modelimiz şu şekilde ifade edilebilir:
+
+>Yakıt performansı = 17,147 + 7,245 x vites türü + hata
+
+Bu model otomatik ve manuel vitese sahip araçların yakıt performansları arasındaki ortalama farkı ortaya koymaktadır. Otomatik vites türünün 0, manuel vites türünün 1 olduğunu göz önüne aldığımızda; 17,147 değeri otomatik vitesli araçların ortalama yakıt performansını göstermektedir. Bu değere kesim noktası (modelde intercept olarak belirtilmiş) denilmesinin sebebi, regresyon hattının `y` eksenini kestiği noktayı göstermesidir. Diğer bir ifadeyle kesim noktası, bağımsız değişken 0 olduğunda, bağımlı değişkenin alacağı değeri gösterir.
+
+Bunu daha iyi anlamak için yukarıdaki doğrusal model formülüne vites türü olarak 0 ve 1 değerlerini koyarak yakıt performansını hesaplayalım. Otomatik vitesli araçların ortalama yakıt performansını bulmak için vites türü değeri yerine 0 koyarak hesapladığımızda 17,147 değerini buluyoruz. Manuel vitesli araçların ortalama yakıt performansını bulmak için vites türü değeri yerine 1 koyarak hesapladığımızdaysa 24,392 değerini buluyoruz.
+
+Aşağıdaki grafikte yakıt performansı ve vites türü grafiklerinin dağılımı gösterilmektedir. Grafikteki çizgiyse regresyon hattını temsil etmektedir. Görüldüğü gibi regresyon hattı yukarıda bulduğumuz ortalama değerlerden geçmektedir. Vites türü 0 olduğunda y=17,147 ve vites türü 1 olduğunda y=24,392.
+
+```{r}
+plot(mtcars$mpg~mtcars$am,xlim=c(-1,2), xlab="Vites Türü",ylab="Yakıt Performansı")
+abline(reg1)
+```
+
+Sonucu daha anlaşılır olarak şöyle ifade edebiliriz: Otomatik vitesli araçlar bir galon benzinle ortalama 17,147 mil yol alırken, manuel vitesli araçlar 24,392 mil yol almaktadır. Yazının başında yer alan "regresyon analizi, ortalama değerlerinin karşılaştırılmasından ibarettir" ifadesinden kastettiğimiz de tam olarak buydu.
+
+Bu iki değer arasındaki fark bize vites türünün regresyon katsayısını vermekte (24,392 - 17,147 = 7,245). Regresyon katsayısı, "bağımsız değişken bir birim arttığında bağımlı değişkenin alacağı değer" olarak ifade edilebilir. Dolayısıyla bizim örneğimizde "manuel vitesli araçlar, otomatik vitesli araçlara göre bir galon benzinle ortalama 7,245 mil daha fazla mesafe gitmektedir" diyebiliriz.
+
+Bu durumu vites türü gibi iki değerli bir değişkenle değilde, aracın ağırlığını gösteren ve sürekli değerler içeren bir değişkenle inceleyelim. Aşağıdaki analizde araç ağırlığını ifade eden wt isimli değişken, aracın paund cinsinden ağırlığının 1000 sayısına bölünmesiyle elde edilmiştir:
+
+```{r}
+reg2 <- lm(mtcars$mpg~mtcars$wt)
+reg2
+```
+
+Regresyon grafiğiyse aşağıdaki şekilde görülmektedir. Görüldüğü gibi regresyon hattı negatif bir eğime sahiptir. Bu durum, araç ağırlığının artmasının yakıt performansını düşürdüğünü göstermektedir. Regresyon hattının geçtiği noktalar, herbir ağırlık değeri için tahmin edilen yakıt sarfiyatı miktarı olarak veya herbir noktadaki alt nüfusların ortalama değeri olarak yorumlanabilir.
+
+```{r}
+plot(mtcars$mpg~mtcars$wt,xlim=c(0,6), ylim=c(0,40), xlab="Ağırlık",ylab="Yakıt Performansı")
+abline(reg2)
+```
+
+Regresyon katsayısı bize yine bir birimlik ağırlık farkının yakıt performansında ne kadar değişime neden olduğunu göstermektedir. Regresyon eğrisinin üzerinden geçtiği farklı alt nüfusları karşılaştırdığımızda; araç ağırlığındaki bir birimlik artışla birlikte, bir galon yakıtla gidilen mesafenin 5,344 mil azaldığını görebiliriz.
+
+Burada kesim noktasını yorumlamak biraz zor. Yukarıda belirttiğimiz gibi kesim noktası, bağımsız değişken yani araç ağırlığının sıfır olduğu durumda bağımlı değişkenin yani yakıt performansının alacağı değeri göstermektedir. Yukarıdaki sonuca göre sıfır ağırlığa sahip araçlar bir galon benzinle 37,285 mil gidecektir. Hiçbir aracın ağırlığı sıfır olmayacağından bu durum pek bir anlam ifade etmemektedir.

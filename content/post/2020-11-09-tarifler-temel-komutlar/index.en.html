@@ -1,0 +1,417 @@
+---
+title: 'Tarifler: Temel Komutlar'
+author: Hakan Hekim
+date: '2020-11-09'
+slug: tarifler-temel-komutlar
+categories:
+  - Temel R
+tags:
+  - Temel Komutlar
+series:
+- Tarifler
+description: Temel R işlemlerinin tarifleri.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/tarif_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>R öğrenirken veya kod yazarken bazı temel işlemlerin nasıl yapıldığını unutabiliyoruz. Bunun için internette <em>cheat sheet</em> olarak adlandırılan bir iki sayfalık hatırlatma notları bulmak mümkün. Ancak bazen daha etraflı bir anlatıma ihtiyaç duyabiliyoruz. Tarifler serisini bu amaçla hazırladım. Bazısı önceki notlarımda da bulunan temel R bilgilerini derli toplu bir biçimde Tarifler serisinde bulabilirsiniz. Bu tarifleri hazırlarken büyük ölçüde <strong>Paul Teetor</strong>’un <em>R Cookbook</em> kitabından faydalandım.</p>
+<ul>
+<li><a href="#değişken-ve-ifadelerin-değerlerini-nasıl-öğrenirim">Değişken ve ifadelerin değerlerini nasıl
+öğrenirim?</a></li>
+<li><a href="#değişkenlere-nasıl-değer-atarım">Değişkenlere nasıl değer atarım?</a></li>
+<li><a href="#tanımlı-değişkenleri-nasıl-listelerim">Tanımlı değişkenleri nasıl
+listelerim?</a></li>
+<li><a href="#tanımlı-değişkenleri-nasıl-silerim">Tanımlı değişkenleri nasıl
+silerim?</a></li>
+<li><a href="#nasıl-yeni-bir-vektör-oluştururum">Nasıl yeni bir vektör
+oluştururum?</a></li>
+<li><a href="#nasıl-dizi-oluştururum">Nasıl dizi oluştururum?</a></li>
+<li><a href="#vektör-içeriğini-diğer-bir-vektörle-yahut-değerle-nasıl-karşılatırırım">Vektör içeriğini diğer bir vektörle yahut değerle nasıl
+karşılatırırım?</a></li>
+<li><a href="#vektör-elemanlarını-nasıl-seçerim">Vektör elemanlarını nasıl
+seçerim?</a></li>
+<li><a href="#vektörleri-aritmetik-işlemlerde-nasıl-kullanırım">Vektörleri aritmetik işlemlerde nasıl
+kullanırım?</a></li>
+<li><a href="#operatörler-arasındaki-öncelik-sıralaması-nasıldır">Operatörler arasındaki öncelik sıralaması
+nasıldır?</a></li>
+<li><a href="#kendi-fonksiyonumu-nasıl-tanımlarım">Kendi fonksiyonumu nasıl
+tanımlarım?</a></li>
+</ul>
+<div id="değişken-ve-ifadelerin-değerlerini-nasıl-öğrenirim" class="section level2">
+<h2>Değişken ve ifadelerin değerlerini nasıl öğrenirim?</h2>
+<p>Değişkenin adını yazıp ENTER tuşuna basarak veya <code>print</code> fonksiyonuyla değişkenin değerini görebilirsiniz.</p>
+<pre class="r"><code>x &lt;- 0.289
+y &lt;- matrix(rnorm(4,0,1),2,2)
+x</code></pre>
+<pre><code>## [1] 0.289</code></pre>
+<pre class="r"><code>print(x)</code></pre>
+<pre><code>## [1] 0.289</code></pre>
+<pre class="r"><code>y</code></pre>
+<pre><code>##           [,1]       [,2]
+## [1,] -1.470333  0.0574465
+## [2,] -0.351294 -1.6092788</code></pre>
+<pre class="r"><code>print(y)</code></pre>
+<pre><code>##           [,1]       [,2]
+## [1,] -1.470333  0.0574465
+## [2,] -0.351294 -1.6092788</code></pre>
+<p>Aslında değişkenin ismini yazıp ENTER tuşuna bastığımızda R <code>print</code> fonksiyonunu çağırdığından her iki işlemde de aynı çıktıyı almaktayız.</p>
+<p>Lakin <code>print</code> fonksiyonu yalnızca bir girdi alabilmektedir. Mesela aşağıdaki komut beklenen sonucu vermeyecektir:</p>
+<pre class="r"><code>print(x,y)</code></pre>
+<p>Hatta aşağıdaki gibi daha okunaklı bir çıktı almak istersek hata mesajıyla karşılaşırız:</p>
+<pre class="r"><code>print(&quot;x değişkeninin değeri:&quot;,x,&quot;, y değişkeninin değeri:&quot;,y)</code></pre>
+<p>Bu işlem için <code>cat</code> fonksiyonunu kullanabiliriz:</p>
+<pre class="r"><code>cat(&quot;x değişkeninin değeri:&quot;,x,&quot;, y değişkeninin değeri:&quot;,y, &quot;\n&quot;)</code></pre>
+<pre><code>## x değişkeninin değeri: 0.289 , y değişkeninin değeri: -1.470333 -0.351294 0.0574465 -1.609279</code></pre>
+<p><code>cat</code> fonksiyonu halihazırda liste (list) veri tipini görüntülememektedir.</p>
+</div>
+<div id="değişkenlere-nasıl-değer-atarım" class="section level2">
+<h2>Değişkenlere nasıl değer atarım?</h2>
+<p>R’da değişkeni tanımlama ihtiyacı yoktur. Değer atamak için <code>&lt;-</code> operatörünü kullanırız.</p>
+<pre class="r"><code>x &lt;- 0.289</code></pre>
+<p>Tanımladığınız değişkenler R çalışma ortamına (workspace) kaydedilecektir. R tanımladığınız bir değişkeni herhangi biçimde korumamaktadır. Yani numerik olarak tanımladığınız bir değişkeni sonradan karaktere dönüştürmeniz halinde R sıkıntı çıkarmaz. Bu durum bazı hallerde hatalara sebebiyet verebildiğinden değişkenleri kendiniz denetlemelisiniz.</p>
+<pre class="r"><code>x &lt;- 0.289
+x</code></pre>
+<pre><code>## [1] 0.289</code></pre>
+<pre class="r"><code>x &lt;- c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;)
+x</code></pre>
+<pre><code>## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot;</code></pre>
+<p>Bazı durumlarda değişkenleri çalışmakta olduğumuz ortama (workspace) değil de global çalışma ortamına (global environment) kaydetmemiz gerekebilir. Bu durumda <code>&lt;&lt;-</code> operatörünü kullanırız.</p>
+<p>Bunlara ilaveten R, <code>-&gt;</code> operatörü ile atama yapılacak değişkeni sağa yazılmasına izin verir. Aynı şekilde <code>=</code> operatörü ile de değişkenlere atama yapılabilir. Ancak bu iki operatör pek kullanılmamaktadır:</p>
+<pre class="r"><code>sqrt(11) -&gt; x
+y = abs(11)
+x</code></pre>
+<pre><code>## [1] 3.316625</code></pre>
+<pre class="r"><code>y</code></pre>
+<pre><code>## [1] 11</code></pre>
+</div>
+<div id="tanımlı-değişkenleri-nasıl-listelerim" class="section level2">
+<h2>Tanımlı değişkenleri nasıl listelerim?</h2>
+<p>Çalışma ortamında tanımlı değişkenleri <code>ls</code> fonksiyonuyla listeleyebiliriz.</p>
+<pre class="r"><code>ls()</code></pre>
+<pre><code>## [1] &quot;x&quot; &quot;y&quot;</code></pre>
+<pre class="r"><code>x &lt;- 23.33
+y &lt;- &quot;elma&quot;
+z &lt;- list(q = c(1,2,3), w= c(&quot;a&quot;,&quot;b&quot;,&quot;c&quot;))
+ls()</code></pre>
+<pre><code>## [1] &quot;x&quot; &quot;y&quot; &quot;z&quot;</code></pre>
+<p>Tanımlı herhangi bir değişken yoksa <code>character(0)</code>, yani büyüklüğünde string vektörü gelir. Tanımlı değişken varsa isimleri gelir. Değişkenlerle ilgili daha detaylı bilgiye <code>ls.str</code> fonksiyonu ile ulaşılabilir:</p>
+<pre class="r"><code>ls.str()</code></pre>
+<pre><code>## x :  num 23.3
+## y :  chr &quot;elma&quot;
+## z : List of 2
+##  $ q: num [1:3] 1 2 3
+##  $ w: chr [1:3] &quot;a&quot; &quot;b&quot; &quot;c&quot;</code></pre>
+<p>Çalışma ortamında gizli değişkenler olabilir. Bunlar <code>all.names = TRUE</code> parametresiyle ulaşabiliriz:</p>
+<pre class="r"><code>ls(all.names = TRUE)</code></pre>
+<pre><code>## [1] &quot;.Random.seed&quot; &quot;x&quot;            &quot;y&quot;            &quot;z&quot;</code></pre>
+<p>Nokta ile başlayan değişkenler gizli değişkendir.</p>
+</div>
+<div id="tanımlı-değişkenleri-nasıl-silerim" class="section level2">
+<h2>Tanımlı değişkenleri nasıl silerim?</h2>
+<p>Değişkenleri <code>rm</code> fonksiyonuyla sileriz.</p>
+<pre class="r"><code>a &lt;- 1
+b &lt;- 2
+c &lt;- 3
+ls()</code></pre>
+<pre><code>## [1] &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;x&quot; &quot;y&quot; &quot;z&quot;</code></pre>
+<pre class="r"><code>rm(a)
+ls()</code></pre>
+<pre><code>## [1] &quot;b&quot; &quot;c&quot; &quot;x&quot; &quot;y&quot; &quot;z&quot;</code></pre>
+<pre class="r"><code>rm(b,c)
+ls()</code></pre>
+<pre><code>## [1] &quot;x&quot; &quot;y&quot; &quot;z&quot;</code></pre>
+<p>Çalışma ortamındaki tüm değişkenleri silmek için <code>rm</code> fonksiyonunu aşağıdaki parametreyle kullanırız:</p>
+<pre class="r"><code>ls()</code></pre>
+<pre><code>## [1] &quot;x&quot; &quot;y&quot; &quot;z&quot;</code></pre>
+<pre class="r"><code>rm(list=ls())
+ls()</code></pre>
+<pre><code>## character(0)</code></pre>
+</div>
+<div id="nasıl-yeni-bir-vektör-oluştururum" class="section level2">
+<h2>Nasıl yeni bir vektör oluştururum?</h2>
+<p>Vektör R dilinin en basit ve en kullanışlı veri tipidir. Vektör oluşturmak için <code>c()</code> fonksiyonunu kullanırız. Vektörler rakam, metin veya mantıksal değerler içerebilir.</p>
+<pre class="r"><code>a &lt;- c(1,2,3,4.08,5.374)
+b &lt;- c(&quot;a&quot;, &quot;pi&quot;, &quot;x&quot;, &quot;q&quot;)
+c &lt;- c(&quot;TURE&quot;, &quot;FALSE&quot;,&quot;FALSE&quot;)</code></pre>
+<p><code>c()</code> parametre olarak vektör alması halinde aldığı vektörleri birleştirir. Vektörler varklı veri türleri içeremez. Farklı veri türlerinden vektör yapılması halinde R hepsini aynı veri türü haline getirir:</p>
+<pre class="r"><code>d &lt;- c(a,b)
+str(d)</code></pre>
+<pre><code>##  chr [1:9] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4.08&quot; &quot;5.374&quot; &quot;a&quot; &quot;pi&quot; &quot;x&quot; &quot;q&quot;</code></pre>
+<p><code>c()</code> sadece vektörler değil diğer veri türleriyle de işlem yapabilir. Fakat sonuç beklediğiniz gibi çıkmayabileceğinden mutlaka kontrol edilmelidir.</p>
+</div>
+<div id="nasıl-dizi-oluştururum" class="section level2">
+<h2>Nasıl dizi oluştururum?</h2>
+<p>En basit biçimde <code>n:m</code> formatıyla sayı dizisi oluşturabiliriz. Bu şekilde birer birer artan bir seri elde ederiz:</p>
+<pre class="r"><code>0:7</code></pre>
+<pre><code>## [1] 0 1 2 3 4 5 6 7</code></pre>
+<pre class="r"><code>7:0</code></pre>
+<pre><code>## [1] 7 6 5 4 3 2 1 0</code></pre>
+<p>Farklı aralık değerine sahip dizi için <code>seq</code> fonksiyonu kullanılır:</p>
+<pre class="r"><code>seq(from = 7, to = 31, by = 3)</code></pre>
+<pre><code>## [1]  7 10 13 16 19 22 25 28 31</code></pre>
+<p><code>length.out</code> parametresiyle dizinin uzunluğunu belirleyebiliriz, aralık değerini R hesaplar:</p>
+<pre class="r"><code>seq(from = 0, to = 100, length.out = 5)</code></pre>
+<pre><code>## [1]   0  25  50  75 100</code></pre>
+<p>Belli sayı veya sayıları tekrar etmek için <code>rep</code> fonksiyonu kullanılır:</p>
+<pre class="r"><code>rep(3, times = 5)</code></pre>
+<pre><code>## [1] 3 3 3 3 3</code></pre>
+<pre class="r"><code>rep(3:6, times = 3)</code></pre>
+<pre><code>##  [1] 3 4 5 6 3 4 5 6 3 4 5 6</code></pre>
+<pre class="r"><code>rep(c(1,4,9), times = 3)</code></pre>
+<pre><code>## [1] 1 4 9 1 4 9 1 4 9</code></pre>
+<pre class="r"><code>rep(&quot;x&quot;, times = 3)</code></pre>
+<pre><code>## [1] &quot;x&quot; &quot;x&quot; &quot;x&quot;</code></pre>
+</div>
+<div id="vektör-içeriğini-diğer-bir-vektörle-yahut-değerle-nasıl-karşılatırırım" class="section level2">
+<h2>Vektör içeriğini diğer bir vektörle yahut değerle nasıl karşılatırırım?</h2>
+<p>R karşılaştırma operatörleri olan <code>==, !=, &lt;, &gt;, &lt;=, &gt;=</code> ile vektörleri veya değişkenleri karşılaştırabiliriz. Karşılaştırma sonucu her vektör elemanı için bir mantıksal değer görüntülenir.</p>
+<pre class="r"><code>a &lt;- 3
+a == pi</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code>a != pi</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>a &lt; pi</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>a &gt; pi</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code>a &lt;= pi</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>a &gt;= pi</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<p>Aynı biçimde iki vektörü karşılaştırmakta mümkündür. Bu durumda R vektörlerin elemanlarını sırayla karşılaştırır, yani birinci elemanları, ikinci elemanları vs gibi ve sonucu verir:</p>
+<pre class="r"><code>a &lt;- c(1,2,3,4,5)
+b &lt;- c(1,3,5,7,9)
+a == b</code></pre>
+<pre><code>## [1]  TRUE FALSE FALSE FALSE FALSE</code></pre>
+<pre class="r"><code>a != b</code></pre>
+<pre><code>## [1] FALSE  TRUE  TRUE  TRUE  TRUE</code></pre>
+<pre class="r"><code>a &lt; b</code></pre>
+<pre><code>## [1] FALSE  TRUE  TRUE  TRUE  TRUE</code></pre>
+<pre class="r"><code>a &gt; b</code></pre>
+<pre><code>## [1] FALSE FALSE FALSE FALSE FALSE</code></pre>
+<pre class="r"><code>a &lt;= b</code></pre>
+<pre><code>## [1] TRUE TRUE TRUE TRUE TRUE</code></pre>
+<pre class="r"><code>a &gt;= b</code></pre>
+<pre><code>## [1]  TRUE FALSE FALSE FALSE FALSE</code></pre>
+<p>Eşit uzunlukta olmayan vektörler karşılaştırıldığında, küçük olan vektörün son elemanı karşılaştırıldıktan sonra sıra tekrardan başa döner. Örneğin <code>a</code> vektörü 5, <code>b</code> vektörü 3 eleman içeriyorsa; üçüncü elemanlar karşılaştırıldıktan sonra <code>a</code> vektörünün 4. elemanıyla <code>b</code> vektörünün 1. elemanı, <code>a</code> vektörünün 5. elemanıyla <code>b</code> vektörünün 2. elemanı karşılaştırılır. Sonuç uyarı mesajıyla birlikte gelir. Bir vektör tek bir değerle de karşılaştırılabilir. Bu durumda vektörün her bir elemanı sırayla değerle karşılaştırılarak sonuç verilir.</p>
+<pre class="r"><code>a &lt;- c(1,2,3,4,5)
+b &lt;- c(1,5,9)
+a == b</code></pre>
+<pre><code>## Warning in a == b: longer object length is not a multiple of shorter object
+## length</code></pre>
+<pre><code>## [1]  TRUE FALSE FALSE FALSE  TRUE</code></pre>
+<pre class="r"><code>a == 3</code></pre>
+<pre><code>## [1] FALSE FALSE  TRUE FALSE FALSE</code></pre>
+<p>Karşılaştırma sonucunda herhangi bir <code>TURE</code> sonuç olup olmadığını <code>any</code> ile, bütün sonuçların <code>TURE</code> olup olmadığını <code>all</code> ile kontrol edebiliriz. Vektör büyüklükleri farklı olması halinde uyarı mesajı gelecektir.</p>
+<pre class="r"><code>a &lt;- c(1,2,3,4,5)
+b &lt;- c(1,3,5,7,9)
+c &lt;- c(1,2,3)
+any(a == b)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>all(a == b)</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code>any(a == c)</code></pre>
+<pre><code>## Warning in a == c: longer object length is not a multiple of shorter object
+## length</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>all(a == c)</code></pre>
+<pre><code>## Warning in a == c: longer object length is not a multiple of shorter object
+## length</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+</div>
+<div id="vektör-elemanlarını-nasıl-seçerim" class="section level2">
+<h2>Vektör elemanlarını nasıl seçerim?</h2>
+<p>Köşeli parantez kullanarak istediğimiz bir vektör elemanını sırasını belirterek seçebiliriz. İlk vektör elemanının sıra numarası 1’dir. Birden fazla sıra numarası belirtmek mümkündür:</p>
+<pre class="r"><code>a &lt;- c(1,2,3,4,5)
+a[1]</code></pre>
+<pre><code>## [1] 1</code></pre>
+<pre class="r"><code>a[1:3]</code></pre>
+<pre><code>## [1] 1 2 3</code></pre>
+<pre class="r"><code>a[c(1,3,5)]</code></pre>
+<pre><code>## [1] 1 3 5</code></pre>
+<p>Sıra numarasını negatif işareti (-) ile belirtmek, o sıradaki elemanı hariç tutmak anlamına gelir:</p>
+<pre class="r"><code>a &lt;- c(1,2,3,4,5)
+a[-1]</code></pre>
+<pre><code>## [1] 2 3 4 5</code></pre>
+<pre class="r"><code>a[-(1:3)]</code></pre>
+<pre><code>## [1] 4 5</code></pre>
+<pre class="r"><code>a[c(-1,-3,-5)]</code></pre>
+<pre><code>## [1] 2 4</code></pre>
+<p>Karşılaştırma operatörlari kullanarak seçim yapabiliriz:</p>
+<pre class="r"><code>a &lt;- c(1,2,3,4,5)
+a &lt; 4</code></pre>
+<pre><code>## [1]  TRUE  TRUE  TRUE FALSE FALSE</code></pre>
+<pre class="r"><code>a[a &lt; 4]</code></pre>
+<pre><code>## [1] 1 2 3</code></pre>
+<p>Aynı biçimde belirli şartları karşılayan elemanları mantıksal karşılaştırma yoluyla seçebiliriz:</p>
+<pre class="r"><code>a &lt;- c(1,2,3,4,5)
+a %% 2 == 1</code></pre>
+<pre><code>## [1]  TRUE FALSE  TRUE FALSE  TRUE</code></pre>
+<pre class="r"><code>a[a %% 2 == 1]</code></pre>
+<pre><code>## [1] 1 3 5</code></pre>
+<p><code>%%</code> operatörü bölme işleminde kalanı verir. <code>a %% 2 == 1</code> ile vektör elemanlarının tek sayı olup olmadığını sorguladık, <code>a[a %% 2 == 1]</code> ile tek sayıları seçtik.</p>
+<p>Karşılaştırma operatörleriyle her türlü seçim işlemi gerçekleştirebiliriz:</p>
+<pre class="r"><code>a &lt;- c(18.92, 14.27, 19.75, 14.89, 23.79, 15.83, 15.94, 2.51, 25.02, 20.07)
+# ortalama değerden küçük elemanları seçebiliriz
+a[a &lt; mean(a)]</code></pre>
+<pre><code>## [1] 14.27 14.89 15.83 15.94  2.51</code></pre>
+<pre class="r"><code># belirli yüzdelik dilimlerdeki elmanları seçebiliriz
+a[a &lt; quantile(a,0.05) | a &gt; (quantile(a,0.95))]</code></pre>
+<pre><code>## [1]  2.51 25.02</code></pre>
+<pre class="r"><code># ortalamadan iki standart sapmadan daha küçük veya büyük olan elemanlar
+a[abs(a-mean(a)) &gt; 2*sd(a)]</code></pre>
+<pre><code>## [1] 2.51</code></pre>
+<pre class="r"><code># NA veya NULL olmayan elemanları seçme
+a[!is.na(a) &amp; !is.null(a) ]</code></pre>
+<pre><code>##  [1] 18.92 14.27 19.75 14.89 23.79 15.83 15.94  2.51 25.02 20.07</code></pre>
+</div>
+<div id="vektörleri-aritmetik-işlemlerde-nasıl-kullanırım" class="section level2">
+<h2>Vektörleri aritmetik işlemlerde nasıl kullanırım?</h2>
+<p>Vektörlerle aritmetik işlem yapıldığında vektör elemanlarının hepsi teker teker işleme girer:</p>
+<pre class="r"><code>a &lt;- c(1,2,3,4,5)
+b &lt;- c(6,7,8,9,10)
+a+b</code></pre>
+<pre><code>## [1]  7  9 11 13 15</code></pre>
+<pre class="r"><code>a-b</code></pre>
+<pre><code>## [1] -5 -5 -5 -5 -5</code></pre>
+<pre class="r"><code>a*b</code></pre>
+<pre><code>## [1]  6 14 24 36 50</code></pre>
+<pre class="r"><code>a/b</code></pre>
+<pre><code>## [1] 0.1666667 0.2857143 0.3750000 0.4444444 0.5000000</code></pre>
+<pre class="r"><code>a^b</code></pre>
+<pre><code>## [1]       1     128    6561  262144 9765625</code></pre>
+<p>Vektörler ile tek bir sayı işlem yapıldığından, vektörün bütün elemanları verilen sayıyla işleme girer:</p>
+<pre class="r"><code>a &lt;- c(1,2,3,4,5)
+a * 5</code></pre>
+<pre><code>## [1]  5 10 15 20 25</code></pre>
+<p>Vektörlerle yapabileceğimiz aritmetik işlemler sadece bunlarla sınırlı değildir:</p>
+<pre class="r"><code>a &lt;- c(1,2,3,4,5)
+sqrt(a)</code></pre>
+<pre><code>## [1] 1.000000 1.414214 1.732051 2.000000 2.236068</code></pre>
+<pre class="r"><code>log(a)</code></pre>
+<pre><code>## [1] 0.0000000 0.6931472 1.0986123 1.3862944 1.6094379</code></pre>
+<pre class="r"><code>sin(a)</code></pre>
+<pre><code>## [1]  0.8414710  0.9092974  0.1411200 -0.7568025 -0.9589243</code></pre>
+<pre class="r"><code>factorial(a)</code></pre>
+<pre><code>## [1]   1   2   6  24 120</code></pre>
+<pre class="r"><code>factorial(a[length(a)])</code></pre>
+<pre><code>## [1] 120</code></pre>
+</div>
+<div id="operatörler-arasındaki-öncelik-sıralaması-nasıldır" class="section level2">
+<h2>Operatörler arasındaki öncelik sıralaması nasıldır?</h2>
+<p>R operatörler arasında aşağıdaki öncelik sırasını gözetmektedir. Aynı öncelik sıralamasındaki operatörlerden solda yer alan diğer(ler)ine göre önceliklidir:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Operatör</th>
+<th align="left">Anlamı</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">[ [[</td>
+<td align="left">Seçme</td>
+</tr>
+<tr class="even">
+<td align="left">:: :::</td>
+<td align="left">Değişkenlere erişim</td>
+</tr>
+<tr class="odd">
+<td align="left">$ @</td>
+<td align="left">Component extraction, slot extraction</td>
+</tr>
+<tr class="even">
+<td align="left">^</td>
+<td align="left">Üs alma (sağdan sola)</td>
+</tr>
+<tr class="odd">
+<td align="left">- +</td>
+<td align="left">Artı, eksi</td>
+</tr>
+<tr class="even">
+<td align="left">:</td>
+<td align="left">Dizi oluşturma</td>
+</tr>
+<tr class="odd">
+<td align="left">%<em>any</em>%</td>
+<td align="left">Özel operatörler</td>
+</tr>
+<tr class="even">
+<td align="left">*/</td>
+<td align="left">Çarpma, bölme</td>
+</tr>
+<tr class="odd">
+<td align="left">+-</td>
+<td align="left">Toplama, çıkartma</td>
+</tr>
+<tr class="even">
+<td align="left">== != &lt; &gt; &lt;= &gt;=</td>
+<td align="left">Karşılaştırma</td>
+</tr>
+<tr class="odd">
+<td align="left">!</td>
+<td align="left">Mantıksal “değil” operatörü</td>
+</tr>
+<tr class="even">
+<td align="left">&amp; &amp;&amp;</td>
+<td align="left">Mantıksal ve</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">~</td>
+<td align="left">Formül</td>
+</tr>
+<tr class="odd">
+<td align="left">-&gt; -&gt;&gt;</td>
+<td align="left">Sağ yönlü atama</td>
+</tr>
+<tr class="even">
+<td align="left">=</td>
+<td align="left">Sol yönlü atama</td>
+</tr>
+<tr class="odd">
+<td align="left">&lt;- &lt;&lt;-</td>
+<td align="left">Sol yönlü atama</td>
+</tr>
+<tr class="even">
+<td align="left">?</td>
+<td align="left">Yardım</td>
+</tr>
+</tbody>
+</table>
+<p>İki yüzde (%) işareti arasında yer alan operatörlere binary operatör adı verilir. Kullanıcılar da binary operatör tanımlayabilir. Bu operatörlerden bazıları ve kullanışı şu şşekildedir:</p>
+<pre class="r"><code># %% modula operatörüdür, bölme işleminde kalanı verir
+739 %% 17</code></pre>
+<pre><code>## [1] 8</code></pre>
+<pre class="r"><code># %/% bölme işleminde sonucu tamsayı olarak verir
+739 %/% 17</code></pre>
+<pre><code>## [1] 43</code></pre>
+<pre class="r"><code># %in% soldaki ögenin sağdakinde yer alıp olmadığını kontrol eder
+a &lt;- c(1,3,5,7,9)
+c(4,5) %in% a</code></pre>
+<pre><code>## [1] FALSE  TRUE</code></pre>
+</div>
+<div id="kendi-fonksiyonumu-nasıl-tanımlarım" class="section level2">
+<h2>Kendi fonksiyonumu nasıl tanımlarım?</h2>
+<p>Yeni fonksiyonlar basitçe şu şekilde tanımlanır:</p>
+<blockquote>
+<p>function(parametre<sub>1</sub>, …, parametre<sub>n</sub>) ifade</p>
+</blockquote>
+<p>Şayet fonksiyon ifadesi bir satırı aşıyorsa dalgalı parantez ({}) içerisine alınır. Fonksiyon tanımlanırken bir isim verilerek sonradan o isimle yazacağımız kodun herhangi bir yerinde kullanılabilir:</p>
+<pre class="r"><code>mymean &lt;- function(x) max(cumsum(x)) / length(x)
+mean(1:100)</code></pre>
+<pre><code>## [1] 50.5</code></pre>
+</div>

@@ -1,0 +1,163 @@
+---
+title: cbind, rbind ve matrix fonksiyonları
+author: Hakan Hekim
+date: '2020-10-07'
+slug: [cbind-rbind-ve-matrix-fonksiyonlari]
+categories:
+  - Temel R
+tags:
+  - cbind
+  - rbind
+  - matrix
+description: cbind, rbind ve matrix fonksiyonlarını kullanarak vektörleri birleştirme ve diziler oluşturma konuları.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Vektörler kullanışlı olsa da çoğu zaman birden fazla değişken üzerinde işlem yapma ihtiyacı duyarız. Bunun için bu değişkenleri topluca tutacak veri yapılarına ihtiyaç duyarız. `rbind`, `cbind` fonksiyonları eşit uzunluktaki vektörleri birleştirmemizi sağlarken, `matrix` fonksiyonu dizi üertmemizi sağlar.
+
+Aşağıdaki örnekte olduğu gibi boy, kilo ve yas değişkenlerini oluşturarak onlara yeni değerler atamış olalım:
+
+```{r}
+boy <- c(1.80, 1.65, 1.85, 1.90, 1.70, 1.67)
+kilo <- c(70, 75, 80, 95, 65, 63)
+yas <- c(45, 37, 23, 54, 27, 44)
+boy;kilo;yas
+```
+
+Üç değişkeni `c()` fonksiyonu kullanarak tek bir değişkende birleştirebiliriz:
+
+```{r}
+bky <- c(boy,kilo,yas)
+bky
+```
+
+`bky`, 18 değerden oluşan yeni bir değişken (bky’den daha akılda kalıcı bir isim bulabilirsiniz).
+
+Köşeli parantez içerisinde yer alan değerler, R çıktısında yeni satırdaki ilk değerin sıra numarasını vermektedir.
+
+Şimdi bu farklı değişkenlerin sıra numarasını tutmak üzere bir `sn` değişkeni oluşturalım. Boy 1, kilo 2 ve yas 3 ile temsil edilsin. Bunu sağlamanın birkaç yolu var. Birincisi `c()` fonksiyonu;
+
+```{r}
+sn <- c(1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3)
+sn
+```
+
+Daha pratik bir yöntem `rep()` fonksiyonunu kullanmak;
+
+```{r}
+sn <- rep(c(1,2,3),each=6)
+sn
+```
+
+veya
+
+```{r}
+sn<-rep(1:3,each=6)
+sn
+```
+
+şeklinde kısaltmak ta mümkün.
+
+## `cbind()`
+
+`c()` fonksiyonuyla değişkenler aynı vektörde birleştirilirken, `cbind()` fonksiyonu değişkenleri sütun şeklinde birleştirir:
+
+```{r}
+bky <- cbind(boy,kilo,yas)
+bky
+```
+
+Bu formattayken belli bir veriye ulaşmak için koordinatlarını vermek yetecektir. Mesela üçüncü satır, ikinci sütundaki değeri bulmak için;
+
+```{r}
+bky[3,2]
+```
+
+Belli bir sütundaki değerleri seçmek için satır kısmını boş bırakmak yeterli. Yalnız virgülü unutmamak önemli. Mesela sadece kilo değişkeni için;
+
+```{r}
+bky[,3]
+```
+
+Yahut dördüncü satırdaki değişkenler için;
+
+```{r}
+bky[4,]
+```
+
+Bir sütunun belli satırlarını seçmek te mümkün. Mesela 2. sütunun 2,3,4 ve 5. sütunlarını bu şekilde seçebiliriz;
+
+```{r}
+bky[2:5,2]
+```
+
+Hatta seçim yaparken `c()` fonksiyonu da kullanılabilir;
+
+```{r}
+bky[c(1,4,6),]
+```
+
+Satır ve sütun sayısını sorgularken dim() fonlsiyonu kullanılabilir;
+
+```{r}
+dim(bky)
+```
+
+Satır ve sütun sayılarını ayrı ayrı sorgulamak için nrow() ve ncol() fonksiyonları kullanılabilir;
+
+```{r}
+nrow(bky)
+ncol(bky)
+```
+
+## `rbind()`
+
+`cbind()`, değişkenleri sütun olarak birleştirirken `rbind()`, satır olarak birleştirmektedir;
+
+```{r}
+bky <- rbind(boy,kilo,yas)
+bky
+```
+
+## `matrix()`
+
+Değişkenleri bu şekilde birleştirmek yerine matriks oluşturup doğrudan içerisine atmakta mümkün.
+
+```{r}
+bkymat <- matrix(nrow=6,ncol=3)
+bkymat
+```
+
+Görüldüğü gibi boş bir matrix elde ettik. Şimdi satır veya sütunları doldurabiliriz. Bunu `c()` fonksiyonuyla uzun uzun yazarak yapabileceğimiz gibi önceden oluşturduğumuz değişkenleri atayarak ta gerçekleştirebiliriz.
+
+```{r}
+bkymat[,1] <- boy
+bkymat[,2] <- kilo
+bkymat[,3] <- yas
+bkymat
+```
+
+`colnames()` fonksiyonuyla sütun adları atayabiliriz;
+
+```{r}
+colnames(bkymat) <- c("Boy","Kilo","Yas")
+bkymat
+```
+
+Matriks oluşturma işlemi `as.matrix()` ve `cbind()` fonksiyonlarıyla daha kolay bir biçimde yapılabilir:
+
+```{r}
+bkymat<- as.matrix(cbind(boy,kilo,yas))
+bkymat
+```
+
+Bu durumda değişken isimleri sütun başlıkları olarak kullanılmaktadır. Matriksin herhangi bir elemanını yine `matriks[satır,sütun]` şeklinde sorgulayarak öğrenebiliriz veyahut başka işlemlerde kullanabiliriz.
+
+Burada belki lüzumsuz veya detay gibi görünen bu fonksiyonların farklı işlemlerde çok kolaylaştırıcı olduğunu göreceksiniz.

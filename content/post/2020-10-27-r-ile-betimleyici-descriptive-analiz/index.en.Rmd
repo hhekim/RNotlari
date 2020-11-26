@@ -1,0 +1,85 @@
+---
+title: R ile betimleyici (descriptive) analiz - II
+author: Hakan Hekim
+date: '2020-10-27'
+slug: r-ile-betimleyici-descriptive-analiz
+categories:
+  - Istatistik
+  - Grafik
+tags:
+  - Betimleyici
+  - Descriptive
+description: İlave yöntemler.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Temel betimleyici istatistik yöntemlerinden önceki bir yazıda bahsetmiştik. Bu yazıda betimleyici istatistiği biraz daha detaylandıracak ve verisetini gruplara ayırarak inceleyeceğiz. Yine, hazır R veri paketlerinden `mtcars` verisetini kullanacağız.
+
+Verisetinde bulunan araçların motor tipine göre ortalama yakıt sarfiyatını `tapply()` fonksiyonuyla hesaplayabiliriz:
+
+```{r}
+tapply(mtcars$mpg, mtcars$vs, mean)
+```
+
+Sıfır V tipi, bir ise normal motoru temsil ettiğinden, V tipi motora sahip  araçların aynı mesafeyi daha fazla yakıtla aldığı görülüyor. Şayet verisetinde eksik veri bulunmaktaysa `mean()` fonksiyonu çalışmayacağından fonksiyon `tapply (mtcars$mpg, mtcars$vs, mean, na.rm=T )` şeklinde kodlanmalı.
+
+Aynı işi yapan diğer bir fonksiyonsa `aggregate()`:
+
+```{r}
+aggregate(mtcars[c("mpg","wt")],list(transm=mtcars$vs), mean,na.rm=T)
+```
+
+`aggregate()` fonksiyonunun iki farkı, verisetinin tamamı üzerinde işlem yapabilmesi ve sonucu data frame olarak vermesi. Fonksiyon, verisetinin tamamı üzerinde işlem yaptığından ilk olarak istediğimiz değişkenleri seçtik. İkinci olarak gruplama değişkenini liste olarak fonksiyona girdik. Son olarak istediğimiz fonksiyonu ve eksik verilerle ilgili kontrolümüzü ekledik.
+
+Biraz daha farklı bir sonuç alacağımız benzer bir fonksiyon `by()` fonksiyonudur:
+
+```{r}
+by(mtcars[1:4],mtcars["vs"],summary)
+```
+
+Yukarıda sadece ilk dört değişkene yer verdik. Yukarıda gruplama değişkenini `mtcars["vs"]` şeklinde girdik. Aynı format `aggregate()` fonksiyonunda da işe yarayacaktır.
+
+Verisetini gruplayarak istatistik hesaplaması yaptığımız gibi, grafik te çizebiliriz:
+
+```{r message=FALSE, warning=FALSE}
+attach(mtcars)
+mpg.v <- mpg[vs == 0]
+mpg.str <- mpg[vs == 1]
+par(mfrow=c(2,1))
+hist(mpg.v,breaks=10,xlim=c(10,25),col="red")
+hist(mpg.str,breaks=15,xlim=c(10,35),col="blue")
+par(mfrow=c(1,1))
+```
+
+Burada öncelikle ilk grupta `mtcars` verisetini çalışma sayfamıza ilişkilendirdik. Sonra motor türüne göre araçların yakıt sarfiyatını tutan iki yeni vektör ürettik. İkinci grubun ilk satırında grafik alanını iki satır, tek sütun şeklinde ayarladık. Daha sonra iki histogram çizdik ve grafik alanını tekrardan öceki haline geri çevirdik. Bu şekilde aşağıdaki grafiği elde etmiş olduk.
+
+Buna ilaveten karşılaştırmalı bir kutu grafiği de üretebiliriz:
+
+```{r}
+boxplot(mpg ~ vs, ylim=c(10,35), col=c("red","green"))
+```
+
+Yukarıdaki kodda yakıt sarfiyatı değişkenini, motor türüne göre gruplayarak kutu grafiği oluşturduk. `ylim` parametresiyle `y` eksenini düzenledik ve `col` parametresiyle kutuları renklendirdik.
+
+Kutu grafikleri veri hakkında biraz kabataslak bilgi vermekte. Detayları, teker teker bütün veri noktalarını görmek istiyorsak `stripchart()` fonksiyonunu kullanabiliriz:
+
+```{r}
+opar <- par(mfrow=c(2,2), mex=0.8, mar=c(3,3,2,1)+.1, bg="light yellow", bty="c",col.axis="dark red", fg="red")
+stripchart(mpg ~ vs, col="dark green")
+stripchart(mpg ~ vs, method="stack",col="blue")
+stripchart(mpg ~ vs, method="jitter",col="purple")
+stripchart(mpg ~ vs, method="jitter", jitter=.03, col="green")
+par(opar)
+```
+İlk satırda yine grafik alanını ayarladık. `mfrow` parametresiyle grafik alanını iki satır ve sütun şeklinde böldük. Ardından `mex` parametresiyle grafiklerin arasındaki boşluğu daralttık ve `mar` ile de dış marjinleri ayarladık. `mar` ve benzeri parametrelerdeki dört değer grafik alanında sırasıyla alt, sol, üst ve sağ kısımları düzenler. Bunlara ilaveten `par` ile renk ve şekil ayarları yaparak nispeten farklı bir görünüme sahip bir grafk elde ettik.
+
+Birinci `stripchart()` fonksiyonunun ürettiği sol üst köşedeki grafikte aynı veya yakın değere sahip veri noktaları üst üste işaretlenmiş. Bunun önüne geçmek için method parametresine *stack* veya *jitter* özelliklerini belirleyabiliriz. Stack özelliği aynı değere sahip olduğu için üst üste gelen noktalardan birisini kenarda gösterirken, jitter noktaların üst üste gelmesine izin vermemekte, noktaları yaymaktadır. Son grafikte standart jitter değeri olan 0.1’in yerine 0.03 girerek noktaları biraz daha sıklaştırdık.
+
+*Örnekler kısmen Peter Dalgaard'ın Introductory Statistics with R kitabından alıntılandı.*

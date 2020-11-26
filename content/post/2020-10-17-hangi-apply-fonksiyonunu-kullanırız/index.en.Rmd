@@ -1,0 +1,86 @@
+---
+title: Hangi apply fonksiyonunu, nasıl kullanırız?
+author: Hakan Hekim
+date: '2020-10-17'
+slug: [hangi-apply-fonksiyonunu-kullanırız]
+categories:
+  - Temel R
+tags:
+  - functional programming
+description: R ile functional programming ögelerinin tanıtımı.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Bir önceki yazıda `tapply()` fonksiyonunun kullanımına ilişkin örnekler sunmuştum. Aslında R'da apply fonksiyonları olarak adlandırılan başka fonksiyonlar da bulunmakta. Bunların yaptığı iş hemen hemen `tapply()` fonksiyonuna benzer olmakla birlikte genellikle girdi ve çıktıları farklılık göstermektedir.
+
+Şimdi kısaca bunları tanıtayım:
+
+1. `apply()` fonksiyonu matrix tipi verilerde kullanışlıdır:
+```{r}
+M <- matrix(sample(1:100,16,replace = TRUE), nrow = 4, ncol = 4)
+apply(M, 1, sum)
+```
+
+```{r}
+apply(M, 2, sum)
+```
+
+```{r}
+apply(M,c(1,2),sqrt)
+```
+
+Bu örnekte M adını verdiğimiz 4 satır ve sütundan oluşan bir matrix oluşturduk. Matriksin içini `sample()` fonksiyonunu kullanarak rastgele verilerle doldurduk. Daha sonra `apply()` fonksiyonunu kullanarak önce satırların sonra sütunların toplamlarını hesapladık.
+
+Son işlemdeyse `sqrt()` fonksiyonuyla matrikste bulunan bütün değerlerin karekökünü hesapladık. Dikkat ederseniz burada satır ve sütunları `c(1,2)` şeklinde bir vektör ile ifade ettik.
+
+2. `lapply()` fonksiyonu liste türü verilerde kullanılır ve fonksiyonun çıktısı da yine bir liste şeklinde olur:
+
+```{r}
+alist <- list(A=sample(1:30,10), 
+              B=c("a","b","c","d","e"),
+              C=c("şu","köşe","yaz","köşesi"))
+lapply(alist,FUN=length)
+```
+
+```{r}
+lapply(alist,FUN=mean)
+```
+Bu örnekte ilki numerik, ikincisi karakter ve üçüncüsü string şeklinde üç eleman içeren bir liste oluşturduk ve `lapply()` fonksiyonu ile listedeki herbir ögenin kaç eleman içerdiğini sorguladık. Görüldüğü gibi fonksiyonun çıktısı da liste şeklinde oldu.
+
+`lapply()` fonksiyonunu ikinci kullanımımızda sadece numerik değerler üzerinde çalışabilecek ortalama yani `mean()` fonksiyonunu kulandık. Listenin ilk ögesinin ortalaması hesaplanırken, iki ve üçüncü ögeler hesaplanamamış ve çıktının sonunda ortalama fonksiyonunun numerik olmayan değerlere uygulanamayacağına ilişkin hata mesajı görüntülenmiştir.
+
+3. `sapply()` fonksiyonunu da liste türü verilere uygulanır ancak çıktı tipi vektördür. Örnek olarak az önce oluşturduğumuz alist isimli listenin elemanlarının uzunluğunu bu sefer sapply() fonksiyonuyla hesaplayalım:
+```{r}
+sapply(alist,FUN=length)
+```
+
+```{r}
+sapply(alist,FUN=mean)
+```
+
+4. `vapply()` fonksiyonu `sapply()` gibi girdi olarak liste tipi verileri almakta ve çıktısı ise vektör tipi veriler olmaktadır. `vapply()` fonksiyonunun farkı, istenilen işlemi daha hızlı gerçekleştirmesidir. Büyük verisetleri üzerinde çalışmamız durumuda `vapply()` fonksiyonu yazdığımız koda hız katabilir.
+
+5. `mapply()` fonksiyonununun farklı yanı, istenilen işlemi veri yapılarının ilk önce birinci sıradaki elemanlara, sonra ikinci, sonra üçüncü olmak üzere bütün elemanlarına sırasıyla uygulamasıdır. Bunu bir örnekle daha iyi anlayabiliriz:
+
+```{r}
+mapply(sum,10:20,100:110,1000:1010)
+```
+
+Bu örnekte `mapply()` fonksiyonu içerisinde üç farklı veri yapısı tanımlanmakta ve bunlar üzerinde toplama işlemi yapılması istenmektedir. İlk işlem 10+100+1000=1110, ikinci işlem 11+101+1001=1113, üçüncü işlem 12+102+1002=1116 olarak yapılmaktadır. Toplama işlemi bu şekilde sırasıyla herbir dizinin bütün sayılarına uygulanmıştır.
+
+6. Bir önceki yazıda incelediğimiz `tapply()` fonksiyonu bir vektörün alt grupları üzerinde işlem yapmamızı sağlar. Bu alt gruplar da genellikle bir faktör tarafından belirlenir. Hatırlayacak olursak buna örnek olarak `mtcars` verisetinde farklı motor tipine sahip iki araç grubunun yakıt sarfiyatı üzerinde işlem yapmıştık:
+
+```{r}
+tapply(mtcars$mpg,mtcars$vs,mean)
+```
+
+7. `mapply()` fonksiyonu, kullanıcı tarafından tanımlanan özel bir fonksiyonun bir listede bulunan veri tiplerinin tamamına sırayla uygulanmasını sağlar.
+
+Daha fazla bilgi için burada verilen fonksiyonların yardım dosyalarına ve bu yazıyı hazırlarken de faydalandığım R Grouping functions: sapply vs. lapply vs. apply. vs. tapply vs. by vs. aggregate başlıklı stackoverflow [girdisine](https://stackoverflow.com/questions/3505701/grouping-functions-tapply-by-aggregate-and-the-apply-family) göz atılabilir.

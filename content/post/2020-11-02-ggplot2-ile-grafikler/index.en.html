@@ -1,0 +1,88 @@
+---
+title: ggplot2 ile şık grafikler
+author: Hakan Hekim
+date: '2020-11-02'
+slug: ggplot2-ile-grafikler
+categories:
+  - Grafik
+tags:
+  - ggplot2
+description: ggplot ile grafik çizimine başlangıç.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/ggplot_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Bu yazıda Hadley Wickham’ın <code>ggplot2</code> paketiyle grafik çiziminden bahsedeceğim. <code>ggplot2</code>’nin bütün yönleriyle anlatımı koca bir kitaba ancak sığar. Wickham’ın <em>ggplot2: Elegant Graphics for Data Analysis</em> kitabı <a href="https://github.com/hadley/ggplot2-book">github.com</a>’dan ücretsiz temin edilebilir. Teknik kitapların iyi tarafı mükemmel bir yabancı dil gerektirmemesi. Biraz İngilizce biliyorsanız ve R kodunu okuyabiliyorsanız kitabın faydalı olacağına inanıyorum.</p>
+<p>ggplot2 için öncelikle <code>install.packages("ggplot2")</code> komutuyla paketi indirmeniz ve yüklemeniz gerekmekte.</p>
+<p>Grafik nesneleri katmanlardan ibarettir. R sistemindeki standart grafik araçlarıyla bunu bir nebze görebiliriz. Hatırlarsanız grafik ortamını ayarladıktan sonra koordinat düzlemini, değişkenleri, başlık, etiket gibi görsel ögeleri ilave katmanlar halinde grafiğe ekleyebiliyorduk. <code>ggplot2</code>’yi kullanırken bu katmanlı yapıyı daha net görebiliyoruz. Görsel ögeleri içeren katmanlara <code>ggplot2</code>’de <code>geom</code> ismini vermekteyiz. Ne tür bir grafik istediğimizi geom katmanıyla belirtmekteyiz. Herbir geom’un kendisine has estetik (kısaca <code>aes()</code>) fonksiyonu bulunmaktadır. Estetik özellikler plotun tamamı için topluca tanımlanabileceği gibi herbir geom için ayrı ayrı da tanımlanabilir. Aşağıdaki listede sık kullanılan geomlar bulunmaktadır:</p>
+<ul>
+<li><code>geom_bar()</code>: Çubuk grafiği çizer.</li>
+<li><code>geom_point()</code>: Dağılım grafiğinde olduğu gibi gözlemlerin nokta veya şekillerle ifade edildiği nokta grafiği çizer.</li>
+<li><code>geom_line()</code>: Gözlemlerin çizgilerle birleştirildiği çizgi grafiği çizer.</li>
+<li><code>geom_smooth()</code>: Regresyon çizgisi gibi, verideki trendi özetlemeyi sağlar.*</li>
+<li><code>geom_histogram()</code>: Histogram grafiği çizer.</li>
+<li><code>geom_boxplot()</code>: Kutu grafiği çizer.</li>
+<li><code>geom_text()</code>: Metin eklememizi sağlar.</li>
+<li><code>geom_density()</code>: Yoğunluk grafiği çizer.</li>
+</ul>
+<p>Haliyle bunların dışında birçok geom bulunmaktadır. Her geom farklı estetik ögeler almaktadır. Bu sebeple <code>ggplot2</code> paketini yükledikten sonra yardım dosyalarına mutlaka göz atmalısınız.</p>
+<p>Herbir geom, grafiği çizebilmek için veride bir kısım hesaplamalar yapmaktadır. Mesela çubuk grafiği verilen değişkenin sayısını hesaplamaktadır. geomların bu standart özelliklerini stat fonksiyonuyla değiştirebiliriz. Bu şekilde mesela histogram grafiğinin sayı değil de yoğunluk (density) hesaplaması yapmasını sağlayabiliriz. Herbir geom’un stat fonksiyonu da farklılıklar göstermektedir. Bu sebeple mutlaka yardım dosyalarına müracaat edilmelidir.</p>
+<p>Bu kısa (ve mutlaka yetersiz) anlatımdan sonra örneklere geçelim. Ne de olsa suya girmeden yüzme öğrenilmez. Neye benzediğini görürsek nasıl çalıştığını daha iyi akledebiliriz. Öncelikle <code>mpg</code> verisetinde bulunan araçların motor hacimleriyle şehirler arası yolculuktaki yakıt performanslarına ilişkin dağılım grafiğini çizelim. Önce <code>mpg</code> verisetinde neyin ne olduğunu hatırlamak için <code>?mpg</code> ile yardım dosyasına bir göz atmakta fayda var:</p>
+<pre class="r"><code>library(ggplot2)
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))</code></pre>
+<p><img src="/post/2020-11-02-ggplot2-ile-grafikler/index.en_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>Görüldüğü gibi <code>ggplot</code> komutunun ardından kullanacağımız verisetini belirledik. Daha sonra kullanacağımız geom katmanını ‘+’ ile ekledik. <code>ggplot2</code>‘de ilave katmanlar bu şekilde’+’ işareti ile grafiğe dahil edilmektedir. Şimdi grafiğe bir değişken daha ekleyerek otomobil sınıflarını da farklı renkler olarak grafikte gösterelim:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class))</code></pre>
+<p><img src="/post/2020-11-02-ggplot2-ile-grafikler/index.en_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>Renkle beraber noktaların şeklini de değiştirebiliriz:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class, shape = class))</code></pre>
+<pre><code>## Warning: The shape palette can deal with a maximum of 6 discrete values because
+## more than 6 becomes difficult to discriminate; you have 7. Consider
+## specifying shapes manually if you must have them.</code></pre>
+<pre><code>## Warning: Removed 62 rows containing missing values (geom_point).</code></pre>
+<p><img src="/post/2020-11-02-ggplot2-ile-grafikler/index.en_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Yahut dördüncü bir değişkeni de şekil olarak atayabiliriz:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class, shape = drv))</code></pre>
+<p><img src="/post/2020-11-02-ggplot2-ile-grafikler/index.en_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Şimdi grafiğe bir katman daha ilave ederek ilişkideki trendi görelim:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class)) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy))</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/post/2020-11-02-ggplot2-ile-grafikler/index.en_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Görüldüğü gibi yeni bir katman eklemek gayet kolay. Eklediğimiz bu trendi de dördüncü bir değişkene göre parçalara ayırabiliriz:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class)) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy, color = drv))</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/post/2020-11-02-ggplot2-ile-grafikler/index.en_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>Bu grafikte üç farklı vites türünün trend hatlarını ayrı ayrı göstermiş olduk. Trend hatlarının etrafindaki gri alanlar güven aralıklarını göstermektedir ve <code>se = FALSE</code> ile kaldırılabilir. Hatları çizmekte kullanılan metod <code>method</code> parametresi ile değiştirilebilir.</p>
+<p>Verisetimizde çok fazla miktarda gözlem varsa hepsini aynı koordinat düzleminde görmek faydalı olmayabilir. Böyle durumlarda gözlemleri istenen bir değiişkene göre ayrı ayrı grafiklemek gerekebilir. ggplot2’de bu işlem facet yardımıyla yapılabilir:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = class)) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy), se = FALSE) + 
+  facet_wrap(~ drv)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/post/2020-11-02-ggplot2-ile-grafikler/index.en_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Grafiği bir değişkene göre parçalara ayıracaksak facet_wrap() yeterliyken, iki değişkene göre ayıracaksak facet_grid() kullanılmalıdır:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid(drv ~ cyl)</code></pre>
+<p><img src="/post/2020-11-02-ggplot2-ile-grafikler/index.en_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Bu grafikte veriyi vites türü ve silindir sayısına göre farklı grafiklerde gösterdik.</p>
+<p><code>ggplot2</code> çok zengin ve ilk başta karmaşık görünen bir konu. Kolları sıvayıp işin içine girdiğinizde temel seviyede grafikler çizmenin çok kolay olduğunu göreceksiniz. Detaylara hükmetmek için yardım dosyaları ve Wickham’ın yukarıdaki kitabıyla epey vakit geçirmek gerekiyor.</p>
+<p>İleriki notlarda <code>ggplot2</code>’nin diğer özelliklerine değinmeye çalışacağım.</p>

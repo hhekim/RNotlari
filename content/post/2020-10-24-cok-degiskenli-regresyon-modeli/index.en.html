@@ -1,0 +1,83 @@
+---
+title: Çok değişkenli regresyon modeli
+author: Hakan Hekim
+date: '2020-10-24'
+categories:
+  - Istatistik
+tags:
+  - Dogrusal Regresyon
+  - Linear Regression
+slug:
+  - cok-degiskenli-regresyon-modeli
+description: R ile çok değişkenli regresyon modeli hesaplanması ve sonuçların yorumlanması.
+featured: yes
+thumbnail: /images/thumbs/multireg_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Bir önceki yazıda doğrusal regresyonun temel mantığını, analiz sonuçlarının nasıl yorumlandığını ve analizin R ortamında nasıl yapıldığını anlattık. Analiz mantığını kavrayabilmek için tek bir bağımsız değişken içeren iki model hesapladık. İlk modelde iki değerli (binary) bir bağımsız değişken ve ikinci modelde sürekli değerler içeren bir bağımsız değişken kullanarak regresyon analizinin temelde değişkenlerin ortalama değerlerinin karşılaştırmasından ibaret olduğunu göstermeye çalıştık.</p>
+<p>Bu yazıdaysa birden fazla değişken olması halinde analizin nasıl yapıldığı ve ne şekilde yorumlanacağını inceleyeceğiz. Bu yazıda A. German ve J. Hill’in, <a href="http://www.amazon.com/Analysis-Regression-Multilevel-Hierarchical-Models/dp/052168689X/ref=sr_1_1?ie=UTF8&amp;qid=1464028381&amp;sr=8-1&amp;keywords=Data+Analysis+Using+Regression+and+Multilevel%2FHierarchical+Models">Data Analysis Using Regression and Multilevel/Hierarchical Models</a> kitabının üçüncü bölümünde yer alan örneği dikkatinize sunacağım. Kitapta yer alan verisetleri ve kullanılan R kodlarını <a href="http://stat.columbia.edu/~gelman/arm/software/">burada</a> bulabilirsiniz.</p>
+<p>Bu örnekte <code>kidiq</code> isimli verisetini kullanacağız. Verisetinde 434 çocuğa ait IQ test skorları ve bu çocukların annelerine ilişkin bazı veriler bulunmakta. İlk modelimizde çocuğun IQ skorunun, annenin lise mezunu olup olmamasıyla (0=lise mezunu değil, 1= lise mezunu) ve annenin IQ seviyesiyle ilişkili olup olmadığına bakacağız:</p>
+<pre class="r"><code>library(foreign)
+kidiq &lt;- read.dta(&quot;kidiq.dta&quot;)
+attach(kidiq)
+fit.2 &lt;- lm (kid_score ~ mom_hs + mom_iq)
+fit.2</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = kid_score ~ mom_hs + mom_iq)
+## 
+## Coefficients:
+## (Intercept)       mom_hs       mom_iq  
+##     25.7315       5.9501       0.5639</code></pre>
+<p>Öncelikle verisetini R ortamına aktarmamız gerekiyor. A. German ve J. Hill’in çalışmasında veriseti STATA formatında kaydedilmiş olduğundan öncelikli olarak <code>foreign</code> paketini sisteme yükledik ve <code>read.dta()</code> fonksiyonuyla versetini aktardık. Değişken isimlerini daha rahat kullanabilmek için <code>attach()</code> fonksiyonuyla verisetini R ile ilişkilendirdik. Ardından regresyon modelimizi hesapladık. Çıkan modeli şu şekilde ifade edebiliriz:</p>
+<blockquote>
+<p>Çocuğun IQ Skoru = 25,73 + 5,95 Annenin lise durumu + 0,56 Annenin IQ skoru</p>
+</blockquote>
+<p>Dolayısıyla bu modele göre annenin lise mezunu olmasının çocuğun IQ seviyesi üzerinde daha büyük bir etkisi var. Kesim noktası annesi lise bitirmemiş ve IQ seviyesi 0 puan olan bir çocuğun IQ skorunu ifade etmekte (ki çok anlamlı değil). Anneleri aynı IQ seviyesine sahip çocukları karşılaştırdığımızda, anneleri lise bitirmiş çocukların IQ skorları yaklaşık 6 puan daha yukarıda. Anneleri lise bitirme açısından aynı durumda olan çocuklar arasında, annenin IQ skorunun bir birim artışı çocuğun IQ skoruna sadece yarım puan (0,56) kadar bir etki yapmakta.</p>
+<p>Lise bitirmiş ve bitirmemiş annelerini çocuklarının IQ skorlarını aşağıda yer alan grafikte daha rahat karşılaştırabiliriz. Önce grafiğin çizilişine bakalım:</p>
+<pre class="r"><code>plot(mom_iq,kid_score, xlab=&quot;Mother IQ score&quot;, ylab=&quot;Child test score&quot;,pch=20, xaxt=&quot;n&quot;, yaxt=&quot;n&quot;, type=&quot;n&quot;)
+curve (coef(fit.2)[1] + coef(fit.2)[2] + coef(fit.2)[3]*x, add=TRUE, col=&quot;blue&quot;) 
+curve (coef(fit.2)[1] + coef(fit.2)[3]*x, add=TRUE, col=&quot;red&quot;)
+points (mom_iq[mom_hs==0], kid_score[mom_hs==0], col=&quot;red&quot;, pch=19)
+points (mom_iq[mom_hs==1], kid_score[mom_hs==1], col=&quot;blue&quot;, pch=19)
+axis (1, c(80,100,120,140))
+axis (2, c(20,60,100,140))</code></pre>
+<p><img src="/post/2020-10-24-cok-degiskenli-regresyon-modeli/index.en_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>Yukarıdaki R kodunda ilk önce <code>plot()</code> fonksiyonuyla grafik alanını boş olarak çizerek eksen etiketlerini yerleştirdik. Bir önceki yazıda regresyon hattını <code>abline()</code> fonksiyonuyla çizmiştik. Şimdiyse verilen bir fonksiyona ait eğriyi çizmeye yarayan <code>curve()</code> fonksiyonunu kullanıyoruz. Regresyon katsayılarını değer olarak girmek için <code>coef()</code> fonksiyonunu kullandık. <code>coef()</code> verilen bir değişkendeki katsayıları ayıklayarak ekrana getirmektedir. c<code>oef(fit.2)</code> komutunu girdiğimizde şu çıktıyı almaktayız:</p>
+<pre class="r"><code>coef(fit.2)</code></pre>
+<pre><code>## (Intercept)      mom_hs      mom_iq 
+##   25.731538    5.950117    0.563906</code></pre>
+<p>Dolayısıyla <code>coef(fit.2)[1]=25,73</code>, <code>coef(fit.2)[2]= 5,95</code> ve <code>coef(fit.2)[2]= 0,56</code> değerlerine sahip.</p>
+<p>İlk <code>curve()</code> fonksiyonunda üç katsayı da yer alırken, ikincisinde annenin lise mezunu olması fonksiyonu sıfır olduğundan (lise mezunu olmadığı anlamına gelmekte) fonksiyona dahil edilmedi ve bu şekilde iki regresyon hattı çizildi. Sonraki iki satırda <code>point()</code> fonksiyonuyla annenin lise mezuniyetine göre noktalar mavi ve kırmızı renkle renklendirildi. Son olarak <code>axis()</code> fonksiyonuyla <code>x</code>ve <code>y</code> eksenlerine koordinat etiketleri atandı.</p>
+<p>Grafikte annelerin ve çocukların IQ skorlarının dağılımı bulunmaktadır. Mavi noktalar lise bitirmiş anneleri gösterirken kırmızı noktalar lise bitirmemiş anneleri simgelemektedir. Aynı şekilde her iki gruba ait regresyon hattı da kendi rengiyle gösterilmektedir. Grafikte görüldüğü üzere anneleri lise bitirmiş çocuklara ait regresyon hattı, anneleri lise bitirmemiş olan çocuklara ait regresyon hattının üzerinde yer almaktadır. Yani anneleri lise bitirmiş çocukların IQ ortalamalarının, anneleri lise bitirmemiş çocukların IQ ortalamalarından daha büyük olduğunu göstermekte.</p>
+<p>Regresyon analizinin temel mantığı burada bahsetmeye çalıştığımız gibi “ortalamaların karşılaştırılması” olmakla birlikte, analiz sonuçları yorumlanırken ortalamadan pek bahsedilmez. Genellikle sonuçlar yorumlanırken “diğer değişkenlerin sabit olması şartıyla x’in bir birimlik artışının y üzerinde etkisi şu kadardır” şeklinde bir ifade tercih edilir. Bu örneğe uyarlayacak olursak, “diğer değişken(ler) sabit olmak şartıyla, anneleri lise mezunu olan çocuklar 5,95 puan daha yüksek IQ skoruna sahiptirler” diyebiliriz. Yahut “diğer değişken(ler) sabit olmak şartıyla, annenin IQ skorundaki 1 puanlık artış, çocuğun IQ skorunda 0,56 puan artışı netice vermektedir” diyebiliriz.</p>
+<p>Yukarıdaki sonuç çıktısında <code>fit.2</code> modelinin sadece katsayılarına yer verdik. Daha detaylı çıktıyı <code>summary()</code> fonksiyonuyla görebiliriz:</p>
+<pre class="r"><code>summary(fit.2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = kid_score ~ mom_hs + mom_iq)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -52.873 -12.663   2.404  11.356  49.545 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 25.73154    5.87521   4.380 1.49e-05 ***
+## mom_hs       5.95012    2.21181   2.690  0.00742 ** 
+## mom_iq       0.56391    0.06057   9.309  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 18.14 on 431 degrees of freedom
+## Multiple R-squared:  0.2141, Adjusted R-squared:  0.2105 
+## F-statistic: 58.72 on 2 and 431 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Görüldüğü üzere yukarıdaki çıktıda epey bir veri bulunmakta. Bunların izahını sonraki yazılara bırakarak sadece bağımsız değişkenlerin anlamlılık değerlerine dikkat çekelim. Değişkenlerin analiz sonuçlarını gösteren satırların en sağında yer alan yıldızlar her iki değişkenin de istatistiksel olarak anlamlı olduğunu göstermekte.</p>

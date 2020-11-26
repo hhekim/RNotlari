@@ -1,0 +1,152 @@
+---
+title: R ile kategorik veri
+author: Hakan Hekim
+date: '2020-11-08'
+slug: r-ile-kategorik-veri
+categories:
+  - Istatistik
+tags:
+  - Kategorik veri
+description: Article description.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/categorical_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Kategorik veri hemen her yerde karşımıza çıkmakta ve bu verilerin analizi kendine has yöntemler gerektirmekte. İstatistik eğitiminde genellikle normal dağılıma sahip verilerin analizine ağırlık verilmesi ve bu analizlerin karmaşık boyutlara varabilmesi, kategorik veri analiz yöntemlerinin arka planda kalmasına sebebiyet verebilmekte. Bu notta R ile kategorik veri analizine değineceğim.</p>
+<div id="ikiye-ayrılan-yollar-binomial-dağılım" class="section level3">
+<h3>İkiye ayrılan yollar: Binomial dağılım</h3>
+<p>Her istatistiksel analiz model seçimiyle başlar. İstatistiksel model genellikle, veride gözlemlenen belirsizliği hesaplamamızı sağlayan bir olasılık dağılımı şeklidir. Bilindiği gibi kategorik değişkenlerde iki veya daha fazla kategori bulunabilir. En temel kategorik veri olan ikili (binary) bağımlı değişkene en uygun modele Bernoulli veya Binomial dağılımı adı verilir.</p>
+<p>Mesela yeni geliştirilen bir ilacın hastalarda başarılı olup olmadığını gösteren <em>Y</em> değişkenini ele alırsak <em>Y = 0</em> ilacın başarısız olduğu ve <em>Y = 1</em> başarılı olduğunu ifade eder. Binomial dağılıma sahip bir değişkenin herhangi bir değerine ilişkin olasılığı şu formülle hesaplıyoruz: <code>p(x) = choose(n, x) p^x (1-p)^(n-x)</code>. Binomial dağılım açısından önemli iki varsayım; denemelerin 1) birbirinin aynı olması ve 2) birbirlerinden bağımsız olmaları, yani bir denemenin sonucunun diğerlerini etkilememesidir.</p>
+<p><code>dbinom()</code> fonksiyonu bu formülü kullanarak söz konusu olasılığı hesaplamaktadır. Mesela yeni geliştirilen bir ilaç 10 hasta üzerinde test edilmek istendiğini ve ilacın başarı ihtimalinin de %40 olduğunu düşünelim. Bu durumda ilacın hastalardan beşi üzerinde başarılı olma ihtimalini şu şekilde hesaplayabiliriz:</p>
+<pre class="r"><code>dbinom(x = 5, size = 10, prob = 0.4)</code></pre>
+<pre><code>## [1] 0.2006581</code></pre>
+<pre class="r"><code>choose(10, 5) * 0.4^5 * (1-0.4)^(10-5)</code></pre>
+<pre><code>## [1] 0.2006581</code></pre>
+<p>5 kişinin iyileşmesi ihtimali %20. <em>x</em> parametresine dizi atamak suretiyle birden fazla ihtimali de hesaplayabiliriz. Şimdi bunu kullanarak olasılık değerlerinin bir grafiğini çizelim:</p>
+<pre class="r"><code>pmf &lt;- data.frame(w = 0:10, prob = round(dbinom(x = 0:10, size = 10, prob = 0.4),3))
+plot(x = pmf$w, y = pmf$prob, type = &quot;h&quot;, 
+     main = &quot;&quot;, xlab = &quot;Başarı&quot;, ylab = &quot;Olasılık&quot;,  
+     panel.first = grid(col = &quot;gray&quot;, lty = &quot;dotted&quot;), lwd = 3)</code></pre>
+<p><img src="/post/2020-11-08-r-ile-kategorik-veri/index.en_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>En yüksek ihtimal 4 başarı olması. <code>dbinom()</code> ile elde edeceğimiz olasılık değeri işe yarar olsa da özellikle akademik çalışmalarda güven aralığını unutmamak gerekir. Kategorik analizler için güven aralığını hesaplayan farklı yöntemler bulunmakta. Hepsinin artıları ve eksileri olduğundan eldeki veriye göre tercih yapılması gerekmekte. <code>binom.test()</code> ve <code>prop.test()</code> ile güven aralığını hesaplayabiliriz.</p>
+<pre class="r"><code>binom.test(5,10,.4)$conf.int</code></pre>
+<pre><code>## [1] 0.187086 0.812914
+## attr(,&quot;conf.level&quot;)
+## [1] 0.95</code></pre>
+<pre class="r"><code>prop.test(5,10,.4)$conf.int</code></pre>
+<pre><code>## Warning in prop.test(5, 10, 0.4): Chi-squared approximation may be incorrect</code></pre>
+<pre><code>## [1] 0.201423 0.798577
+## attr(,&quot;conf.level&quot;)
+## [1] 0.95</code></pre>
+<p><code>binom.test()</code> daha geniş bir aralık hesaplayan ve bazı kaynaklarda “kullanışsız” olarak nitelenen Clopper-Pearson yöntemini uygulamaktadır. <code>prop.test()</code> küçük örneklemlerde ve düşük olasılıklarda sağlıklı sonuç vermemekle eleştirilen Wilson CI kullanmaktadır. Yukarıdaki fonksiyonların güven aralığı (conf.int) dışındaki diğer parametrelerini yardım dosyasında bulabilirsiniz. <code>exactci</code> paketiyle farklı güven aralığı metodlarını kullanmak mümkün.</p>
+<p>Her iki test de birer <em>p</em> değeri hesaplamakta. Kategorik veri için <em>p</em> değeri Wald, Score ve Likelihood-Ratio olmak üzere başlıca üç farklı metodla hesaplanabilmekte. Aralarında bazı nüanslar olmakla birlikte genel kullanım açısından çok fark taşımadığından olsa gerek ki R yardım dosyalarında yukarıdaki testlerde hangi yöntemin kullanıldığından bahsedilmemiş.</p>
+<p>Bu kısmı kapatmadan önce <code>rbinom()</code> hakkında da bir örnek vermek istiyorum. Simulasyon hem analiz yaparken hem de istatistik eğitiminde önemli bir yöntem. Bütün istatistiksel yöntemlerin bir takım varsayımları bulunmakta. Simulasyonlar bu varsayımlar ihlal edildiğinde sonucun nasıl farklılaştığını anlamamıza yardımcı oluyor.</p>
+<p>Yukarıdaki ilaç örneğine uygun 1000 gözlem içeren bir örneklem oluşturalım. Yani başarı oranı %40 olan yeni geliştirilen bir ilacı 1000 tane 10’ar kişilik gruplara uygulamamız halinde, her bir grupta meydana gelebilecek başarı sayılarını içeren bir örneklem simüle edelim:</p>
+<pre class="r"><code>set.seed(4554) 
+mcsim &lt;- rbinom(n = 1000, size = 10, prob = 0.4) 
+table(mcsim) </code></pre>
+<pre><code>## mcsim
+##   0   1   2   3   4   5   6   7   8   9 
+##   8  50 125 211 263 185 108  32  16   2</code></pre>
+<pre class="r"><code>hist(mcsim, probability = TRUE, breaks = c(-0.5:10.5), main = &quot;&quot;, 
+     xlab = &quot;Başarı&quot;, ylab = &quot;Olasılık&quot;)</code></pre>
+<p><img src="/post/2020-11-08-r-ile-kategorik-veri/index.en_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>æ rastgele sayı üretme işleminde kullanılacak çekirdek değeri belirliyor. Çekirdek değer esasında bilgisayarca rastgele belirlenmekte. <code>set.seed()</code> ile bu değeri sabitleyerek simulasyon sonucunda sizde aynı değerleri elde etmiş oluyorsunuz.</p>
+</div>
+<div id="x2-iki-kategorili-iki-değişkenin-hikayesi" class="section level3">
+<h3>2x2: İki Kategorili iki değişkenin hikayesi</h3>
+<p>Tek bir değişkenle ne kadar analiz olur? Pek fazla değil. Değişken sayısının artması analizin daha anlamlı olmasını sağlarken karmaşıklığı da illaki arttırmakta. Kategorik değişkenlerde bu karmaşıklığı daha fazla hissediyoruz. Biri bağımlı diğeri bağımsız iki binary değişken 2x2 ebatlarında bir tabloyla gösterilebilir. Hatırlarsanız bu tablolara kontenjans tablosu diyoruz. Kategori sayısı arttıkça tablodaki hücre sayısı artacaktır. Üçüncü bir değişken eklenmesi halinde tabloya bir boyut daha eklememiz gerekiyor.</p>
+<p>Şimdi yukarıda bahsettiğimiz yeni ilacı test etmek için rastgele seçilen hastalara ilaç ve placebo verdiğimizi farz edelim. Hastaların iyileşme durumunu aşağıdaki gibi bir tabloyla ifade edebiliriz:</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="center">Olumlu</th>
+<th align="center">Olumsuz</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>İlaç</td>
+<td align="center">π1</td>
+<td align="center">1-π1</td>
+</tr>
+<tr class="even">
+<td>Placebo</td>
+<td align="center">π2</td>
+<td align="center">1-π2</td>
+</tr>
+</tbody>
+</table>
+<p>Yukarıda <em>π</em> olasılığı ifade etmektedir. Dolayısıyla tabloda ilk satır ilaç kullananlardan tedavisi başarılı ve başarısız olanların oranını, ikinci satır placebo kullananlardan tedavisi başarılı ve başarısız olanların oranını vermektedir. Bağımsız değişken ilaç veya placebo olmak üzere iki kategoriden oluşan tedavi değişkeni ve bağımlı değişken ilaçların olumlu veya olumsuz etkisini gösteren etki değişkeni.</p>
+<p>Böyle bir tablonun analizinden muradımız öncelikle olasılıkları hesaplamak. Bunun için öncelikle veriyi <em>array</em> olarak kaydediyorum (veriler hayalidir):</p>
+<pre class="r"><code>t.table &lt;- array(data = c(83, 67, 65, 101), 
+                 dim = c(2,2), 
+                 dimnames = list( c(&quot;ilaç&quot;, &quot;placebo&quot;), c(&quot;olumlu&quot;, &quot;olumsuz&quot;))) 
+t.table</code></pre>
+<pre><code>##         olumlu olumsuz
+## ilaç        83      65
+## placebo     67     101</code></pre>
+<pre class="r"><code>pi.t.table &lt;- round(t.table/rowSums(t.table),3) 
+pi.t.table</code></pre>
+<pre><code>##         olumlu olumsuz
+## ilaç     0.561   0.439
+## placebo  0.399   0.601</code></pre>
+<p>Şayet elimizde yukarıdaki gibi sayılar değilde verisetinin kendisi varsa <code>table()</code> veya <code>xtabs()</code> fonksiyonlarından birisiyle yukarıdaki tabloları elde etmek mümkün:</p>
+<pre class="r"><code>dfTedavi &lt;- data.frame(tedavi = rep(c(&quot;ilaç&quot;,&quot;placebo&quot;), c(148,168)), 
+                       sonuc = rep(c(&quot;olumlu&quot;,&quot;olumsuz&quot;,&quot;olumlu&quot;,&quot;olumsuz&quot;),c(83,65,67,101))) 
+table(dfTedavi)</code></pre>
+<pre><code>##          sonuc
+## tedavi    olumlu olumsuz
+##   ilaç        83      65
+##   placebo     67     101</code></pre>
+<p>İlaç ve placebo arasında istatistiksel olarak anlamlı bir fark olup olmadığını ölçmek için score test, Pearson chi-square test, ve likelihood ratio test (LRT)’den birisini kullanabiliriz. Score test ve Pearson chi-square test (üzerinde çalıştığımız örnekte) aynı sonucu verecektir Bunu <code>prop.test()</code> veya <code>chisq.test()</code> ile hesaplayabiliriz:</p>
+<pre class="r"><code>prop.test(x = t.table, conf.level = 0.95, correct = FALSE)</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions without continuity
+##  correction
+## 
+## data:  t.table
+## X-squared = 8.2812, df = 1, p-value = 0.004006
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  0.05302749 0.27097509
+## sample estimates:
+##    prop 1    prop 2 
+## 0.5608108 0.3988095</code></pre>
+<pre class="r"><code>chisq.test(x = t.table, correct = FALSE)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s Chi-squared test
+## 
+## data:  t.table
+## X-squared = 8.2812, df = 1, p-value = 0.004006</code></pre>
+<p><em>x</em> olarak kontenjans tablosunu atadım, güven seviyesini %95 olarak ayarladım ve continuity correction yapılmasını istemedim. <em>X<sup>2</sup></em>=8.281 ve <em>p</em>=0.004 değerleri ilaç ve placebo grupları arasında fark olmadığını savunan sıfır hipotezini reddedebileceğimizi göstermekte.</p>
+<p>LRT içinse <code>vcd</code> paketinde yer alan <code>assocstats()</code> fonksiyonunu kullanabiliriz.</p>
+<pre class="r"><code>library(vcd)</code></pre>
+<pre><code>## Loading required package: grid</code></pre>
+<pre class="r"><code>assocstats(t.table)</code></pre>
+<pre><code>##                     X^2 df  P(&gt; X^2)
+## Likelihood Ratio 8.3129  1 0.0039365
+## Pearson          8.2812  1 0.0040057
+## 
+## Phi-Coefficient   : 0.162 
+## Contingency Coeff.: 0.16 
+## Cramer&#39;s V        : 0.162</code></pre>
+<p>Görüldüğü gibi LRT ile birlikte Pearson chi-square test sonucunu da aldık. Değerlerin birbirine yakın olması dikkate değer.</p>
+<p>Yukarıdaki üç yöntem de olasılıklar arasındaki farkı ortaya koymaya yönelik, yani <em>π<sub>1</sub>-π<sub>2</sub></em>. Haliyle sonuç örneklem büyüklüğünden etkilenmekte. Diğer yandan test sonucunun ve p değerininin yorumlanması ve anlaşılması her zaman sıkıntılı olmuştur. Bu yüzden gazete veya haber kanallarında anlaşılması daha kolay olan <strong>relative risk</strong> değeri sıkça rapor edilir. Relative risk <em>π<sub>1</sub>/π<sub>2</sub></em> şeklinde hesaplanır. Bizim örneğimizde relative risk 0.561/0.399 = 1.41 (olasılıkları yukarıda hesaplamıştık, <code>pi.t.table</code> değişkeni). Bunu ilaç kullanan hastaların tedavilerinin başarılı olma olasılığının placebo kullananlardan 1.41 kat daha fazla olduğu şeklinde yorumlayabiliriz.</p>
+<p>Benzer bir istatistik de <em>odds ratio</em>. Daha çok bahislerde kullanılan bir terim. Mesela “<em>A takımının kazanma şansı 1’e karşı 4</em>” gibi bir kullanımı var. Odds ratio başarı olasılığının başarısızlık olasılığına veyahut birinci grubun olasılığının, ikinci grubun olasılığına oranlamasıyla bulunuyor. Dolayısıyla yorumlarken başarı/başarısızlık olarak değil de grupların taşıdığı anlamlara bakmak gerekiyor. Biz ilacın başarı ihtimalinden başladığımıdan yine aynı konuda devam edelim. Mesela bir ilacın başarı ihtimali %40 ise, odds ratio; 0.4/1-0.4=4/6=0.67. Yani ilaçla tedavinin başarı şansı 4’e karşı 6. Odds ratio bire eşit olması durumunda her iki durum aynı odds’a sahip. Birden büyük olması halinde birinci grup, küçük olması halinde ikinci grup daha fazla odds’a sahip. Yukarıdaki 2x2 tablomuz için odds ratio şu şekilde hesaplanır:</p>
+<pre class="r"><code>(OR &lt;- t.table[1,1] * t.table[2,2] / (t.table[2,1] * t.table[1,2]))</code></pre>
+<pre><code>## [1] 1.924914</code></pre>
+<p>Dolayısıyla tedavinin başarılı olma odds’u hastanın yeni ilaç kullanması durumunda 1.93 kat daha fazla olduğu anlaşılıyor.</p>
+<p>Örneğimizde relative risk ve odds ratio tabiatıyla farklı sonuçlar veriyor. Şunu unutmamak gerek; odds ratio ihtimal ile aynı şey değil. Relative risk’i doğrudan “<em>birinci grubun başarılı olma ihtimali ikinci grubun x katıdır</em>” şeklinde yorumlamak mümkünken, odds ratio için bu tarz bir yorum yapılamaz. Odds ratio için “<em>birinci grubun odds’u ikinci grubun x katıdır</em>” diyebiliriz. Günlük hayatta pek kullanılmadığından ve anlaşılması da problemli olabildiğinden genellikle raporlarda relative risk kullanılmaktadır. Ancak odds ratio’nun istatistikte başka kullanım yerleri olduğundan ne olduğunu anlamak önemli.</p>
+</div>

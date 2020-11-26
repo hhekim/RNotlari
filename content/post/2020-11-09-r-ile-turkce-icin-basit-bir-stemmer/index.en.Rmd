@@ -1,0 +1,48 @@
+---
+title: 'R ile Türkçe için basit bir stemmer uygulaması: turkish-stemmeR'
+author: Hakan Hekim
+date: '2020-11-09'
+slug: r-ile-turkce-icin-basit-bir-stemmer
+categories:
+  - Metin Analizi
+tags:
+  - Stemmer
+description: Türkçe kelimelerin köklerini ayırmayı sağlayan bir stemmer denemesi.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/stem_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Kelimeleri eklerinden ayırma işlemine stemming bu işi yapan yazılıma stemmer denilmekte. Metin analizi yapan herkes bir aşamada kelimelerin köklerini ayırmaya ihtiyaç duyar. Basit bir sıklık analizi bile esasında kelime köklerini ayırmayı gerektirmekte çünkü farklı ekler alan bir kök analizde farklı kelimeler olarak işlenecektir. Analiz sonucunun yüksek katiyyete sahip olması için kökleri eklerinden doğru bir biçimde ayırabilmek önemli bir beceri. Stemming, Natural Language Processing (NLP) başlığı altında çalışılan bir konu.
+
+Türkçe kelimelerin köklerini doğru bir biçimde ayırabilmek güç bir iş. Türkçe'de kelimelerin sonlarına eklenerek kelimeye farklı anlamlar kazandıran yahut yeni kelimeler üretmeye yarayan çok sayıda ek bulunmaktadır. Bu ekler belli kurallar çerçevesinde kelimelere eklenmektedir. Bu kuralların en önemlisi ses uyumu kuralıdır. Ses uyumu kuralı eklerin, sonuna geldikleri kelimelerin ses yapısına uygun olarak değişime uğramasını gerektirmektedir. Aynı zamanda kökler de değişime uğrayabilmektedir. Yine kelimelerin ve eklerin ses yapılarına göre aralara ilave harf(ler)in eklenmesi de gerekebilmektedir. Bütün bunlar Türkçe kelimeler üzerinde stemming işlemini zorlaştırmaktadır.
+
+R kütüphanesinde bulunan `SnowballC`, C diliyle yazılmış ve Türkçe stemming de yapan bir paket. Paket yüklendikten sonra `wordStem()` fonksiyonuyla kelime kökleri ayrıştırabilmektedir:
+
+```{r}
+library(SnowballC)
+wordStem(c("kitapların","evimize","kalitesinden","politikasının","geleneğimizin", "itibarsızlaştırılan","yadırganmaması"), language = "turkish")
+```
+
+Örnekte görüldüğü gibi ek yapısı karmaşıklaştıkça ayrıştırma işleminde hata ihtimali de artmakta.
+
+Daha önceden "successor variety stemmer" (SVS) olarak adlandırılan bir ayrıştırma tekniğini Python ile uygulamaya çalışmıştım. SVS, ayrıştırmak istenilen kelimeyi, verilen bir metin havuzundaki kelimelerle karşılaştırarak ekleri tespit etme esasına göre çalışmaktaydı. Ancak Türkçe açısından pek başarılı bir teknik değildi.
+
+R ile basit bir stemmer yapabilirmiyim diye biraz kafa yordum ve ekleri tespit ederek kökü ayrıştıran bir algoritma yazmaya çalıştım. Uygulama:
+
+1. Öncelikle kelimenin Türkçe harfler dışında karakter içerip içermediğini kontrol ediyor.
+2. Kelimeyi bir kelime listesinde arıyor. Şayet kelime listesinde varsa ek taşımadığını varsayarak akışı sonlandırıyor.
+3. Bu iki aşamayı geçerse kelimeyi hecelerine ayırıyor.
+4. Son heceden başlayarak tekli, ikili, üçlü, dörtlü harf gruplarını belli bir sistematik içinde verilen bir ek listesiyle karşılaştırıyor.
+5. Ek listesindeki girdilerle eşleşen yapıları siliyor.
+6. Yeni kelimeyi, kelime listesinde arıyor. Eşleşme olursa akışı sonlandırıyor, olmazsa işlem tekrarlanıyor.
+7. Hiçbir ek tespit edilemezse kelime üzerinde bir işlem yapılmıyor.
+
+Uygulama halihazırda sadece isimlere gelen ekleri ayrıştırabiliyor. Başarı oranı `SnowballC` paketi kadar değil ancak kısa zamanda yazılmış bir algoritma olarak fena da değil.
+
+Meraklıları uygulamayı [GitHub](https://github.com/hhekim/turkish-stemmeR) ambarında bulabilir.

@@ -1,0 +1,16 @@
+# Show or hide by uncommenting and vice versa
+- item: "github"
+  url: "https://github.com/hhekim"
+- item: "twitter"
+  url: "https://twitter.com/hakan_hekim"
+- item: "linkedin"
+  url: "https://www.linkedin.com/in/hakan-hekim-51556637"
+# - item: "youtube"
+#  url: "https://www.youtube.com/#"
+# - item: "facebook"
+#  url: "https://facebook.com/#"
+# - item: "instagram"
+# url: "https://instagram.com/#"
+- item: "rss"
+  url: "index.xml"
+  internal:  true

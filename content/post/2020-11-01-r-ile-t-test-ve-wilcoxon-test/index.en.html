@@ -1,0 +1,118 @@
+---
+title: R ile t-test ve Wilcoxon test
+author: Hakan Hekim
+date: '2020-11-01'
+slug: r-ile-t-test-ve-wilcoxon-test
+categories:
+  - Istatistik
+tags:
+  - t-test
+  - wilcoxon
+description: R ile t-test ve Wilcoxon test uygulaması.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/tdist_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Pek çok istatistiksel test değişken ortalamalarının belli bir değerden (tek örneklem) yahut başka bir değişken ortalamasından (iki örneklem) farklı olup olmadığını hesaplar. En sık kullanılan testlerden birisi olan <em>t-testi</em> iki ortalamayi karşılaştırmak veya bir değişkenin ortalamasının bilinen bir sayıdan farklı olup olmadığını test etmek için kullanılır.</p>
+<div id="tek-örneklem" class="section level3">
+<h3>Tek Örneklem</h3>
+<p>Mesela, <code>mtcars</code> verisetinde yer alan <code>mpg</code> değişkeninin ortalamasının belli bir değerden farklı olup olmadığına bakalım. Bunun için önce <code>mpg</code> değişkenine ait temel istatistikleri hesaplayalım:</p>
+<pre class="r"><code>attach(mtcars)
+mean(mpg); sd(mpg); quantile(mpg)</code></pre>
+<pre><code>## [1] 20.09062</code></pre>
+<pre><code>## [1] 6.026948</code></pre>
+<pre><code>##     0%    25%    50%    75%   100% 
+## 10.400 15.425 19.200 22.800 33.900</code></pre>
+<p>T-testi ile ortalaması 30 olan bir başka değişkenin mpg değişkeninden farklı olup olmadığına bakalım:</p>
+<pre class="r"><code>t.test(mpg, mu=30)</code></pre>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  mpg
+## t = -9.3009, df = 31, p-value = 1.757e-10
+## alternative hypothesis: true mean is not equal to 30
+## 95 percent confidence interval:
+##  17.91768 22.26357
+## sample estimates:
+## mean of x 
+##  20.09062</code></pre>
+<p>Test çıktısı test adını içeren başlıkla başlıyor; tek örneklem t-testi. İlk satırda kullandığımız verinin/değişkenin adını görüyoruz, <code>mpg</code>. İkinci satırda test sonucu olarak <code>t</code> değeri, <code>df</code> yani degrees of freedom ve <code>p</code> değeri yer alıyor. Sonucu yorumlamak için t tablosuna bakmamıza gerek yok. <code>p</code> değeri 0,05’den hatta 0,01’den de küçük olduğundan ortalamanın 30’dan farklı olduğunu söyleyebiliriz. Üçüncü satırda alternatif hipotez belirtilmiş. Hemen altta %95 güven aralığı gösterilmiş. Buna göre null hipotezin geçerliliğini koruyabilmesi için diğer ortalamanın 17,92 ile 22,26 arasında bir değer olması gerekiyor. En sondaysa <code>mpg</code> değişkeninin ortalaması verilmiş.</p>
+<p><code>t.test()</code> fonksiyonu pek çok argüman alabilir. Bunlardan birisi olan <code>mu</code> yukarıda kullanıldı. <code>conf.level</code> ile güven aralığını belirleyebiliriz. Mesela, <code>conf.level = 0.99</code> ile güven aralığını %99 olarak ayarlayabiliriz. Diğer bir argüman olan <code>alternative="greater"</code> ve <code>alternative="less"</code> ile tek yönlü test seçeneklerinden birisini seçebiliriz.</p>
+<p>Bilindiği gibi parametrik testler verinin normal dağılıma sahip olduğunu varsayar. Nanparametrik testlerde bu varsayım aranmaz ve bu sayede az sayıda değer/gözlem içeren değişkenlere uygulanabilir. Nanparametrik testlerden olan Wilcoxon testi için R paketinde <code>wilcox.test()</code> fonksiyonu bulunmaktadır. Örnek olması amacıyla yukarıdaki aynı değişken ile Wilcoxon testi yapalım:</p>
+<pre class="r"><code>wilcox.test(mpg, mu=30)</code></pre>
+<pre><code>## Warning in wilcox.test.default(mpg, mu = 30): cannot compute exact p-value with
+## ties</code></pre>
+<pre><code>## 
+##  Wilcoxon signed rank test with continuity correction
+## 
+## data:  mpg
+## V = 11, p-value = 2.333e-06
+## alternative hypothesis: true location is not equal to 30</code></pre>
+<p>Görüldüğü gibi test çıktısında fazla bilgi yok. Nonparametrik testlerde parametre tahmini olmadığından sonuçta bir güven aralığı da bulunmuyor. Wilcoxon test signed-rank test olarak adlandırılan gruba girdiğinden aynı değeri içeren gözlemler test için problem teşkil etmektedir. <code>mpg</code> değişkeninde altı tane mükerrer gözlem bulunmaktadır. Bu durum uyarı mesajı olarak belirtilmiştir. Test çıktısında yer alan <code>V</code> değeri pozitif değerlerin toplamıdır.</p>
+</div>
+<div id="iki-örneklem" class="section level3">
+<h3>İki örneklem</h3>
+<p>İki örneklemin aynı ortalamaya sahip olup olmadığını test etmek için kullanılır. <code>?mtcars</code> komutuyla mtcars verisetini incelersek, araçların motor tipini gösteren <code>vs</code> değişkeninin olduğunu görebiliriz. <code>table(vs)</code> komutu araçlarının 18’inin 0 yani V tipi, 14’ünün 1 yani normal motorlu olduğunu görebiliriz. T-test ile araçların yakıt sarfiyatlarının motor türüne göre farklılaşıp farklılaşmadığını test edebiliriz:</p>
+<pre class="r"><code>t.test(mpg ~ vs)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  mpg by vs
+## t = -4.6671, df = 22.716, p-value = 0.0001098
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -11.462508  -4.418445
+## sample estimates:
+## mean in group 0 mean in group 1 
+##        16.61667        24.55714</code></pre>
+<p>İki örneklem t-testinde değişkenleri tilde (~) ile ayırdık. Test çıktısı tek örneklem t-testiyle aynı.<code>p</code> değeri araçların yakıt sarfiyatlarının motor türüne göre farklı olduğunu gösteriyor. Güven aralığının sıfır değeri içermemesi de iki araç türünün ortalama yakıt sarfiyatlarının farklı olduğunu göstermekte. En altta yer verilen <code>mpg</code> değeri ortalamaları, sıfır ile gösterilen V tip motorlu araçların bir galon yakıtla daha az mesafe aldığını gösteriyor.</p>
+<p>R paketinde standart olarak bulunan t-testi (diğer istatistik paketlerinden farklı olarak) örneklemler arasında eşit varyans olduğu varsayımını taşımayan <em>Welch</em> metodunu uygular. Eşit varyans varsayımının geçerli olduğunnu düşünüyorsak komuta <code>var.equal=T</code> argümanını ekleyebiliriz.</p>
+<pre class="r"><code>t.test(mpg ~ vs, var.equal=T)</code></pre>
+<pre><code>## 
+##  Two Sample t-test
+## 
+## data:  mpg by vs
+## t = -4.8644, df = 30, p-value = 3.416e-05
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -11.274221  -4.606732
+## sample estimates:
+## mean in group 0 mean in group 1 
+##        16.61667        24.55714</code></pre>
+<p>İlk testten farklı olarak <code>df</code> (degrees of freedom) değerinin arttığını, <code>p</code> değerinin azaldığını görüyoruz.</p>
+<p>Örneklemlerin varyans değerlerinin eşit olup olmadığını <code>var.test()</code> ile F dağılımını hesaplayarak analiz edebiliriz:</p>
+<pre class="r"><code>var.test(mpg ~ vs)</code></pre>
+<pre><code>## 
+##  F test to compare two variances
+## 
+## data:  mpg by vs
+## F = 0.51515, num df = 17, denom df = 13, p-value = 0.1997
+## alternative hypothesis: true ratio of variances is not equal to 1
+## 95 percent confidence interval:
+##  0.1714935 1.4353527
+## sample estimates:
+## ratio of variances 
+##          0.5151485</code></pre>
+<p><code>p</code> değeri istatistiksel olarak anlamlı olmaadığı için iki örneklemin varyanslarının farklı olduğunu iddia eden alternatif hipotezi reddediyoruz. Dolayısıyla ilk t-testi daha sağlıklı. R paketinde varyansları karşılaştıran başka testlerde bulunmaktadır. Bu testlerin hepsinin kendisine göre varsayımları bulunmaktadır. Bu arada F testi grupların bağımsız olduklarını varsayar ve eş gruplara (paired sample) uygulanmaz.</p>
+<p>İki örneklem t-testinin nanparametrik alternatifi tek örneklemdeki gibi yine Wilcoxon testi:</p>
+<pre class="r"><code>wilcox.test(mpg ~ vs)</code></pre>
+<pre><code>## Warning in wilcox.test.default(x = c(21, 21, 18.7, 14.3, 16.4, 17.3, 15.2, :
+## cannot compute exact p-value with ties</code></pre>
+<pre><code>## 
+##  Wilcoxon rank sum test with continuity correction
+## 
+## data:  mpg by vs
+## W = 22.5, p-value = 9.034e-05
+## alternative hypothesis: true location shift is not equal to 0</code></pre>
+<p>Eş grupların, yani ilk-test, son-test (pre ve post test) sonuçlarını karşılaştırmak için <code>t.test(pre, post, paired = T)</code> ve <code>wilcox.test(pre, post, paired = T)</code> komutları kullanılır. Komutlarda geçen <code>pre</code> ve <code>post</code> ifadeleri yerine ilk ve son test değerlerini içeren değişkenlerin adları girilir. Test çıktısı diğer t-test ve Wilcoxon test çıktısıyla aynı biçimde yorumlanır.</p>
+</div>

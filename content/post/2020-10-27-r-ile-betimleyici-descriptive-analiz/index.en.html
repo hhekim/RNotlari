@@ -1,0 +1,83 @@
+---
+title: R ile betimleyici (descriptive) analiz - II
+author: Hakan Hekim
+date: '2020-10-27'
+slug: r-ile-betimleyici-descriptive-analiz
+categories:
+  - Istatistik
+  - Grafik
+tags:
+  - Betimleyici
+  - Descriptive
+description: İlave yöntemler.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Temel betimleyici istatistik yöntemlerinden önceki bir yazıda bahsetmiştik. Bu yazıda betimleyici istatistiği biraz daha detaylandıracak ve verisetini gruplara ayırarak inceleyeceğiz. Yine, hazır R veri paketlerinden <code>mtcars</code> verisetini kullanacağız.</p>
+<p>Verisetinde bulunan araçların motor tipine göre ortalama yakıt sarfiyatını <code>tapply()</code> fonksiyonuyla hesaplayabiliriz:</p>
+<pre class="r"><code>tapply(mtcars$mpg, mtcars$vs, mean)</code></pre>
+<pre><code>##        0        1 
+## 16.61667 24.55714</code></pre>
+<p>Sıfır V tipi, bir ise normal motoru temsil ettiğinden, V tipi motora sahip araçların aynı mesafeyi daha fazla yakıtla aldığı görülüyor. Şayet verisetinde eksik veri bulunmaktaysa <code>mean()</code> fonksiyonu çalışmayacağından fonksiyon <code>tapply (mtcars$mpg, mtcars$vs, mean, na.rm=T )</code> şeklinde kodlanmalı.</p>
+<p>Aynı işi yapan diğer bir fonksiyonsa <code>aggregate()</code>:</p>
+<pre class="r"><code>aggregate(mtcars[c(&quot;mpg&quot;,&quot;wt&quot;)],list(transm=mtcars$vs), mean,na.rm=T)</code></pre>
+<pre><code>##   transm      mpg       wt
+## 1      0 16.61667 3.688556
+## 2      1 24.55714 2.611286</code></pre>
+<p><code>aggregate()</code> fonksiyonunun iki farkı, verisetinin tamamı üzerinde işlem yapabilmesi ve sonucu data frame olarak vermesi. Fonksiyon, verisetinin tamamı üzerinde işlem yaptığından ilk olarak istediğimiz değişkenleri seçtik. İkinci olarak gruplama değişkenini liste olarak fonksiyona girdik. Son olarak istediğimiz fonksiyonu ve eksik verilerle ilgili kontrolümüzü ekledik.</p>
+<p>Biraz daha farklı bir sonuç alacağımız benzer bir fonksiyon <code>by()</code> fonksiyonudur:</p>
+<pre class="r"><code>by(mtcars[1:4],mtcars[&quot;vs&quot;],summary)</code></pre>
+<pre><code>## vs: 0
+##       mpg             cyl             disp             hp       
+##  Min.   :10.40   Min.   :4.000   Min.   :120.3   Min.   : 91.0  
+##  1st Qu.:14.78   1st Qu.:8.000   1st Qu.:275.8   1st Qu.:156.2  
+##  Median :15.65   Median :8.000   Median :311.0   Median :180.0  
+##  Mean   :16.62   Mean   :7.444   Mean   :307.1   Mean   :189.7  
+##  3rd Qu.:19.07   3rd Qu.:8.000   3rd Qu.:360.0   3rd Qu.:226.2  
+##  Max.   :26.00   Max.   :8.000   Max.   :472.0   Max.   :335.0  
+## ------------------------------------------------------------ 
+## vs: 1
+##       mpg             cyl             disp              hp        
+##  Min.   :17.80   Min.   :4.000   Min.   : 71.10   Min.   : 52.00  
+##  1st Qu.:21.40   1st Qu.:4.000   1st Qu.: 83.03   1st Qu.: 66.00  
+##  Median :22.80   Median :4.000   Median :120.55   Median : 96.00  
+##  Mean   :24.56   Mean   :4.571   Mean   :132.46   Mean   : 91.36  
+##  3rd Qu.:29.62   3rd Qu.:5.500   3rd Qu.:162.38   3rd Qu.:109.75  
+##  Max.   :33.90   Max.   :6.000   Max.   :258.00   Max.   :123.00</code></pre>
+<p>Yukarıda sadece ilk dört değişkene yer verdik. Yukarıda gruplama değişkenini <code>mtcars["vs"]</code> şeklinde girdik. Aynı format <code>aggregate()</code> fonksiyonunda da işe yarayacaktır.</p>
+<p>Verisetini gruplayarak istatistik hesaplaması yaptığımız gibi, grafik te çizebiliriz:</p>
+<pre class="r"><code>attach(mtcars)
+mpg.v &lt;- mpg[vs == 0]
+mpg.str &lt;- mpg[vs == 1]
+par(mfrow=c(2,1))
+hist(mpg.v,breaks=10,xlim=c(10,25),col=&quot;red&quot;)
+hist(mpg.str,breaks=15,xlim=c(10,35),col=&quot;blue&quot;)</code></pre>
+<p><img src="/post/2020-10-27-r-ile-betimleyici-descriptive-analiz/index.en_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>par(mfrow=c(1,1))</code></pre>
+<p>Burada öncelikle ilk grupta <code>mtcars</code> verisetini çalışma sayfamıza ilişkilendirdik. Sonra motor türüne göre araçların yakıt sarfiyatını tutan iki yeni vektör ürettik. İkinci grubun ilk satırında grafik alanını iki satır, tek sütun şeklinde ayarladık. Daha sonra iki histogram çizdik ve grafik alanını tekrardan öceki haline geri çevirdik. Bu şekilde aşağıdaki grafiği elde etmiş olduk.</p>
+<p>Buna ilaveten karşılaştırmalı bir kutu grafiği de üretebiliriz:</p>
+<pre class="r"><code>boxplot(mpg ~ vs, ylim=c(10,35), col=c(&quot;red&quot;,&quot;green&quot;))</code></pre>
+<p><img src="/post/2020-10-27-r-ile-betimleyici-descriptive-analiz/index.en_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Yukarıdaki kodda yakıt sarfiyatı değişkenini, motor türüne göre gruplayarak kutu grafiği oluşturduk. <code>ylim</code> parametresiyle <code>y</code> eksenini düzenledik ve <code>col</code> parametresiyle kutuları renklendirdik.</p>
+<p>Kutu grafikleri veri hakkında biraz kabataslak bilgi vermekte. Detayları, teker teker bütün veri noktalarını görmek istiyorsak <code>stripchart()</code> fonksiyonunu kullanabiliriz:</p>
+<pre class="r"><code>opar &lt;- par(mfrow=c(2,2), mex=0.8, mar=c(3,3,2,1)+.1, bg=&quot;light yellow&quot;, bty=&quot;c&quot;,col.axis=&quot;dark red&quot;, fg=&quot;red&quot;)
+stripchart(mpg ~ vs, col=&quot;dark green&quot;)
+stripchart(mpg ~ vs, method=&quot;stack&quot;,col=&quot;blue&quot;)
+stripchart(mpg ~ vs, method=&quot;jitter&quot;,col=&quot;purple&quot;)
+stripchart(mpg ~ vs, method=&quot;jitter&quot;, jitter=.03, col=&quot;green&quot;)</code></pre>
+<p><img src="/post/2020-10-27-r-ile-betimleyici-descriptive-analiz/index.en_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>par(opar)</code></pre>
+<p>İlk satırda yine grafik alanını ayarladık. <code>mfrow</code> parametresiyle grafik alanını iki satır ve sütun şeklinde böldük. Ardından <code>mex</code> parametresiyle grafiklerin arasındaki boşluğu daralttık ve <code>mar</code> ile de dış marjinleri ayarladık. <code>mar</code> ve benzeri parametrelerdeki dört değer grafik alanında sırasıyla alt, sol, üst ve sağ kısımları düzenler. Bunlara ilaveten <code>par</code> ile renk ve şekil ayarları yaparak nispeten farklı bir görünüme sahip bir grafk elde ettik.</p>
+<p>Birinci <code>stripchart()</code> fonksiyonunun ürettiği sol üst köşedeki grafikte aynı veya yakın değere sahip veri noktaları üst üste işaretlenmiş. Bunun önüne geçmek için method parametresine <em>stack</em> veya <em>jitter</em> özelliklerini belirleyabiliriz. Stack özelliği aynı değere sahip olduğu için üst üste gelen noktalardan birisini kenarda gösterirken, jitter noktaların üst üste gelmesine izin vermemekte, noktaları yaymaktadır. Son grafikte standart jitter değeri olan 0.1’in yerine 0.03 girerek noktaları biraz daha sıklaştırdık.</p>
+<p><em>Örnekler kısmen Peter Dalgaard’ın Introductory Statistics with R kitabından alıntılandı.</em></p>

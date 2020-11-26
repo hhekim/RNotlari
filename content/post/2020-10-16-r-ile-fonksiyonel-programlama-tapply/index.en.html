@@ -1,0 +1,55 @@
+---
+title: R ile fonksiyonel programlama, tapply
+author: Hakan Hekim
+date: '2020-10-16'
+slug: [r-ile-fonksiyonel-programlama-tapply]
+categories:
+  - Temel R
+tags:
+  - functional programming
+  - tapply
+description: Functional programming ögelerinden tapply fonksiyonu.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Şimdi <code>mtcars</code> verisetinde yer alan <code>mpg</code> değişkeninin (yakıt sarfiyatının) motor türüne göre ortalamasını ayrı ayrı hesaplayalım. Ortalama <code>mean()</code> fonksiyonuyla hesaplanabilir. Şöyle bir kod işimizi görecektir:</p>
+<pre class="r"><code>mean(mtcars$mpg[mtcars$vs==0])</code></pre>
+<pre><code>## [1] 16.61667</code></pre>
+<pre class="r"><code>mean(mtcars$mpg[mtcars$vs==1])</code></pre>
+<pre><code>## [1] 24.55714</code></pre>
+<p><code>mpg</code> değişkeni yerine araçtaki karbürator sayısını gösteren <code>carb</code> değişkenini kullanacak olsaydık bu işlemi altı defa tekrarlamamız gerekecekti. Ancak <code>tapply()</code> fonksiyonuyla bu işlemi bir defada gerçekleştirmek mümkün:</p>
+<pre class="r"><code>tapply(mtcars$mpg,mtcars$vs,mean)</code></pre>
+<pre><code>##        0        1 
+## 16.61667 24.55714</code></pre>
+<p>Bu değerleri yeni bir değişkene atayarak bir dizi (array) oluşturabiliriz:</p>
+<pre class="r"><code>mpg_by_vs &lt;- tapply(mtcars$mpg,mtcars$vs,mean)
+mpg_by_vs</code></pre>
+<pre><code>##        0        1 
+## 16.61667 24.55714</code></pre>
+<p><code>tapply()</code> fonksiyonu, fonksiyona giren birinci değişkeni, ikinci değişkene göre gruplara ayırmakta ve herbir gruba üçüncü parametre olarak verilen fonksiyonu uygulamaktadır. Görüldüğü gibi <code>tapply()</code> fonksiyonu bir skalar modunda bir dizi (array) oluşturmaktadır. Bazı hallerde liste modunda bir dizi elde etmek isteyebiliriz. Bunu <code>simplify=FALSE</code> parametresiyle yapabiliriz:</p>
+<pre class="r"><code>mpg_by_vs &lt;- tapply(mtcars$mpg,mtcars$vs,mean, simplify = FALSE)
+mpg_by_vs</code></pre>
+<pre><code>## $`0`
+## [1] 16.61667
+## 
+## $`1`
+## [1] 24.55714</code></pre>
+<p><code>tapply()</code> fonksiyonu diğer istatistiksel fonksiyonlarla da kullanılabilir. Mesela, <code>cbind()</code> fonksiyonuyla skalar dizileri birleştirebilir ve liste yahut dataframe üretebiliriz:</p>
+<pre class="r"><code>cbind(tapply(mtcars$mpg,mtcars$vs,mean), 
+      tapply(mtcars$mpg,mtcars$vs,sd), 
+      tapply(mtcars$mpg,mtcars$vs,median))</code></pre>
+<pre><code>##       [,1]     [,2]  [,3]
+## 0 16.61667 3.860699 15.65
+## 1 24.55714 5.378978 22.80</code></pre>
+<p>Bu örnekte verisetinde bulunan araçların motor türüne göre yakıt performans değerlerinin ortalama, standart sapma ve medyen değerlerini <code>tapply()</code> fonksiyonuyla ayrı ayrı hesapladık ve <code>cbind()</code> fonksiyonuyla sütunlar halinde bir araya getirdik.</p>

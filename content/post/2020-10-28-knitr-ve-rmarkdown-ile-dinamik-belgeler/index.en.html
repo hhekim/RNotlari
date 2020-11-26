@@ -1,0 +1,69 @@
+---
+title: knitr ve RMarkdown ile dinamik belge üretimi
+author: Hakan Hekim
+date: '2020-10-28'
+slug: knitr-ve-rmarkdown-ile-dinamik-belgeler
+categories:
+  - Raporlama
+tags:
+  - knitr
+  - rmarkdown
+description: knitr paketini kullanarak Rmarkdown ve LATEX dökümanlar oluşturmak.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/knitr_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Knitr, R ile yapılan analiz sonuçlarını raporlamaya yarayan bir tür “literate programming” motorudur. Literate programming kavramınin yaygın bir uygulamasi Donald Knuth tarafından geliştirilen <span class="math inline">\(\TeX\)</span> sistemidir. Bilindiği gibi <span class="math inline">\(\TeX\)</span> ve onun bir türevi olan <span class="math inline">\(\LaTeX\)</span> profesyonel kalitede belge üretmeye yarayan tipografi yazılımlarıdır. Tıpkı R gibi açık kaynak kodludur ve ücretsizdir. Kaliteli matematiksel formüller üretmedeki başarısı sebebiyle özellikle matematik ve mühendislik gibi alanlarda kullanımı yaygındır.</p>
+<p><code>knitr</code> paketi ile <span class="math inline">\(\LaTeX\)</span>, HTML ve Markdown formatlarında belge üretebilir ve bu belgelere R, C, C++, Python gibi yazılım dillerinden kod ekleyebiliriz. Böylelikle R ile yapacağımız analizin kodlaması, sonuçları ve sonuçların anlatımı tek bir dökümanda yapılabilir ve bu döküman isteğe göre HTML, PDF veya Word formatlarına çevrilebilir.</p>
+<p>Bunun en güzel yanı, yaptığımız analizi sunarken (benim burada yaptığım gibi) R penceresinden kodu ve analiz sonucunu kopyalayıp metne ekleme, grafiği uygun bir resim dosyası olarak bir klasöre kopyalayıp metne bağlantı yerleştirme, ortaya çıkan metni blog sayfasına uygun biçimde formatlama işleriyle uğraşmaktan kurtarmasıdır. Böylelikle çalışmanızın tamamı tek bir dosyada derli toplu bir biçimde saklanabilir. Diğer yandan özellikle <span class="math inline">\(\LaTeX\)</span> sistemi profesyonel kalitede raporlar üretmemize imkan sağlamaktadır.</p>
+<p>knitr ve Rmarkdown için öncelikle paketleri yüklememiz gerekmektedir:</p>
+<pre class="r"><code>install.packages(&quot;knitr&quot;, dependencies = TRUE)
+install.packages(&quot;rmarkdown&quot;)</code></pre>
+<p>İlk satırda yer alan <code>dependencies = TRUE</code> kısmı <code>knitr</code> ile alakalı olup ilk aşamada çok kullanılmayacak paketleri de yükleyeceğinden iptal edilebilir. <code>knitr</code>’i <span class="math inline">\(\LaTeX\)</span> ile kullanabilmek için haliyle işletim sistemimize uygun <span class="math inline">\(\LaTeX\)</span> uygulamasının de yüklenmiş olması gerekmektedir; Windows için MiKTeX, Mac OS için MacTeX ve Linux için TeXLive en yaygın kullanılan <span class="math inline">\(\LaTeX\)</span> sürümleridir. HTML veya Markdown için ilave bir programa ihtiyaç bulunmamaktadır.</p>
+<div id="latex" class="section level3">
+<h3>LaTeX</h3>
+<p>R kodunu aşağıdaki örnekteki gibi <span class="math inline">\(\LaTeX\)</span> dökümanlarına ekleyebiliriz (Bu ve bir sonraki örnek Yihui Xie’nin Dynamic Documents with R and knitr adlı kitabından alınmıştır):</p>
+<pre class="r"><code>\documentclass{article} 
+\begin{document} 
+\title{A Minimal Example} 
+\author{Yihui Xie} 
+\maketitle 
+
+We examine the relationship between speed and stopping distance using a linear regression model: $Y = beta_0 + beta_1 x + epsilon$.
+
+&lt;&lt;model, fig.width=4, fig.height=3, fig.align=&#39;center&#39;&gt;&gt;= 
+par(mar = c(4, 4, 1, 1), mgp = c(2, 1, 0), cex = 0.8)
+plot(cars, pch = 20, col = &#39;darkgray&#39;) 
+fit &lt;- lm(dist ~ speed, data = cars) 
+abline(fit, lwd = 2) 
+@ 
+  
+The slope of a simple linear regression is 
+\Sexpr{coef(fit)[2]}. 
+\end{document}</code></pre>
+<p>Yukarıdaki kodu .Rnw uzantılı minimal.Rnw isimli bir dosya olarak kaydettikten sonra <code>knitr</code> ile .tex uzantılı bir dosyaya çevirebiliriz:</p>
+<pre class="r"><code>knitr::knit(&#39;minimal.Rnw&#39;)</code></pre>
+<p>Bu işlemin sonucunda minimal.tex isimli yeni bir dosya oluşacaktır. Ortaya çıkan bu .tex dosyasını <span class="math inline">\(\LaTeX\)</span> ile işleyerek PDF belgesine çevirebiliriz.</p>
+<p>Yukarıda yer alan kodun standart bir <span class="math inline">\(\LaTeX\)</span> belgesinden tek farkı R kodunun yer aldığı kısım. Görüldüğü üzere R koduna &lt;&lt; işaretiyle başlıyoruz ve @ işaretiyle bitiriyoruz. &lt;&lt; ile &gt;&gt;= arasındaki kısım üreteceğimiz grafiğin büyüklüğü ve sayfadaki konumunu belirlemekte. <code>knitr</code> paketinde yer alan knit komutu R komutunu çalıştırarak ortaya çıkan grafiği <span class="math inline">\(\LaTeX\)</span>’in işleyebileceği komutlara çevirerek .tex uzantılı bir belge olarak kaydediyor.</p>
+</div>
+<div id="rmarkdown" class="section level3">
+<h3>RMarkdown</h3>
+<p><span class="math inline">\(\LaTeX\)</span> ile kaliteli dökümanlar üretebilmenin bedeli, <span class="math inline">\(\LaTeX\)</span>’in karmaşık olması ve tıpkı R gibi dik bir öğrenme eğrisinin bulunmasıdır. Buna karşın <code>RMarkdown</code> daha basit bir formata sahip ve yine kaliteli belgeler üretmemizi sağlar. <code>RMarkdown</code> ile yaptığımız analizleri ve sonçlarını sunan HTML belgeleri üretebiliriz.</p>
+<p>Yukarıdaki aynı örneği <code>RMarkdown</code> için aşağıdaki biçimde uyarlamak mümkün:</p>
+<div class="figure">
+<img src="/post/2020-10-28-knitr-ve-rmarkdown-ile-dinamik-belgeler/index.en_files/rmarkdown.png" alt="" />
+<p class="caption">Rmarkdown</p>
+</div>
+<pre class="r"><code>rmarkdown::render(&#39;minimal.Rmd&#39;)</code></pre>
+<p><code>RMarkdown</code> ile R kodunu <code>{r} ve</code> işaretleri arasına yerleştiriyoruz. Grafiğe ilişkin ayarlamalar ise yine açılış anahtarında yer alan <code>r</code> parametresinden sonra veriliyor.</p>
+</div>

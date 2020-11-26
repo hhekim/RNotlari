@@ -1,0 +1,90 @@
+---
+title: read.table(), scan() ve read.csv() fonksiyonlarıyla R ortamına dışarıdan veri
+  aktarma
+author: Hakan Hekim
+date: '2020-10-10'
+slug: [r-ortamina-disaridan-veri-aktarma]
+categories:
+  - Temel R
+tags:
+  - read.table
+  - scan
+  - read.csv
+description: R ortamına veri aktarımı.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>SPSS, STATA, SAS vb gibi farklı istatistiksel paketler de dahil olmak üzere hemen her platformda üretilmiş veri R ortamına aktarılabilir. Bunların tamamına burada örnek vermek yazıyı gereksiz yere uzatacaktır. O yüzden en sık kullanılan üç fonksiyondan bahsedeceğim.</p>
+<p>Veri girerken sütun başlığı olarak R için yasaklı olan £,$,%,^,&amp;,*,(,),􏰗,#,?,,,.,,/,|,,,[,],{,ve } gibi karakterler kullanılmamalıdır.</p>
+<p>Örnek olarak bir sınıfta bulunan öğrencilerin matematik, fen, edebiyat, sanat notlarını ve bunların ortalamasını içeren bir excel dosyası oluşturup, bu dosyayı tab-delimited text dosyası olarak kaydettim. Şimdi bu dosyayı <code>read.table()</code> fonksiyonunu kullanarak R ortamına aktaralım:</p>
+<pre class="r"><code>classA &lt;- read.table(&quot;grades.txt&quot;, header=TRUE, dec = &quot;,&quot;)
+classA</code></pre>
+<pre><code>##    ID MATH SCIENCE LITR ARTS mean
+## 1  51   75      51   99   57 66.6
+## 2  86   77      66   99   87   83
+## 3  93   67      53   77   90   76
+## 4  99   91      70   61   61 76.4
+## 5  55   89      65   62   94   73
+## 6  66   98      92   54   50   72
+## 7  95   85      82   97   98 91.4
+## 8  79   62      68   90   65 72.8
+## 9  56   86      69   62   54 65.4
+## 10 76   83      70   98  100 85.4
+## 11 78   94      81   87   72 82.4
+## 12 65   90      85   71   83 78.8
+## 13 62   76      99   82   72 78.2
+## 14 67   84      76   82   66   75
+## 15 50   89      52   66   77 66.8
+## 16 78   80      55   96   65 74.8
+## 17 66   93      59   77   58 70.6
+## 18 54   90      63   99   81 77.4
+## 19 69   71      85   66   76 73.4</code></pre>
+<p><code>read.table()</code> fonksiyonuna girdiğim ilk parametre olan <code>file</code> dosyanın disk üzerindeki yerini, <code>header</code> ise ilk satırın değişken isimleri olarak atanıp atanmayacağını bildiriyor. Yani ilk satırın değişken adı olarak atanmasını bildiriyor. Son parametre olan <code>dec</code> ondalık ayracı olarak virgül kullanıldığını bildiriyor.</p>
+<p>Bu aşamada sık yapılan hatalar; dosyanın yerinin yanlış girilmesi ve ondalık ayracının hatalı bildirilmesidir. Yine aktarılan verisetindeki değişken isimlerinde boşluk olması, verisetinde boş hücrelerin bulunması hata mesajlarına sebebiyet verecektir. Bunları gidermek için Excel dosyası değiştirilebileceği gibi, <code>read.table()</code> fonksiyonunda mevcut parametreler kullanılabilir. Bu yüzden hata yaptığınız fonksiyonların yardım dosyasını incelemek problemi gidermenize katkı sağlayacaktır.</p>
+<p>classA değişkeninin türünü öğrenmek için <code>class()</code> fonksiyonu kullanılabilir:</p>
+<pre class="r"><code>class(classA)</code></pre>
+<pre><code>## [1] &quot;data.frame&quot;</code></pre>
+<p>görüldüğü üzere veriseti data frame olarak R içine aktarılmış.</p>
+<p>Veri aktarmada <code>scan()</code> fonksiyonu da kullanılabilir. Ancak <code>scan()</code> daha esnek bir fonksiyondur ve verileri vektör yahut liste şeklinde içeri aktarır.</p>
+<pre class="r"><code>classA1 &lt;- scan(&quot;grades.txt&quot;, what = list(&quot;ID&quot;,&quot;MATH&quot;,&quot;SCIENCE&quot;,&quot;LITR&quot;,&quot;ARTS&quot;,&quot;mean&quot;))
+classA1</code></pre>
+<pre><code>## [[1]]
+##  [1] &quot;ID&quot; &quot;51&quot; &quot;86&quot; &quot;93&quot; &quot;99&quot; &quot;55&quot; &quot;66&quot; &quot;95&quot; &quot;79&quot; &quot;56&quot; &quot;76&quot; &quot;78&quot; &quot;65&quot; &quot;62&quot; &quot;67&quot;
+## [16] &quot;50&quot; &quot;78&quot; &quot;66&quot; &quot;54&quot; &quot;69&quot;
+## 
+## [[2]]
+##  [1] &quot;MATH&quot; &quot;75&quot;   &quot;77&quot;   &quot;67&quot;   &quot;91&quot;   &quot;89&quot;   &quot;98&quot;   &quot;85&quot;   &quot;62&quot;   &quot;86&quot;  
+## [11] &quot;83&quot;   &quot;94&quot;   &quot;90&quot;   &quot;76&quot;   &quot;84&quot;   &quot;89&quot;   &quot;80&quot;   &quot;93&quot;   &quot;90&quot;   &quot;71&quot;  
+## 
+## [[3]]
+##  [1] &quot;SCIENCE&quot; &quot;51&quot;      &quot;66&quot;      &quot;53&quot;      &quot;70&quot;      &quot;65&quot;      &quot;92&quot;     
+##  [8] &quot;82&quot;      &quot;68&quot;      &quot;69&quot;      &quot;70&quot;      &quot;81&quot;      &quot;85&quot;      &quot;99&quot;     
+## [15] &quot;76&quot;      &quot;52&quot;      &quot;55&quot;      &quot;59&quot;      &quot;63&quot;      &quot;85&quot;     
+## 
+## [[4]]
+##  [1] &quot;LITR&quot; &quot;99&quot;   &quot;99&quot;   &quot;77&quot;   &quot;61&quot;   &quot;62&quot;   &quot;54&quot;   &quot;97&quot;   &quot;90&quot;   &quot;62&quot;  
+## [11] &quot;98&quot;   &quot;87&quot;   &quot;71&quot;   &quot;82&quot;   &quot;82&quot;   &quot;66&quot;   &quot;96&quot;   &quot;77&quot;   &quot;99&quot;   &quot;66&quot;  
+## 
+## [[5]]
+##  [1] &quot;ARTS&quot; &quot;57&quot;   &quot;87&quot;   &quot;90&quot;   &quot;61&quot;   &quot;94&quot;   &quot;50&quot;   &quot;98&quot;   &quot;65&quot;   &quot;54&quot;  
+## [11] &quot;100&quot;  &quot;72&quot;   &quot;83&quot;   &quot;72&quot;   &quot;66&quot;   &quot;77&quot;   &quot;65&quot;   &quot;58&quot;   &quot;81&quot;   &quot;76&quot;  
+## 
+## [[6]]
+##  [1] &quot;mean&quot; &quot;66.6&quot; &quot;83&quot;   &quot;76&quot;   &quot;76.4&quot; &quot;73&quot;   &quot;72&quot;   &quot;91.4&quot; &quot;72.8&quot; &quot;65.4&quot;
+## [11] &quot;85.4&quot; &quot;82.4&quot; &quot;78.8&quot; &quot;78.2&quot; &quot;75&quot;   &quot;66.8&quot; &quot;74.8&quot; &quot;70.6&quot; &quot;77.4&quot; &quot;73.4&quot;</code></pre>
+<p><code>scan()</code> fonksiyonu daha hızlı çalıştığından büyük verisetlerinde tercih edilebilir. Aksi halde <code>read.table()</code> fonksiyonu daha kullanışlıdır.</p>
+<p>Son olarak yaygın kullanılan .csv uzantılı verilerin aktarılmasına bakalım:</p>
+<pre class="r"><code>data &lt;-read.csv(&quot;data.csv&quot;)</code></pre>
+<p>CSV dosyası değişkenleri genellikle virgül işareti ile birbirinden ayırdığından, şayet değişkenler içerisinde virgül kullanılmışsa bu durum verinin hatalı aktarılmasına sebebiyet verecektir. Özellikle rakamlarda ondalık ayracı olarak virgül kullanmışsak sonuç hatalı olacaktır. Bu durumda <code>read.csv2</code> fonksiyonu kullanılmalıdır.</p>
+<p>Başta da belirttiğimiz gibi hemen her tür veriyi R’a aktarmak artık mümkün. R yardım dosyalarından veya internet üzerinden bu konuda destek bulabiliriz.</p>

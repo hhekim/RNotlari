@@ -1,0 +1,112 @@
+---
+title: ggplot2 ile betimsel (descriptive) analiz grafikleri
+author: Hakan Hekim
+date: '2020-11-03'
+slug: ggplot2-ile-betimsel-descriptive-analiz-grafikleri
+categories:
+  - Grafik
+tags:
+  - ggplot2
+description: ggplot ile beitmsel istatistik analizleri, grafikleri.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/ggplot_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Bu yazıda `ggplot2` paketine örnekler vermeye devam ederek, betimleyici (descriptive) analizlerde kullanılan grafikleri `ggplot2` paketiyle üretelim. Öncelikle histogram grafiğiyle başlayalım:
+
+```{r}
+library(ggplot2)
+ggplot(data = mpg) + 
+  geom_histogram(mapping = aes(x = hwy), colour = "black", fill = "white")
+
+```
+
+Çizmiş olduğumuz histogramın sadece belli bir bölgesine odaklanabiliriz:
+
+```{r warning=FALSE}
+ggplot(data = mpg) + 
+  geom_histogram(mapping = aes(x = hwy), colour = "black", fill = "white") +
+  coord_cartesian(xlim = c(15, 30))
+```
+
+`binwidth` parametresiyle veri aralıklarını daraltarak daha az detay sunan ancak daha derli toplu bir histogram üretebiliriz:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_histogram(mapping = aes(x = hwy), colour = "black", fill = "white", binwidth = 2.5)
+```
+
+Çizdiğimiz iki grafikte `y` ekseninde değişkenin frekans değerleri (herbir aralıkta kaç gözlem olduğu) bulunuyordu. Bunun yerine y ekseninde yoğunluğu (density) gösterip dağılımı daha iyi değerlendirmemizi sağlayacak bir eğri ekleyelim ve eksenlerin etiketlerini yazalım:
+
+
+```{r}
+ggplot(data = mpg) + 
+  geom_histogram(mapping = aes(x = hwy, y = ..density..), 
+                 colour = "black", fill = "white", binwidth = 2.5) + 
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(mpg$hwy, na.rm = TRUE), 
+                            sd = sd(mpg$hwy, na.rm = TRUE)), 
+                colour = "red", size = 1) + 
+  labs(x = "Şehirler arası yakıt\nperformansı", y = "Density")
+```
+
+Aynı grafiği geom_freqpoly kullanarak sadece eğri ile çizebiliriz:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_freqpoly(mapping = aes(x = hwy, y = ..density..), 
+                colour = "red",  binwidth = 2.5) + 
+  labs(x = "Şehirler arası yakıt\nperformansı", y = "Density")
+```
+
+Birden fazla histogramı aynı grafik üzerinde görmek istiyorsak geom_freqpoly ile bunu yapabiliriz:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_freqpoly(mapping = aes(x = hwy,  color = as.character(cyl)),  binwidth = 1) + 
+  labs(x = "Şehirler arası yakıt\nperformansı", y = "Count", color = "Silindir\nSayısı")
+```
+
+
+geom_boxplot ile kuut grafikleri çizebiliriz. Otomobillerin sınıflarına göre kutu grafiği üretelim:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_boxplot(mapping = aes(x = class, y = hwy)) + 
+  labs(x = "Sınıf", y = "Şehirler arası yakıt performansı")
+```
+
+Kutuları medyen değerlerine göre sıralayalım:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_boxplot(mapping = aes(x = reorder(class, hwy, FUN = median), y = hwy)) + 
+  labs(x = "Sınıf", y = "Şehirler arası yakıt performansı")
+```
+
+İstersek `coord_flip()` ile grafiği yatay biçime getirebiliriz:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_boxplot(mapping = aes(x = reorder(class, hwy, FUN = median), y = hwy)) + 
+  labs(x = "Sınıf", y = "Şehirler arası yakıt performansı") + 
+  coord_flip()
+```
+
+`geom_bar` ile çubuk grafikleri çizebiliriz:
+
+```{r}
+ggplot(mpg, aes(class, fill = drv)) + 
+  geom_bar(width = .75) + 
+  labs(x = "Sınıf", y = "Miktar", fill = "Çekiş")
+```
+
+Bu örnekte estetik özellikleri `ggplot` komutunun hemen ardından verdik. Bu şekilde tanımlanmış estetik özellikleri geomlarda da (yeniden tanımlanmaması durumunda) geçerli olacaktır. Yukarıdaki grafikte araçları sınıflarına göre grafiklerken çekiş özelliklerini de yığınlanmış renkler şeklinde grafiğe ekledik.
+
+Görüldüğü gibi `ggplot2` paketiyle pek çok grafik işlemini kolayca yapmak mümkün.

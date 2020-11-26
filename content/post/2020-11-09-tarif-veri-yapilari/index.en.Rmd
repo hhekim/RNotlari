@@ -1,0 +1,563 @@
+---
+title: 'Tarifler: Veri Yapıları'
+author: Hakan Hekim
+date: '2020-11-09'
+categories:
+  - Temel R
+tags:
+  - dataframe
+  - Liste
+  - vector
+slug: tarif-veri-yapilari
+description: Temel R işlemlerinin tarifleri.
+featured: yes
+thumbnail: /images/thumbs/tarif_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Bütün programlama dillerinde olduğu gibi R'da da temel yapı taşları verileri depoladığımız veri yapılarıdır. R'da yapzdığımız her kodun içerisinde bu yapıları kullanmaktayız. Vektör, dizi, matris, liste ve dataframe yapılarının nasıl üretileceği, değiştirileceği, alt gruplara ayrılacağı, dönüştürüleceği gibi konularda yeterli beceriye sahip olursak R'ı çok daha etkin kullanabiliriz.
+
+-   [Bir vektörün sonuna nasıl yeni bir eleman
+    eklerim?](#bir-vektörün-sonuna-nasıl-yeni-bir-eleman-eklerim)
+-   [Bir vektörün herhangi bir konumuna yeni bir elemanı nasıl
+    eklerim?](#bir-vektörün-herhangi-bir-konumuna-yeni-bir-elemanı-nasıl-eklerim)
+-   [Nasıl faktör (yahut kategorik değişken)
+    oluştururum?](#nasıl-faktör-yahut-kategorik-değişken-oluştururum)
+-   [Birbirleriyle ilişkili vektörleri nasıl data frame’e
+    dönüştürebilirim?](#birbirleriyle-ilişkili-vektörleri-nasıl-data-framee-dönüştürebilirim)
+-   [Nasıl liste oluştururum?](#nasıl-liste-oluştururum)
+-   [Liste elemanlarını nasıl
+    seçerim?](#liste-elemanlarını-nasıl-seçerim)
+-   [Bir listeden nasıl eleman
+    silerim?](#bir-listeden-nasıl-eleman-silerim)
+-   [Bir listeyi vektöre nasıl
+    çevirebilirim?](#bir-listeyi-vektöre-nasıl-çevirebilirim)
+-   [Listemde bulunan bazı elemanları belli bir kritere göre silmek
+    istiyorum, nasıl
+    yapabilirim?](#listemde-bulunan-bazı-elemanları-belli-bir-kritere-göre-silmek-istiyorum-nasıl-yapabilirim)
+-   [Nasıl yeni bir matris
+    üretebilirim?](#nasıl-yeni-bir-matris-üretebilirim)
+-   [Matrisin satır ve sütunlarına nasıl başlık
+    verebilirim?](#matrisin-satır-ve-sütunlarına-nasıl-başlık-verebilirim)
+-   [Matrisin sadece bir satır veya sütununu nasıl
+    seçebilirim?](#matrisin-sadece-bir-satır-veya-sütununu-nasıl-seçebilirim)
+-   [Vektör olarak kaydedilmiş değişkenleri data frame sütunları olarak
+    birleştirmek istiyorum, nasıl
+    yaparım?](#vektör-olarak-kaydedilmiş-değişkenleri-data-frame-sütunları-olarak-birleştirmek-istiyorum-nasıl-yaparım)
+-   [Vektör olarak kaydedilmiş gözlemleri data frame satırları olarak
+    birleştirmek istiyorum, nasıl
+    yaparım?](#vektör-olarak-kaydedilmiş-gözlemleri-data-frame-satırları-olarak-birleştirmek-istiyorum-nasıl-yaparım)
+-   [Mevcut bir data frame’e nasıl yeni bir satır
+    eklerim?](#mevcut-bir-data-framee-nasıl-yeni-bir-satır-eklerim)
+-   [Boş bir data frame oluşturmak istiyorum, nasıl
+    yapabilirim?](#boş-bir-data-frame-oluşturmak-istiyorum-nasıl-yapabilirim)
+-   [Data frame’de bulunan değişkenlerin konumuna göre seçme işlemini
+    nasıl
+    yaparım?](#data-framede-bulunan-değişkenlerin-konumuna-göre-seçme-işlemini-nasıl-yaparım)
+-   [Data frame sütunlarını sütun (değişken) isimleriyle nasıl
+    seçebilirim?](#data-frame-sütunlarını-sütun-değişken-isimleriyle-nasıl-seçebilirim)
+-   [Sütun seçim işlemini daha pratik yapamaz
+    mıyız?](#sütun-seçim-işlemini-daha-pratik-yapamaz-mıyız)
+-   [Data frame’de bulunan değişken isimlerini nasıl
+    değiştirebilirim?](#data-framede-bulunan-değişken-isimlerini-nasıl-değiştirebilirim)
+-   [Data frame’imde `NA` değerleri var ve fonksiyonlar hatalı sonuç
+    veriyor, ne
+    yapabilirim?](#data-frameimde-na-değerleri-var-ve-fonksiyonlar-hatalı-sonuç-veriyor-ne-yapabilirim)
+-   [İki veya daha fazla data frame’i birleştirmek istiyorum, nasıl
+    yaparım?](#iki-veya-daha-fazla-data-framei-birleştirmek-istiyorum-nasıl-yaparım)
+-   [`with` fonksiyonunu data frame ile nasıl
+    kullanabilirim?](#with-fonksiyonunu-data-frame-ile-nasıl-kullanabilirim)
+
+## Bir vektörün sonuna nasıl yeni bir eleman eklerim?
+Mevcut bir vektöre yeni bir eleman eklemek için yine `c()` fonksiyonundan yararlanırız: 
+
+```{r appendvector1}
+a <- c(0,1,2,3,4)
+a <- c(a,5)
+a
+```
+
+Aynı biçimde iki vektörü birleştirebiliriz:
+
+```{r appendvector2}
+a <- c(0,1,2,3,4)
+b <- c(5,6,7,8,9)
+a <- c(a,b)
+a
+```
+
+İndeks numarası belirterek te yeni eleman ekleyebiliriz:
+
+```{r appendvector3}
+a <- c(0,1,2,3,4)
+a[6] <- 5
+a
+```
+
+İndeks numarasıyla ekleme yaparken eleman sayısından büyük bir değer atanması halinde R hata vermeyecektir. Ancak ortaya çıkan vektör pek de istediğiniz gibi olmayabilir. Bu yüzden indeks numarasıyla atama yaparken vektörün büyüklüğünü sorgulamakta fayda var:
+
+```{r appendvector4}
+a <- c(0,1,2,3,4)
+a[10] <- 5
+a
+b <- c(5,6,7,8,9)
+b[length(b)+1] <- 10
+b
+```
+
+Ayrıca `append()` fonksiyonuyla da mevcut bir vektöre eleman ekleyebiliriz:
+
+```{r appendvector5}
+a <- c(0,1,2,3,4)
+append(a,c(5,6,7,8,9))
+```
+
+## Bir vektörün herhangi bir konumuna yeni bir elemanı nasıl eklerim?
+
+`append` fonksiyonu `after` parametresiyle birlikte kullanılarak vektörün herhangi bir konumuna yeni eleman eklenilebilir.
+
+```{r appendvector6}
+a <- c(0,1,2,3,4,10)
+append(a,c(5,6,7,8,9), after = 5)
+```
+
+`after` parametresine sıfır değeri verirsek yeni elemanlar vektörün baş tarafına yerleştirilir.
+
+```{r appendvector7}
+a <- c(0,1,2,3,4,5)
+append(a, -1, after = 0)
+```
+
+## Nasıl faktör (yahut kategorik değişken) oluştururum?
+
+`factor` fonksiyonuyla veri tipi faktör olan bir değişken üretebiliriz. `levels` parametresiyle değişkenin parametrelerini belirleyebiliriz (komutun tamamının paranteze alınması `print` fonksiyonunu iş başına çağırır):
+
+```{r factor1}
+a <- c(1,1,3,3,5,5)
+(a <- factor(a))
+(b <- factor(a, levels = c(1,3,5,7,9)))
+(c <- factor(c("Pzt","Pzt","Çar","Cu","Cu"),levels= c("Pzt","Sa","Çar","Per","Cu","Cts","Paz")))
+```
+
+## Birbirleriyle ilişkili vektörleri nasıl data frame'e dönüştürebilirim?
+
+Farzedelim üç farklı ilin hava kirliliği değerlerini ölçtük, yine farzedelim bu ölçümler 5 ila 10 arasında rakamlar verdi ve vektör şeklinde kaydettiğimiz bu değerleri bir sütunda birleştirmek istiyoruz. R ile bunu farklı biçimlerde yapmak mümkün. Fakat burada `stack` fonksiyonunun kullanımını göreceğiz. Aşağıda öncelikle `sample` fonksiyonuyla üç il için rastgele değerler üreteceğim. Sonrasında üç vektörü liste veri tipine dönüştürerek data frame'de bir araya getireceğim:
+```{r stack1}
+a <- sample(x = 5:10, size = 12, replace = TRUE)
+b <- sample(x = 5:10, size = 12, replace = TRUE)
+c <- sample(x = 5:10, size = 12, replace = TRUE)
+d <- stack(list(ankara = a, izmir = b, urfa = c))
+head(d, 5)
+```
+
+`stack` fonksiyonu liste veri tipi girdi istediğinden öncelikle vektörleri liste haline dönüştürdüm. Sonuç olarak değerleri barındıran `values` sütunu ve kategorileri barındıran `ind` sütunundan oluşan bir data frame elde ettim.
+
+## Nasıl liste oluştururum?
+
+Listeler, farklı veri tiplerini barındıran yapılardır. Liste, `list` fonksiyonuyla üretilir:
+
+```{r list1}
+persn <- list(isim = c("Ali", "Ayşe", "Atıf"), sicil = c(124,132,156), dot = c("1990-03-12","1993-06-24","1991-11-10"), bh = toupper(c("Ali", "Ayşe", "Atıf")) )
+str(persn)
+```
+
+Görüldüğü üzere liste elemanı olarak fonksiyon da atanabilir. Ayrıca liste elemanlarının eşit büyüklükte olmaları da gerekmez. Bu biçimiyle listeler herşeyi içine atabileceğiniz torba gibidirler.
+
+Listeler boş olarak üretilip sonradan doldurulabilir. Özellikle program yazarken bu yöntem kullanışlı olmaktadır:
+
+```{r list2}
+persn <- list()
+persn[[1]] <- c("Ali", "Ayşe", "Atıf")
+persn[[2]] <- c(124,132,156)
+persn[[3]] <- c("1990-03-12","1993-06-24","1991-11-10")
+persn[[4]] <- toupper(persn[[1]])
+names(persn) <- c("isim","sicil","dot","bh")
+str(persn)
+```
+
+Sondan bir önceki komutta `names` fonksiyonuyla liste elemanlarına isim verdik. Bunun yerine yine boş bir liste üretip, listeye atama yaparken isim verebiliriz. Bunun için liste ve data frame'lerde kullandığımız `$` anahtarını kullanmalıyız:
+
+```{r list2.1}
+persn <- list()
+persn$isim <- c("Ali", "Ayşe", "Atıf")
+persn$sicil <- c(124,132,156)
+persn$dot <- c("1990-03-12","1993-06-24","1991-11-10")
+persn$bh <- toupper(persn[[1]])
+str(persn)
+```
+
+## Liste elemanlarını nasıl seçerim?
+
+Liste veri türünde liste elemanlarını seçerken tek köşeli parantez kullanırsak liste, çift köşeli parantez kullanırsak vektör olarak çıktı alırız. Bu küçük fark bazen uğraştırıcı hatalara düşmemize sebep olduğundan akıldan çıkarılmamalıdır:
+
+```{r list3}
+persn[1] 
+persn[[1]] 
+```
+
+Vektörlerde olduğu gibi birden fazla elemanı aynı anda seçebiliriz:
+
+```{r list4}
+persn[c(1,3)]
+```
+
+Çift parantez kullandığımızda, yani vektör olarak çıktı aldığımızda bu işlem farklı bir sonuç verecektir:
+
+```{r list5}
+persn[[c(1,3)]] 
+```
+
+`persn[[c(1,3)]]` biçiminde yazdığımızda persn listesinin birinci elemanının, üçüncü ögesini seçmiş olduk. Bu şekilde listede eleman seçimi yapabiliriz.
+
+Liste elemanlarını adlarıyla da seçebiliriz:
+
+```{r list6}
+persn["isim"]
+persn[["isim"]]
+persn$isim
+```
+
+Görüldüğü gibi son iki komut şekli aynı sonucu vermektedir. `$` anahtarı aynı data frame'lerde olduğu gibi liste elemanını vektör biçiminde çıktı olarak getirir. 
+
+Toparlayacak olursak; liste elemanlarını seçerken, tek köşeli parantez (`x[n]`) liste, çift köşeli parantez (`x[[n]]`) ve dolar işareti (`x$n`) vektör olarak çıktı verir.
+
+## Bir listeden nasıl eleman silerim?
+
+Listeden bir eleman silmek için silmek istediğimiz elemana `NULL` değeri atarız:
+
+```{r list7}
+persn
+persn[["bh"]] <- NULL
+persn
+```
+
+Yukarıda çift köşeli parantez ve eleman ismini kullandık. Bunun yerine yine çift köşeli parantez ve silmek istediğimiz elemanın indeks değerini `persn[[4]]` veya `persn$bh` şeklindeki tanımlamaları da kullanabiliriz.
+
+## Bir listeyi vektöre nasıl çevirebilirim?
+
+Evet çevirebiliriz. Bunun için `unlist` fonksiyonundan yararlanırız. Bazı R fonksiyonları sadece vektörler üzerinde işlem yapar. Yine bazı R fonksiyonları liste olarak çıktı verir. Liste şeklindeki bir çıktıyı vektörlerle çalışan bir fonksiyona atadığımızda hata mesajı alırız. Bu sebeple listeyi öncelikle vektöre dönüştürmemiz gerekir:
+
+```{r list8}
+degerler <- list(c(1,2,4,2,6,9,1,2,1,9,7,8,3,2))
+mean(degerler)
+mean(unlist(degerler))
+```
+
+## Listemde bulunan bazı elemanları belli bir kritere göre silmek istiyorum, nasıl yapabilirim?
+
+Listede bulunan elemanları mantıksal karşılaştırmalarla seçebiliyorsak, seçtiğimiz elemanları silebiliriz de. Mesela listede bulunan negatif değerleri şöyle silebiliriz:
+
+```{r list9}
+(lst <- -5:10)
+lst <- lst[-(which(lst < 0))]
+lst
+```
+
+## Nasıl yeni bir matris üretebilirim?
+
+`matrix` fonksiyonu ile matris üretebiliriz. `matrix` fonksiyonu temel olarak matrise yerleşecek veriyi ve matrisin satır sütun sayısını parametre olarak alır. Mesela iki satır, üç sütundan  müteşekkil (2x3) bir matris üretelim:
+
+```{r matrix1}
+vec <- round(rnorm(12,5,2), digits = 1)
+matrix(vec,3,4)
+```
+
+`vec` vektörü matrise dönüştürülürken veriler sırasıyla sütunlar esas alınarak yazılır. Yani önce birinci, ardından ikinci ve sonraki sütunlar oluşturulur. Verisi satır temelli yazmak için `byrow` parametresine `TRUE` değerini atamalıyız.
+
+```{r matrix2}
+matrix(vec,3,4,byrow = TRUE)
+```
+
+Herhangi bir veri içermeyen boş bir matris te üretebiliriz:
+
+```{r matrix3}
+matrix(NA,3,4)
+```
+
+Son olarak herhangi bir vektöre boyut ekleyerek te matris üretebiliriz:
+
+```{r matrix4}
+dim(vec) <- c(4,3)
+vec
+```
+
+## Matrisin satır ve sütunlarına nasıl başlık verebilirim?
+
+Matris satırlarını `rownames`, sütunlarını `colnames` fonksiyonları ile başlıklandırabiliriz:
+
+```{r matrix5}
+vec <- round(rnorm(12,5,2), digits = 1)
+dim(vec) <- c(3,4)
+rownames(vec) <- c("X","Y","Z")
+colnames(vec) <- c("A","B","C","D")
+vec
+```
+
+Matrisleri başlıklandırmanın avantajlı tarafı, başlıkları kullanarak matris elemanlarını seçebiliriz:
+
+```{r matrix6}
+vec["Y","C"]
+```
+
+## Matrisin sadece bir satır veya sütununu nasıl seçebilirim?
+
+Matriste yer alan bir veriyi seçerken matrisin adından sonra köşeli parantez içerisinde önce satır sonra sütun başlığını veya indisini belirtmemiz gerekir:
+
+```{r matrix7}
+vec[2,3] # veya vec["Y","C"]
+```
+
+Bir satır seçerken yapmamız gereken satır bilgisini yazıp sütun bilgisini boş bırakmak olacaktır. Aynı biçimde tek bir sütun seçerken yapmamız gereken sütun bilgisini yazıp, satır bilgisini boş bırakmaktır:
+
+```{r matrix8}
+vec[2,] # ikinci satırı seçer
+vec[,3] # üçüncü sütunu seçer
+```
+
+Bu seçim işlemi bir vektör üretecektir. Tek satırlı veya sütunlu matris elde etmek için `drop=FALSE` parametresini eklemeliyiz:
+
+```{r matrix9}
+vec[2,,drop=FALSE] # ikinci satırı seçer
+vec[,3,drop=FALSE] # üçüncü sütunu seçer
+```
+
+## Vektör olarak kaydedilmiş değişkenleri data frame sütunları olarak birleştirmek istiyorum, nasıl yaparım?
+
+Vektörlerden data frame oluşturmak için `data.frame`fonksiyonundan yararlanırız. Ufak bir ayrıntı, vektörlerin eşit uzunlukta olmaları gerekmektedir:
+
+```{r df1}
+var1 <- round(rnorm(10,5,2), digits = 1)
+var2 <- round(rnorm(10,10,2), digits = 1)
+var3 <- sample(c("A","B"),10,replace = TRUE)
+var4 <- round(rnorm(10,15,2), digits = 1)
+df1 <- data.frame(var1,var2,var3,var4)
+df1
+```
+
+Görüldüğü üzere R sütun başlıklarını değişken ismi olarak aldı. İstersek değişken adlarını kendimiz belirleyebiliriz:
+
+```{r df2}
+df1 <- data.frame(height=var1,length=var2,type=var3,width=var4)
+df1
+```
+
+Verimiz farklı farklı vektörlerde değil de bir listede depolanmışsa `as.data.frame` fonksiyonundan faydalanabiliriz:
+
+```{r df3}
+lst <- list(height=var1,length=var2,type=var3,width=var4)
+lst
+df1 <- as.data.frame(lst)
+df1
+```
+
+Listeyi data frame'e çevirirken liste elemanlarının tanımlayıcı birer adının olması önem arzediyor, yoksa anormal sonuçlar alabilirsiniz.
+
+Görüldüğü gibi her iki işlem de eldeki veriyi sütun olarak kullandı.
+
+## Vektör olarak kaydedilmiş gözlemleri data frame satırları olarak birleştirmek istiyorum, nasıl yaparım?
+
+Yukarıda her vektörün ayrı bir değişken olması halinde nasıl data frame olarak birleştirilebileceğini gördük. Ancak bazen veriseti değişkenler değilde gözlemler olarak elimize gelir. Yani her vektör bir gözlem verisi içerir. Yani sütunları değil satırları oluşturmaktadırlar. Bu durumda `rbind` fonksiyonunu kullanırız. Ancak `rbind` her seferde bir vektörü data frame ile birleştirmektedir. Bu sebeple öncelikle vektörleri bir liste yapısında bir araya getirecek sonra `rbind` ile birleştireceğim. Aşağıda, önce bir döngü yardımıyla rastgele sayılardan oluşan 10 vektör oluşturacağım:
+
+```{r df4}
+lst <- list()
+for (i in 1:10) lst[[i]] <- c(rnorm(4,10,1))
+lst
+```
+
+Şimdi sıra vektörleri `rbind` ile satır satır birleştirmeye geldi. Liste elemanlarını topluca data frame altında birleştirebilmek için `do.call` fonksiyonunu kullanacağız. `do.call` fonksiyonuna ilk parametre olarak herhangi bir fonksiyonu atayabiliriz. Ardından fonksiyona girmesini istediğimiz parametreleri liste olarak verebiliriz. `do.call` ilk parametredeki fonksiyonu, ikinci parametredeki nesnelerle çalıştırır. `rbind` ile oluşturduğumuz matrisi `data.frame` fonksiyonuyla data framee çeviriyoruz:
+
+```{r df5}
+df2 <- data.frame(do.call(rbind, lst))
+df2
+```
+
+## Mevcut bir data frame'e nasıl yeni bir satır eklerim?
+
+Önce elimizdeki yeni veriyi bir data frame'e çevirip sonra `rbind` ile iki data frame'i birleştiririz:
+
+```{r df6}
+(new_vec <- rnorm(4,10,1))
+temp_df <- (new_vec)
+df2 <- rbind(df2,temp_df)
+df2
+```
+
+Bu işlem esnasında dikkat edilmesi gereken bir husus şudur; şayet `df2` data frame'inin değişkenlerinin kendi atadığımız isimleri olsaydı, eklediğimiz data frame'in değişken isimleri de aynı olmalı idi, aksi halde işlem hatalı olacaktır.
+
+## Boş bir data frame oluşturmak istiyorum, nasıl yapabilirim?
+
+Bazen eldeki verileri data frame olarak birleştirmektense, büyüklüğü ve değişken adları belirlenmiş boş bir data frame üretmemiz gerekebilir. Bu şekilde R'ın bellek tahsisi yapmasını dağlayabiliriz. Örneğin dört farklı değişken ve 1000 tane gözlem içeren bir data frame üretelim:
+
+```{r df7}
+N <- 1000
+df3 <- data.frame(id = numeric(N), name = character(N), weight = numeric(N), height = numeric(N))
+head(df3,5)
+```
+
+Böylece boş bir data frame ürettik. R, numerik değişkenlere 0 değeri atadı.
+
+## Data frame'de bulunan değişkenlerin konumuna göre seçme işlemini nasıl yaparım?
+
+Yukarıda listelere ilişkin olarak söylediğimiz husus data frme için de geçerlidir. Hatırlarsanız liste elemanlarını seçerken, tek köşeli parantez (`x[n]`) liste, çift köşeli parantez (`x[[n]]`) ve dolar işareti (`x$n`) vektör olarak çıktı veriyordu. Aynı biçimde data frame'lerde de tek köşeli parantez (`x[n]`) data frame, çift köşeli parantez (`x[[n]]`) ve dolar işareti (`x$n`) vektör olarak çıktı vermektedir.
+
+Bu genel kural, fakat aşağıda istisnai durumlar gelecek, buna dikkat ederseniz data frame'lerde seçim işlemini öğrenirken daha az acı çekersiniz.
+
+```{r df8}
+df2[[1]]
+```
+
+```{r df9}
+df2[1]
+```
+
+```{r df10}
+df2[,1]
+```
+
+Yukarıda `df2[[1]]` vektör, `df2[1]` data frame ve matris notasyonu kullandığımız `df2[,1]` vektör olarak çıktı vermektedir. İllaki data frame istiyorsak bunu `df2[,1, drop=FALSE]` ile başarabiliriz (sadece matris notasyonunda).
+
+```{r df11}
+df2[,1, drop=FALSE]
+```
+
+Birden fazla sütun seçmek istiyorsak vektör biçiminde çıktı alamayız. Dolayısyla çift köşeli parantez (`x[[n]]`) yapısını kullanamayız. Birden fazla değişken seçerken matris notasyonunu kullanmalıyız. Yani, `[satır,sütun]` biçiminde yazmalıyız. Satırların tamamını ve belli sütunları seçeceksek, satır değerini boş bırakmalı ve virgülü unutmamalıyız, `[,sütun]` şeklinde.  Sütunların tamamını ve belli satırları seçeceksek bunun tersini yapmalıyız,`[satır,]`. Sütunlar ardışıksa `başlangıç:bitiş` şeklinde seri oluşturabilir veya `c(sütun, sütun)` seklinde seçim yapabiliriz.
+
+```{r df12}
+df2[,c(1,3)]
+df2[1:5,c(1,3)]
+df2[1:5,]
+```
+
+Data frame'ler, R'da en sık kullanılan veri yapılarından olduğundan biraz vakit harcayıp bu kuralları anlamak daha sonraki çalışmalarda size zaman kazandıracak ve böylelikle anlaşılmaz hata mesajlarını çözmeye çabalamaktan kurtulup akıl sağlığınızı korumuş olacaksınız.
+
+## Data frame sütunlarını sütun (değişken) isimleriyle nasıl seçebilirim?
+
+Data frame sütunlarını sütun (veya değişken) isimleriyle seçerken `x[["isim"]]`, `x["isim"]` veya `x$isim` yapılarından birisini kullanabiliriz. Bir önceki başlık altındaki kurallar burada da geçerli:
+
+```{r df13}
+colnames(df2) <- c("world","moon","mars","saturn")
+# Vektör biçiminde çıktı
+df2[["world"]]
+df2$world
+```
+
+```{r df14}
+df2["world"]    # Data frame biçiminde çıktı
+```
+
+Birden fazla sütun seçebiliriz:
+
+```{r df15}
+df2[c("moon", "world", "mars")]    # Data frame biçiminde çıktı
+```
+
+Matris notasyonu kullanabiliriz. Tek sütur seçmemiz halinde vektör biçiminde çıktı alırız. Yukarıdaki gibi `drop=FALSE` parametresiyle data frame olarak çıktı alabiliriz:
+
+```{r df16}
+df2[,"moon"]    # Vektör biçiminde çıktı
+df2[,"moon", drop=FALSE]    # Vektör biçiminde çıktı
+```
+
+Matris notasyonuyla birden fazla satır seçilirse yine vektör şeklinde çıktı gelir. Data frame isteniyorsa `drop=FALSE` burada da kullanılabilir:
+
+```{r df16a}
+df2[1:5,"moon"]    # Vektör biçiminde çıktı
+```
+
+Matris notasyonuyla birden fazla sütun seçilirse data frame şeklinde çıktı gelir:
+
+```{r df17}
+df2[1:5, c("moon","saturn")]    # Vektör biçiminde çıktı
+```
+
+## Sütun seçim işlemini daha pratik yapamaz mıyız?
+
+İlk başlayanlar için yukarıda anlatılan seçme işlemleri çok karışık gelebilir. Çok şükür sütun seçim işlemini kolaylaştıracak bir fonksiyon mevcut, `subset()`:
+
+```{r df18}
+subset(df2, select=c(moon,saturn))
+```
+
+`subset()` ile data frame üzerinde filtreleme de yapabiliriz. Mesela `world` değeri 9'dan küçük olan `moon` ve `saturn` değişkenlerini seçelim:
+
+```{r df19}
+subset(df2, select=c(moon,saturn), subset = (world < 9))
+```
+
+`world` değişkeninin ortalamasından büyük olan `moon` ve `saturn` değişkenlerini seçelim:
+
+```{r df20}
+subset(df2, select=c(moon,saturn), subset = (moon > mean(world) & saturn > mean(world)))
+```
+
+İstemediğimiz bir sütun/sütunları başına (`-`) koyarak hariç tutabiliriz:
+
+```{r df21}
+subset(df2, select=-c(moon,saturn))
+```
+
+Ancak data frame üzerinde daha incelikli seçimler yapabilmek için konuma göre seçim yapma işleminde ustalaşmak gerekmektedir.
+
+## Data frame'de bulunan değişken isimlerini nasıl değiştirebilirim?
+
+Data frame oluştururken değişkenlere isim vermezsek, R kendisi isim atamaktadır.  `colnames` fonksiyonu ile istediğimiz değişken adlarını atayabiliriz:
+
+```{r df22}
+df4 <- data.frame(matrix(sample(50:100, 30, replace = TRUE),10,3))
+colnames(df4) <- c("age","weight","height")
+df4
+```
+
+## Data frame'imde `NA` değerleri var ve fonksiyonlar hatalı sonuç veriyor, ne yapabilirim?
+
+Verisetinde `NA` değerleri olması halinde hesaplama yapan fonksiyonlar çalışmayabilir. Bu durumu bazı fonksiyonlarda bulunan `na.rm` parametresini `na.rm = TRUE` şeklinde değer atayarak düzeltebiliriz. Önce bir data frame oluşturup, rastgele seçeceğimiz yedi değere `NA` atayalım:
+
+```{r df23}
+df5 <- data.frame(matrix(sample(50:100, 30, replace = TRUE),10,3))
+for(i in 1:7){
+  r <- sample(1:10, 1)
+  c <- sample(1:3, 1)
+  df5[r,c] <- NA
+}
+df5
+```
+
+`na.rm` parametresini kullanmayınca sonuçta `NA` olarak geliyor:
+
+```{r df24}
+mean(df5$X1)
+mean(df5$X1, na.rm=TRUE)
+```
+
+Yahut `na.omit fonksiyonuyla`, `NA` içeren bütün satırları kaldırabiliriz:
+
+```{r df25}
+colSums(df5)
+colSums(na.omit(df5))
+```
+
+## İki veya daha fazla data frame'i birleştirmek istiyorum, nasıl yaparım?
+
+İki veya daha fazla data frame'i yan yana yani sütun olarak birleştirmek için `cbind`, alt alta yani satır olarak birleştirmek için `rbind` kullanabiliriz. Dikkat edilmesi gereken ilk husus `rbind` ile sütun adları aynı olmalıdır. Diğer yandan `cbind` kullanırken farklı sütun adları olması yeni data frame'de seçim yapma işlemini kolaylaştıracaktır:
+
+```{r df26}
+df6 <- data.frame(matrix(sample(50:100, 30, replace = TRUE),10,3))
+df7 <- data.frame(matrix(sample(50:100, 30, replace = TRUE),10,3))
+df8 <- rbind(df6,df7)
+colnames(df7) <- c("X4","X5","X6")
+df9 <- cbind(df6,df7)
+```
+
+Satır bazında birleştirme yaparken `rbind` aynı sayıda sütun (değişken) gerektirmektedir, aksi halde hata verecektir. Sütun bazında birleştirme yaparken aynı sayıda satır olmaması durumunda `cbind` yine de birleştirme işlemini yapacaktır. Ancak küçük sütunları R'ın recycling kuralı uyarınca kendisi dolduracaktır. Dolayısıyla böyle bir durumda beklediğiniz çıktıyı alamayabilirsiniz.
+
+## `with` fonksiyonunu data frame ile nasıl kullanabilirim?
+
+`with` fonksiyonu, yukarıdaki seçim işlemlerini yapmadan data frame üzerinde işlem yapmaya imkan verir:
+
+```{r df27}
+z_x1 <- with(df8, (X1 - mean(X1)) / sd(X1))
+```
+

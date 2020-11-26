@@ -1,0 +1,84 @@
+---
+title: ggplot2 ile betimsel (descriptive) analiz grafikleri
+author: Hakan Hekim
+date: '2020-11-03'
+slug: ggplot2-ile-betimsel-descriptive-analiz-grafikleri
+categories:
+  - Grafik
+tags:
+  - ggplot2
+description: ggplot ile beitmsel istatistik analizleri, grafikleri.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/ggplot_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Bu yazıda <code>ggplot2</code> paketine örnekler vermeye devam ederek, betimleyici (descriptive) analizlerde kullanılan grafikleri <code>ggplot2</code> paketiyle üretelim. Öncelikle histogram grafiğiyle başlayalım:</p>
+<pre class="r"><code>library(ggplot2)
+ggplot(data = mpg) + 
+  geom_histogram(mapping = aes(x = hwy), colour = &quot;black&quot;, fill = &quot;white&quot;)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="/post/2020-11-03-ggplot2-ile-betimsel-descriptive-analiz-grafikleri/index.en_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>Çizmiş olduğumuz histogramın sadece belli bir bölgesine odaklanabiliriz:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_histogram(mapping = aes(x = hwy), colour = &quot;black&quot;, fill = &quot;white&quot;) +
+  coord_cartesian(xlim = c(15, 30))</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="/post/2020-11-03-ggplot2-ile-betimsel-descriptive-analiz-grafikleri/index.en_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><code>binwidth</code> parametresiyle veri aralıklarını daraltarak daha az detay sunan ancak daha derli toplu bir histogram üretebiliriz:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_histogram(mapping = aes(x = hwy), colour = &quot;black&quot;, fill = &quot;white&quot;, binwidth = 2.5)</code></pre>
+<p><img src="/post/2020-11-03-ggplot2-ile-betimsel-descriptive-analiz-grafikleri/index.en_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Çizdiğimiz iki grafikte <code>y</code> ekseninde değişkenin frekans değerleri (herbir aralıkta kaç gözlem olduğu) bulunuyordu. Bunun yerine y ekseninde yoğunluğu (density) gösterip dağılımı daha iyi değerlendirmemizi sağlayacak bir eğri ekleyelim ve eksenlerin etiketlerini yazalım:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_histogram(mapping = aes(x = hwy, y = ..density..), 
+                 colour = &quot;black&quot;, fill = &quot;white&quot;, binwidth = 2.5) + 
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(mpg$hwy, na.rm = TRUE), 
+                            sd = sd(mpg$hwy, na.rm = TRUE)), 
+                colour = &quot;red&quot;, size = 1) + 
+  labs(x = &quot;Şehirler arası yakıt\nperformansı&quot;, y = &quot;Density&quot;)</code></pre>
+<p><img src="/post/2020-11-03-ggplot2-ile-betimsel-descriptive-analiz-grafikleri/index.en_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Aynı grafiği geom_freqpoly kullanarak sadece eğri ile çizebiliriz:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_freqpoly(mapping = aes(x = hwy, y = ..density..), 
+                colour = &quot;red&quot;,  binwidth = 2.5) + 
+  labs(x = &quot;Şehirler arası yakıt\nperformansı&quot;, y = &quot;Density&quot;)</code></pre>
+<p><img src="/post/2020-11-03-ggplot2-ile-betimsel-descriptive-analiz-grafikleri/index.en_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Birden fazla histogramı aynı grafik üzerinde görmek istiyorsak geom_freqpoly ile bunu yapabiliriz:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_freqpoly(mapping = aes(x = hwy,  color = as.character(cyl)),  binwidth = 1) + 
+  labs(x = &quot;Şehirler arası yakıt\nperformansı&quot;, y = &quot;Count&quot;, color = &quot;Silindir\nSayısı&quot;)</code></pre>
+<p><img src="/post/2020-11-03-ggplot2-ile-betimsel-descriptive-analiz-grafikleri/index.en_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>geom_boxplot ile kuut grafikleri çizebiliriz. Otomobillerin sınıflarına göre kutu grafiği üretelim:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_boxplot(mapping = aes(x = class, y = hwy)) + 
+  labs(x = &quot;Sınıf&quot;, y = &quot;Şehirler arası yakıt performansı&quot;)</code></pre>
+<p><img src="/post/2020-11-03-ggplot2-ile-betimsel-descriptive-analiz-grafikleri/index.en_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Kutuları medyen değerlerine göre sıralayalım:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_boxplot(mapping = aes(x = reorder(class, hwy, FUN = median), y = hwy)) + 
+  labs(x = &quot;Sınıf&quot;, y = &quot;Şehirler arası yakıt performansı&quot;)</code></pre>
+<p><img src="/post/2020-11-03-ggplot2-ile-betimsel-descriptive-analiz-grafikleri/index.en_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>İstersek <code>coord_flip()</code> ile grafiği yatay biçime getirebiliriz:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_boxplot(mapping = aes(x = reorder(class, hwy, FUN = median), y = hwy)) + 
+  labs(x = &quot;Sınıf&quot;, y = &quot;Şehirler arası yakıt performansı&quot;) + 
+  coord_flip()</code></pre>
+<p><img src="/post/2020-11-03-ggplot2-ile-betimsel-descriptive-analiz-grafikleri/index.en_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><code>geom_bar</code> ile çubuk grafikleri çizebiliriz:</p>
+<pre class="r"><code>ggplot(mpg, aes(class, fill = drv)) + 
+  geom_bar(width = .75) + 
+  labs(x = &quot;Sınıf&quot;, y = &quot;Miktar&quot;, fill = &quot;Çekiş&quot;)</code></pre>
+<p><img src="/post/2020-11-03-ggplot2-ile-betimsel-descriptive-analiz-grafikleri/index.en_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>Bu örnekte estetik özellikleri <code>ggplot</code> komutunun hemen ardından verdik. Bu şekilde tanımlanmış estetik özellikleri geomlarda da (yeniden tanımlanmaması durumunda) geçerli olacaktır. Yukarıdaki grafikte araçları sınıflarına göre grafiklerken çekiş özelliklerini de yığınlanmış renkler şeklinde grafiğe ekledik.</p>
+<p>Görüldüğü gibi <code>ggplot2</code> paketiyle pek çok grafik işlemini kolayca yapmak mümkün.</p>

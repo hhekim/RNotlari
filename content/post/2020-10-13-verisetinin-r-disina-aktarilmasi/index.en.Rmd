@@ -1,0 +1,47 @@
+---
+title: Verisetinin R dışına aktarılması
+author: Hakan Hekim
+date: '2020-10-13'
+slug: [verisetinin-r-disina-aktarilmasi]
+categories:
+  - Temel R
+tags:
+  - dataframe
+description: R dışına veri aktarma işlemleri.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+R verisetlerini diske kaydetmenin farklı yolları mevcut. Bu notta örnek olarak  `write.table()` fonksiyonunu ele alacağım:
+
+```{r eval=FALSE, include=TRUE}
+write.table(mtcars, file="cmtcars.txt", sep=" ", quote=FALSE)
+```
+
+Bu örnekte `write.table()` fonksiyonunun aldığı ilk parametre dışa aktaracağımız verisetinin ismi olan `mtcars`. Sonraki parametre R dışında oluşturacağımız dosyanın ismi. Burada isim olarak .txt uzantılı bir dosya oluşturuyoruz.
+
+Disk üzerinde belli bir klasör belirlemediğimizden dolayı R'ın çalışma klasörü neresi olarak belirlendiyse dosya orada oluşturulacaktır. Bu arada çalışma alanının neresi olduğunu `getwd()` fonksiyonuyla sorgulayabiliriz.
+
+Dosya ismi verirken dikkat edilmesi gereken noktalardan birisi, şayet kayıt edilen yerde aynı isimde başka bir dosya varsa, yeni dosya bu dosyanın üzerine yazılacak dolayısıyla önceki dosya silinecektir. Şayet önceden oluşturduğumuz bir dosyaya ekleme yapmamız gerekiyorsa, yazdığımız R koduna `append=TRUE` şeklinde bir parametre eklememiz gerekmektedir:
+
+```{r eval=FALSE, include=TRUE}
+write.table(mtcars, file="cmtcars.txt", sep=" ", quote=FALSE, append=TRUE)
+```
+
+`sep` parametresi yeni oluşturduğumuz dosyada değerlerin birbirlerinden ayırt edilebilmeleri için aralarında boşluk yerleştirmemizi sağlıyor. Bu seçenek verisetinde birden fazla kelime içeren değerler olması durumunda problem çıkartacaktır çünkü kelimelerin herbiri ayrı bir değişken gibi kaydedilecektir. Bunun önüne geçmek için virgül veya tab gibi farklı bir ayraç kullanabiliriz.
+
+`quote` parametresi şayet `TRUE` olarak bırakılırsa verisetinde yer alan karakter ve faktör tipi veriler ve satır, sütun adları tırnak içine alınacaktır.
+
+`write.table()` fonksiyonunun aldığı diğer bir parametre olan `na` ile verisetinde yer alan eksik değerlerin nasıl işaretleneceği belirlenebilir. Mesela, `na=-11` yazarak eksik değerlerin -11 ile doldurulmasını, `na="NA"` yazarak `NA` ibaresiyle doldurulmasını sağlayabiliriz.
+
+Son olarak `dec` parametresiyle ondalık ayracını belirleyebiliriz. Son iki parametreyi de ekleyecek olursak R kodumuz şu şekilde olacak:
+
+```{r eval=FALSE, include=TRUE}
+write.table(mtcars, file="cmtcars.txt", sep=" ", quote=FALSE, append=TRUE, na="NA", dec=",")
+```

@@ -1,0 +1,156 @@
+---
+title: R ile betimleyici (descriptive) istatistik analizi
+author: Hakan Hekim
+date: '2020-10-19'
+slug: [r-ile-betimleyici-descriptive-istatistik-analizi]
+categories:
+  - Temel R
+  - Grafik
+tags:
+  - Descriptive
+description: R ile betimleyici analiz yöntemleri.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Bir veriseti üzerinde çalışırken ilk olarak yapmamız gereken verisetini anlamaktır. Verisetini anlayabilmekse betimleyici (descriptive) istatistik analiz gerektirmektedir. Betimleyici analiz kapsamında neler yapılması gerektiği kişiye ve duruma göre farklılık arzetse de ortalama, medyen, mod standart sapma gibi değerlerin hesaplanması neredeyse standarttır.</p>
+<p>Betimleyici analiz için ilk yapılması gereken şey öncelikle verisetinin barındırdığı değişkenleri ve tiplerini incelemek olacaktır. Bu örnekte, R’da bulunan verisetlerinden mtcars veriseti kullanılacaktır.</p>
+<pre class="r"><code>str(mtcars)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    32 obs. of  11 variables:
+##  $ mpg : num  21 21 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 ...
+##  $ cyl : num  6 6 4 6 8 6 8 4 4 6 ...
+##  $ disp: num  160 160 108 258 360 ...
+##  $ hp  : num  110 110 93 110 175 105 245 62 95 123 ...
+##  $ drat: num  3.9 3.9 3.85 3.08 3.15 2.76 3.21 3.69 3.92 3.92 ...
+##  $ wt  : num  2.62 2.88 2.32 3.21 3.44 ...
+##  $ qsec: num  16.5 17 18.6 19.4 17 ...
+##  $ vs  : num  0 0 1 1 0 1 0 1 1 1 ...
+##  $ am  : num  1 1 1 0 0 0 0 0 0 0 ...
+##  $ gear: num  4 4 4 3 3 3 3 4 4 4 ...
+##  $ carb: num  4 4 1 1 2 1 4 2 2 4 ...</code></pre>
+<p>Veriseti hepsi nümerik değer içeren 11 değişken içermekte. R konsolunda <code>?mtcars</code> yazarak değişkenlerin neyi ifade ettiğine dair bilgi edinebiliriz. Çıktının ilgili kısmı şu şekilde:</p>
+<blockquote>
+<p>[, 1] mpg Miles/(US) gallon
+[, 2] cyl Number of cylinders
+[, 3] disp Displacement (cu.in.)
+[, 4] hp Gross horsepower
+[, 5] drat Rear axle ratio
+[, 6] wt Weight (lb/1000)
+[, 7] qsec 1/4 mile time
+[, 8] vs V/S
+[, 9] am Transmission (0 = automatic, 1 = manual)
+[,10] gear Number of forward gears
+[,11] carb Number of carburetors</p>
+</blockquote>
+<p>Değişkenlere ilişkin temel bazı istatistikleri summary() fonksiyonuyla hesaplayabiliriz:</p>
+<pre class="r"><code>summary(mtcars)</code></pre>
+<pre><code>##       mpg             cyl             disp             hp       
+##  Min.   :10.40   Min.   :4.000   Min.   : 71.1   Min.   : 52.0  
+##  1st Qu.:15.43   1st Qu.:4.000   1st Qu.:120.8   1st Qu.: 96.5  
+##  Median :19.20   Median :6.000   Median :196.3   Median :123.0  
+##  Mean   :20.09   Mean   :6.188   Mean   :230.7   Mean   :146.7  
+##  3rd Qu.:22.80   3rd Qu.:8.000   3rd Qu.:326.0   3rd Qu.:180.0  
+##  Max.   :33.90   Max.   :8.000   Max.   :472.0   Max.   :335.0  
+##       drat             wt             qsec             vs        
+##  Min.   :2.760   Min.   :1.513   Min.   :14.50   Min.   :0.0000  
+##  1st Qu.:3.080   1st Qu.:2.581   1st Qu.:16.89   1st Qu.:0.0000  
+##  Median :3.695   Median :3.325   Median :17.71   Median :0.0000  
+##  Mean   :3.597   Mean   :3.217   Mean   :17.85   Mean   :0.4375  
+##  3rd Qu.:3.920   3rd Qu.:3.610   3rd Qu.:18.90   3rd Qu.:1.0000  
+##  Max.   :4.930   Max.   :5.424   Max.   :22.90   Max.   :1.0000  
+##        am              gear            carb      
+##  Min.   :0.0000   Min.   :3.000   Min.   :1.000  
+##  1st Qu.:0.0000   1st Qu.:3.000   1st Qu.:2.000  
+##  Median :0.0000   Median :4.000   Median :2.000  
+##  Mean   :0.4062   Mean   :3.688   Mean   :2.812  
+##  3rd Qu.:1.0000   3rd Qu.:4.000   3rd Qu.:4.000  
+##  Max.   :1.0000   Max.   :5.000   Max.   :8.000</code></pre>
+<p>İhtiyacımız olan değerler burada bulunmuyorsa kendimize göre bir tablo oluşturabiliriz:</p>
+<pre class="r"><code>ort &lt;- sapply(mtcars[,0:11], FUN=mean)
+medyen &lt;- sapply(mtcars[,0:11], FUN=median)
+varyans &lt;- sapply(mtcars[,0:11], FUN=var)
+stsapma &lt;- sapply(mtcars[,0:11], FUN=sd)
+min &lt;- sapply(mtcars[,0:11], FUN=min)
+max &lt;- sapply(mtcars[,0:11], FUN=max)
+round(cbind(min,max,ort,medyen,varyans,stsapma),digits=2)</code></pre>
+<pre><code>##        min    max    ort medyen  varyans stsapma
+## mpg  10.40  33.90  20.09  19.20    36.32    6.03
+## cyl   4.00   8.00   6.19   6.00     3.19    1.79
+## disp 71.10 472.00 230.72 196.30 15360.80  123.94
+## hp   52.00 335.00 146.69 123.00  4700.87   68.56
+## drat  2.76   4.93   3.60   3.70     0.29    0.53
+## wt    1.51   5.42   3.22   3.33     0.96    0.98
+## qsec 14.50  22.90  17.85  17.71     3.19    1.79
+## vs    0.00   1.00   0.44   0.00     0.25    0.50
+## am    0.00   1.00   0.41   0.00     0.25    0.50
+## gear  3.00   5.00   3.69   4.00     0.54    0.74
+## carb  1.00   8.00   2.81   2.00     2.61    1.62</code></pre>
+<p>Önce istediğimiz değerleri hesaplayarak herbirini ayrı bir değişkene atadık. Sonra <code>cbind()</code> fonksiyonuyla bu değişkenleri tablo haline getirdik. Burada kullandığımız <code>round()</code> fonksiyonuyla değerleri yuvarladık ve sadece iki ondalık basamak içermelerini sağladık.</p>
+<p>Her defasında bu kadar kod yazmadan da bu işlemi yapabiliriz:</p>
+<pre class="r"><code>library(moments)
+func&lt;-c(&quot;min&quot;,&quot;max&quot;,&quot;mean&quot;,&quot;median&quot;, &quot;var&quot;,&quot;sd&quot;,&quot;skewness&quot;,&quot;kurtosis&quot;)
+desc&lt;-matrix(nrow=11,ncol=8)
+colnames(desc) &lt;-func
+rownames(desc) &lt;-colnames(mtcars)
+for(i in 1:length(func)) desc[,i]&lt;-round(sapply(mtcars[,0:11], FUN=func[i]),digits = 2)
+desc</code></pre>
+<pre><code>##        min    max   mean median      var     sd skewness kurtosis
+## mpg  10.40  33.90  20.09  19.20    36.32   6.03     0.64     2.80
+## cyl   4.00   8.00   6.19   6.00     3.19   1.79    -0.18     1.32
+## disp 71.10 472.00 230.72 196.30 15360.80 123.94     0.40     1.91
+## hp   52.00 335.00 146.69 123.00  4700.87  68.56     0.76     3.05
+## drat  2.76   4.93   3.60   3.70     0.29   0.53     0.28     2.44
+## wt    1.51   5.42   3.22   3.33     0.96   0.98     0.44     3.17
+## qsec 14.50  22.90  17.85  17.71     3.19   1.79     0.39     3.55
+## vs    0.00   1.00   0.44   0.00     0.25   0.50     0.25     1.06
+## am    0.00   1.00   0.41   0.00     0.25   0.50     0.38     1.15
+## gear  3.00   5.00   3.69   4.00     0.54   0.74     0.55     2.06
+## carb  1.00   8.00   2.81   2.00     2.61   1.62     1.10     4.54</code></pre>
+<p>Burada bir <code>for</code> döngüsü (loop) kullandık. İlk satırda kullanacağımız fonksiyonların isimlerinden oluşan bir vektör hazırladık. İkinci satırda analiz sonuçlarını depolamak için bir matrix ürettik. Üç ve dördüncü satırlarda matriksin sütun ve satır isimlerini belirledik.</p>
+<p>Beşinci satırdaysa döngümüz yer alıyor. Döngünün, yapmak istediğimiz işlem sayısınca tekrar etmesini istiyoruz. Bunun için <code>length(func)</code> parametresini kullandık. Devamında da <code>sapply()</code> fonksiyonuyla hesaplama işlemini yapıp sonucu matrikse sütun olarak kaydediyoruz. Bu kodu ayrı bir yere kaydederek data frame ile ilgili değişiklikler yaparak farklı verisetlerinde kullanabiliriz. Burada kullandığımız <code>skewness()</code> ve <code>kurtosis()</code> fonksiyonları için <code>moments</code> kütüphanesinin yüklenmesi gerekmektedir, <code>library(moments)</code>.</p>
+<p>Betimleyici istatistik amacıyla yapılan diğer bir analiz değişkenlerin histogram grafiklerini çizmek. Bunun için <code>hist()</code> fonksiyonunu kullanıyoruz:</p>
+<pre class="r"><code>hist(mtcars$mpg,prob=T,main=&quot;Histogram Grafiği&quot;, xlab=&quot;Yakıt sarfiyatı&quot;,col=&quot;green&quot;)
+curve(dnorm(x, mean=mean(mtcars$mpg), sd=sd(mtcars$mpg)), add=TRUE,col=&quot;darkblue&quot;, lwd=2)</code></pre>
+<p><img src="/post/2020-10-19-r-ile-betimleyici-descriptive-istatistik-analizi/index.en_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Yukarıdaki kodda ilk satırda histogramı oluşturduk. <code>hist()</code> fonksiyonu ilk parametre olarak histogramını üretmek istediğimiz değişkeni alıyor. <code>prob=TRUE</code> parametresi, <code>y</code> ekseninin sıklık değil ihtimal değerlerini göstermesini istiyoruz. Diğer parametrelerde grafik başlığı ve eksen etiketleri belirlenmekte.</p>
+<p>İkinci satırdaki kod ise değişkenin dağılımını gösteren eğriyi grafiğe yerleştirmemizi sağlıyor. Bu yolla değişkenin normal dağılıma sahip olup olmadığını inceleyebiliriz.</p>
+<p>Histogram çizerken <code>breaks</code> parametresiyle kesme noktalarını istediğimiz biçimde düzenleyebiliriz. Mesela yaş gruplarına göre kaza geçirme sayılarını veren bir verisetinin histogram eğrisini çizelim. Yalnız histogram sütunlarının alanları, temsil ettiği sayıyla orantılı olsun:</p>
+<pre class="r"><code>mid.age &lt;- c(2.5,7.5,13,16.5,17.5,19,22.5,44.5,70.5)
+acc.count &lt;- c(28,46,58,20,31,64,149,316,103)
+age.acc &lt;- rep(mid.age,acc.count)
+brk &lt;- c(0,5,10,16,17,18,20,25,60,80)
+hist(age.acc,breaks=brk)</code></pre>
+<p><img src="/post/2020-10-19-r-ile-betimleyici-descriptive-istatistik-analizi/index.en_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>Burada öncelikle <code>mid.age</code> değişkeniyle yaş grupları için ortalama değerleri, ikinci satırda <code>acc.count</code> değişkeniyle herbir gruptaki kişi sayısını belirledik ve üçüncü satırdada ham verisetini oluşturduk. Yani <code>age.acc</code> değişkeninde 28 tane 2.5, 46 tane 7.5 vs. değerleri ürettik. Dördüncü satırda histogramın kesme noktalarını içeren <code>brk</code> vektörünü oluşturduk. Son olarakta histogramı çizdik (Peter Dalgaard, Introductory Statistics with R).</p>
+<p>Kullanacağımız değişkenin normal bir dağılıma sahip olup olmadığını incelemek için yapılabilecek hesaplamalardan birisi emprical birikimli fonksiyon (emprical cumulative function) hesaplanmasıdır:</p>
+<pre class="r"><code>x&lt;-rnorm(50)
+n&lt;-length(x)
+plot(sort(x),(1:n)/n,type=&quot;s&quot;,ylim=c(0,1))</code></pre>
+<p><img src="/post/2020-10-19-r-ile-betimleyici-descriptive-istatistik-analizi/index.en_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Burada öncelikle 50 tane rastgele sayıdan ibaret bir <code>x</code> vektörü oluşturuyoruz. İkinci satırda <code>n</code> değişkenine değer olarak <code>x</code> vektörünün büyüklüğünü atıyoruz. Üçüncü satırdaysa grafiği çiziyoruz. Dikkat edilirse grafiğin ilk parametresi olarak <code>sort()</code> fonksiyonuyla sıraladığımız <code>x</code> değişkenini, ikinci parametre olarak teoretik dağılımı hesapladığımız bir ifadeyi belirledik. <code>type=”s”</code> parametresiyle basamak şeklinde bir grafik çizdik ve <code>ylim=c(0,1)</code> ile de <code>y</code> eksenini düzenledik (Peter Dalgaard, Introductory Statistics with R).</p>
+<p>R ile bu işlemi <code>qqnorm()</code> grafik fonksiyonuyla daha isabetli bir biçimde yapabiliriz.</p>
+<pre class="r"><code>qqnorm(x)</code></pre>
+<p><img src="/post/2020-10-19-r-ile-betimleyici-descriptive-istatistik-analizi/index.en_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Grafikte <code>y</code> ekseni <code>x</code> değişkenini, <code>x</code> ekseni ise teoretik dağılımı ifade etmektedir. Q-Q Plot grafiğinin düzgün bir eğime sahip oluşu verinin normal dağılıma sahip olduğunu gösterir. Yukarıdaki örnekte uçlardaki düzensizlik verinin alt ve üst değerlerinin normal dağılım özelliği taşımadığını göstermektedir. Aynı biçimde yukarıda kullandığımız <code>mpg</code> değişkenine ait q-q plot grafiğini çizelim:</p>
+<pre class="r"><code>qqnorm(mtcars$mpg)
+qqline(mtcars$mpg)</code></pre>
+<p><img src="/post/2020-10-19-r-ile-betimleyici-descriptive-istatistik-analizi/index.en_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>İlk satırda yer alan kod değişkenin dağılım grafiğini oluşturmakta, ikinci satırdaki kod ise değişkenin tamamen normal dağılıma sahip olması durumunda noktaların üzerinde olması gereken hattı çizmektedir. Nadiren bir değişken ikinci satırdaki kod ile çizdiğimiz hat üzerine oturacaktır. Şekildeki grafik değişkenin normal dağılıma yakın olduğunu göstermektedir.</p>
+<p>Betimleyici analiz amacıyla çizilebilecek diğer bir grafik dağılım grafiğidir. Dağılım grafiklerini daha önce incelemiştik.</p>
+<p>Son olarak, değişkenin dağılımı hakkında bilgi veren skewness ve kurtosis betimsel analizde kullanılan istatistiklerdir. Skewness dağılımın sağa veya sola yatık olup olmadığı, kurtosis ise tekdüze olup olmadığı hakkında bilgi verir. Bunları hesaplayabilmek için moments paketine ihtiyacımız var:</p>
+<pre class="r"><code>library(moments)
+round(sapply(mtcars,skewness),digits=2)</code></pre>
+<pre><code>##   mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb 
+##  0.64 -0.18  0.40  0.76  0.28  0.44  0.39  0.25  0.38  0.55  1.10</code></pre>
+<p>Normal dağılıma sahip bir değişkenin skewness değerinin sıfıra yakın olması gerekmektedir. Skewness değerinin pozitif olarak artması, dağılımın sağa doğru uzayan bir kuyruğu olduğunu, negatif olarak artmasıysa sola doğru uzayan bir kuyruğu olduğunu göstermektedir. Yukarıda histogram grafiği bulunan <code>mpg</code> değişkenine baktığımızda skewness değerinin 0.64 olduğunu, bunun grafiği doğruladığını görüyoruz.</p>
+<p>Aynı şekilde normal dağılıma sahip bir değişkenin kurtosis değeri sıfıra yakın olacaktır. Kurtosis değerinin pozitif olarak artması dağılımın bir noktada zirve yaptığını, negatif olarak artması düz bir dağılımın olduğunu göstermektedir.</p>

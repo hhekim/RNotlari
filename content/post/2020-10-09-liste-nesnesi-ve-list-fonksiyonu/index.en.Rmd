@@ -1,0 +1,50 @@
+---
+title: Liste nesnesi ve list() fonksiyonu
+author: Hakan Hekim
+date: '2020-10-09'
+slug: liste-nesnesi-ve-list-fonksiyonu
+categories:
+  - Temel R
+tags:
+  - Liste
+  - list()
+description: Listeleri ve list fonksiyonu kullanarak liste üretilmesini anlatır.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+#thumbnail: /images/path/thumbnail.png
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Buraya kadar saydığımız veri nesneleri içinde en az kısıtlama içereni listelerdir. Liste nesnesi içerisine farklı türlerde ve farklı boyutlarda değişkenleri depolayabiliriz. Aşağıdaki örnekte öncelikle `a`, `b`, `c`, ve `d` adında dört değişken tanımlanacak ve bu değişkenler `list()` fonksiyonu kullanılarak `z` adında bir listede toplanacaktır:
+
+```{r}
+a <- c(1,2,3)
+b <- c("k","l","m","n")
+c <- 8
+d <- matrix(1:9, nrow = 3, ncol = 3)
+z <- list(a=a,b=b,c=c,d=d)
+z
+```
+
+Herhangi bir ögeyi seçmek için matriks veya dataframe’deki notasyon kullanılır:
+
+```{r}
+z$b 
+z$b[4]
+z$d[2,]
+```
+
+Listede hangi değişkenlerin bulunduğu names() fonksiyonuyla sorgulanabilir:
+
+```{r}
+names(z)
+```
+
+Tabi liste oluştururken daha anlaşılır değişken isimleri kullanmak işi kolaylaştıracaktır.
+
+R, t-test, regresyon gibi hemen bütün istatistiksel analizlerin sonuçlarını liste şeklinde sunmaktadır. Bu analiz sonuçları üzerinde işlem yapabilmek için liste nesnesi ve liste içerisindeki ögelere nasıl erişileceği önemlidir.
+

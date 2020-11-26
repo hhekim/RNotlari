@@ -1,0 +1,145 @@
+---
+title: 'Tarifler: Verileri Dönüştürme'
+author: Hakan Hekim
+date: '2020-11-09'
+slug: tarifler-verileri-donusturme
+categories:
+  - Temel R
+tags:
+  - functional programming
+description: R'ın en güçlü özelliklerinden fonksiyonel programlamaya ilişkin tarifler içerir.
+featured: yes
+thumbnail: /images/thumbs/tarif_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+Bu tarifte R'ın en güçlü özelliklerinden olan fonksiyonel programaya dair kullanışlı bilgiler sunulmaktadır. Fonksiyonel programlama *loop* olarak adlandırılan `for`, `while` gibi program döngüleri kullanmadan daha az kod satırıyla ve çoğunlukla daha hızlı bir biçimde veri üzerinde işlem yapmamıza yardım eden fonksiyon yapılarıdır. Fonksiyonel programlamanın temellerini öğrenmek kod yazımını hızlandıracak ve daha pratik, anlaşılır kodlar yazmanızı sağlayacaktır.
+
+-   [Bir vektördeki veriyi nasıl gruplara
+    ayırabilirim?](#bir-vektördeki-veriyi-nasıl-gruplara-ayırabilirim)
+-   [Bir fonksiyonu listemde bulunan bütün elemanlara nasıl
+    uygularım?](#bir-fonksiyonu-listemde-bulunan-bütün-elemanlara-nasıl-uygularım)
+-   [Bir fonksiyonu matris veya data frame satırlarına/sütunlarına nasıl
+    uygularım?](#bir-fonksiyonu-matris-veya-data-frame-satırlarınasütunlarına-nasıl-uygularım)
+-   [Bir fonksiyonu `split` kullanmadan veride bulunan gruplara nasıl
+    uygularım?](#bir-fonksiyonu-split-kullanmadan-veride-bulunan-gruplara-nasıl-uygularım)
+-   [Bir fonksiyonu bir dizi vektöre veya listeye nasıl
+    uygularım?](#bir-fonksiyonu-bir-dizi-vektöre-veya-listeye-nasıl-uygularım)
+
+## Bir vektördeki veriyi nasıl gruplara ayırabilirim?
+
+Elinizde bir vektör var ve onu belli bir kritere göre gruplara ayırmak istiyorsunuz. `split` fonksiyonu bu işe uygun. R'da standart gelen `mtcars` veriseti üzerinden örnek vereyim. `mtcars` verisetinde araçların bir galon yakıtla aldığı mesafeyi gösteren `mpg` değişkeni var. Bu değişkeni araçların silindir sayısını gösteren `ctl` değişkenine göre gruplayalım:
+
+```{r}
+split(mtcars$mpg, mtcars$cyl)
+```
+
+## Bir fonksiyonu listemde bulunan bütün elemanlara nasıl uygularım?
+
+R dili *functional programming* grubuna girmektedir. Yani karmaşık işleri görmeye yarayan fonksiyonlar dilin yapısında tanımlanmıştır. Böylelikle `for`, `while` gibi döngülerle yapılacak işler bir fonksiyonlar kolayca yapılabilir. `lapply` ve `sapply` fonksiyonları bu gruptandır. Her ikisi de girdi olarak işlem yapılacak listeyi ve kullanmak istediğimiz fonksiyonu alır.
+
+Örnek olarak `split` fonksiyonu çıktı olarak liste üretmektedir. Bu listeyi bir değişkene kaydedip gruplar üzerinde analiz yapabiliriz.
+
+```{r}
+mpc <- split(mtcars$mpg, mtcars$cyl)
+lapply(mpc, mean)
+sapply(mpc, mean)
+```
+
+Aslında `lapply` ve `sapply` hemen hemen aynı fonksiyonlardır. `sapply`'ın başındaki `s` *simplified* anlamına gelmektedir. `lapply` liste olarak çıktı verirken `sapply` vektör olarak çıktı vermektedir. `sapply` fonksiyonun ürettiği değerlere göre matris veya liste olarak ta çıktı verebilir:
+
+```{r}
+sapply(mpc, summary)
+```
+
+Şayet fonksiyon R'ın yapılandırdığı bir biçimde sonuç veriyorsa bu sonucu listede saklamak daha doğru olacağından `lapply` kullanılmalıdır:
+
+```{r}
+lapply(mpc, t.test)
+```
+
+## Bir fonksiyonu matris veya data frame satırlarına/sütunlarına nasıl uygularım?
+
+Bir fonksiyonu matris veya data frame üzerine uygulayabilmek için `apply` fonksiyonunu kullanırız. Aşağıda önce bir matris üretip ardından satır ortalamalarını hesaplayalım:
+
+```{r}
+mtx <- matrix(sample(100:1000,20),4,5)
+rownames(mtx) <- c("A","B","C","D")
+colnames(mtx) <- c("X1","X2","X3","X4","X5")
+apply(mtx, 1, mean)
+apply(mtx, 2, mean)
+```
+
+`apply` ilk argüman olarak hesaplama yapmak istediğimiz verisetini, ikinci argüman olarak verisetinin satırlarında işlem yapacaksak **1**, sütunlarında işlem yapacaksak **2** değerini ve son olarakta fonksiyonu almaktadır.
+
+Aynı işlemi data frame üzerinde de yapabiliriz. Ancak numerik olmayan sütunları önceden ayıklamamız gerekir. Numerik olmayan veri tipleri olması halinde farklı sonuçlar ortaya çıkabilir.
+
+```{r}
+apply(mtcars,2,mean)
+```
+
+`lapply` ve `sapply` girdi olarak liste kabul ettiğinden ve data frame bir çeşit liste olduğundan bu fonksiyonlarla kullanılabilir. Çıktı türleri bir önceki maddede analatıldığı gibi olacaktır.
+
+```{r}
+str(lapply(mtcars,mean))
+```
+
+```{r}
+sapply(mtcars,mean)
+```
+
+`lapply` ve `sapply` fonksiyonlarıyla veriseti üzerinde kendi üreteceğimiz fonksiyonları da kullanabiliriz. Aşağıdaki örnekte `lapply` fonksiyonu ilk eleman olarak `mtcars` verisetindeki sütun isimlerini alıyor. Daha sonra bu sütun isimleri ürettiğimiz bir fonksiyona argüman olarak giriyor. Çıktı olarak regresyon katsayılarını alıyoruz:
+
+```{r}
+lms <- lapply(colnames(mtcars)[-1], function(x) {
+  form <- paste0("mpg ~ ", x)
+  lm(form, data=mtcars)$coefficient
+})
+head(lms,3)
+```
+
+## Bir fonksiyonu `split` kullanmadan veride bulunan gruplara nasıl uygularım?
+
+`apply`, `lapply`, `sapply` ... evet bitmedi. Sırada `tapply` var. Bir fonksiyonu gruplara nasıl uygularım diye düşünüyorsanız, `tapply` bu işin yollarından birisi. Ancak `tapply` kullanabilmek için verisetinde gruplamayı yapabilmek için faktör türünden bir veriye ihtiyacımız var. Geçici bir çöcüm olarak `mtcars` verisetindeki `cyl` değişkenini faktör olarak kullanabiliriz:
+
+```{r}
+tapply(mtcars$mpg, as.factor(mtcars$cyl), summary)
+```
+
+Yukarıda bahsettiğimiz diğer fonksiyonlar gibi `tapply` çıktısı da sonuca göre değişecektir. Yukarıda her grup için tek bir sonuç geldiğinden vektör elde ettik. Birden fazla sonuç olursa çıktı liste olacaktır.
+
+```{r}
+tapply(mtcars$mpg, as.factor(mtcars$cyl), range)
+```
+
+Aynı işlemi `by` ile de gerçekleştirebiliriz. Lakin `tapply` girdi olarak vektör alırken, `by` fonksiyonu data frame almaktadır. Bu sebeple kullanacağımız fonksiyon da data frame'e uygulanabilecek bir fonksiyon olmalıdır. Aksi halde hata üretecektir.
+
+```{r}
+by(mtcars[c(1,3,6)], mtcars$cyl, summary)
+```
+
+Verisetini gruplara ayırarak her iki gruba regresyon analizi de uygulayabiliriz:
+
+```{r}
+by(mtcars, mtcars$am, function(x) lm(mpg ~ disp + wt, data = mtcars)$coefficients)
+```
+
+## Bir fonksiyonu bir dizi vektöre veya listeye nasıl uygularım?
+
+Pek çok R fonksiyonu vektör bazlı çalışır. Yani `x` ve `y` iki vektör olarak düşünelim. `x + y` işleminde her iki vektörün elemanları sırayla toplanmakta ve vektör olarak çıktılanmaktadır. Ancak vektörler üzerinde işlem yapmayan fonksiyonlar da vardır. Bu fonksiyonları vektörler üzerinde çalıştırabilmek için  `...pply` ailesinden `mapply` fonksiyonunu yardıma çağırabiliriz.
+
+Mesela aşağıda iki sayının en büyük ortak bölenini bulan bir fonksiyon var, `gcd`. Bu fonksiyona girdi, olarak iki vektör verirsek  hata oluşur. Ancak `mapply` ile bunu başarabiliriz:
+
+```{r}
+gcd <- function(a,b) {
+  if (b == 0) return(a)
+  else return(gcd(b, a %% b))
+}
+
+mapply(gcd,c(1537,1653,3877), c(6731,7751,3479))
+```
+
+Burada `mapply` her iki vektörün sırasıyla 1., 2. ve 3. elemanlarını `gcd` fonksiyonuna girdi olarak vermekte ve sonucu vektör olarak sunmaktadır.

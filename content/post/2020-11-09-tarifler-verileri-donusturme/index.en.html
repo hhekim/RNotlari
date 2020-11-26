@@ -1,0 +1,249 @@
+---
+title: 'Tarifler: Verileri Dönüştürme'
+author: Hakan Hekim
+date: '2020-11-09'
+slug: tarifler-verileri-donusturme
+categories:
+  - Temel R
+tags:
+  - functional programming
+description: R'ın en güçlü özelliklerinden fonksiyonel programlamaya ilişkin tarifler içerir.
+featured: yes
+thumbnail: /images/thumbs/tarif_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Bu tarifte R’ın en güçlü özelliklerinden olan fonksiyonel programaya dair kullanışlı bilgiler sunulmaktadır. Fonksiyonel programlama <em>loop</em> olarak adlandırılan <code>for</code>, <code>while</code> gibi program döngüleri kullanmadan daha az kod satırıyla ve çoğunlukla daha hızlı bir biçimde veri üzerinde işlem yapmamıza yardım eden fonksiyon yapılarıdır. Fonksiyonel programlamanın temellerini öğrenmek kod yazımını hızlandıracak ve daha pratik, anlaşılır kodlar yazmanızı sağlayacaktır.</p>
+<ul>
+<li><a href="#bir-vektördeki-veriyi-nasıl-gruplara-ayırabilirim">Bir vektördeki veriyi nasıl gruplara
+ayırabilirim?</a></li>
+<li><a href="#bir-fonksiyonu-listemde-bulunan-bütün-elemanlara-nasıl-uygularım">Bir fonksiyonu listemde bulunan bütün elemanlara nasıl
+uygularım?</a></li>
+<li><a href="#bir-fonksiyonu-matris-veya-data-frame-satırlarınasütunlarına-nasıl-uygularım">Bir fonksiyonu matris veya data frame satırlarına/sütunlarına nasıl
+uygularım?</a></li>
+<li><a href="#bir-fonksiyonu-split-kullanmadan-veride-bulunan-gruplara-nasıl-uygularım">Bir fonksiyonu <code>split</code> kullanmadan veride bulunan gruplara nasıl
+uygularım?</a></li>
+<li><a href="#bir-fonksiyonu-bir-dizi-vektöre-veya-listeye-nasıl-uygularım">Bir fonksiyonu bir dizi vektöre veya listeye nasıl
+uygularım?</a></li>
+</ul>
+<div id="bir-vektördeki-veriyi-nasıl-gruplara-ayırabilirim" class="section level2">
+<h2>Bir vektördeki veriyi nasıl gruplara ayırabilirim?</h2>
+<p>Elinizde bir vektör var ve onu belli bir kritere göre gruplara ayırmak istiyorsunuz. <code>split</code> fonksiyonu bu işe uygun. R’da standart gelen <code>mtcars</code> veriseti üzerinden örnek vereyim. <code>mtcars</code> verisetinde araçların bir galon yakıtla aldığı mesafeyi gösteren <code>mpg</code> değişkeni var. Bu değişkeni araçların silindir sayısını gösteren <code>ctl</code> değişkenine göre gruplayalım:</p>
+<pre class="r"><code>split(mtcars$mpg, mtcars$cyl)</code></pre>
+<pre><code>## $`4`
+##  [1] 22.8 24.4 22.8 32.4 30.4 33.9 21.5 27.3 26.0 30.4 21.4
+## 
+## $`6`
+## [1] 21.0 21.0 21.4 18.1 19.2 17.8 19.7
+## 
+## $`8`
+##  [1] 18.7 14.3 16.4 17.3 15.2 10.4 10.4 14.7 15.5 15.2 13.3 19.2 15.8 15.0</code></pre>
+</div>
+<div id="bir-fonksiyonu-listemde-bulunan-bütün-elemanlara-nasıl-uygularım" class="section level2">
+<h2>Bir fonksiyonu listemde bulunan bütün elemanlara nasıl uygularım?</h2>
+<p>R dili <em>functional programming</em> grubuna girmektedir. Yani karmaşık işleri görmeye yarayan fonksiyonlar dilin yapısında tanımlanmıştır. Böylelikle <code>for</code>, <code>while</code> gibi döngülerle yapılacak işler bir fonksiyonlar kolayca yapılabilir. <code>lapply</code> ve <code>sapply</code> fonksiyonları bu gruptandır. Her ikisi de girdi olarak işlem yapılacak listeyi ve kullanmak istediğimiz fonksiyonu alır.</p>
+<p>Örnek olarak <code>split</code> fonksiyonu çıktı olarak liste üretmektedir. Bu listeyi bir değişkene kaydedip gruplar üzerinde analiz yapabiliriz.</p>
+<pre class="r"><code>mpc &lt;- split(mtcars$mpg, mtcars$cyl)
+lapply(mpc, mean)</code></pre>
+<pre><code>## $`4`
+## [1] 26.66364
+## 
+## $`6`
+## [1] 19.74286
+## 
+## $`8`
+## [1] 15.1</code></pre>
+<pre class="r"><code>sapply(mpc, mean)</code></pre>
+<pre><code>##        4        6        8 
+## 26.66364 19.74286 15.10000</code></pre>
+<p>Aslında <code>lapply</code> ve <code>sapply</code> hemen hemen aynı fonksiyonlardır. <code>sapply</code>’ın başındaki <code>s</code> <em>simplified</em> anlamına gelmektedir. <code>lapply</code> liste olarak çıktı verirken <code>sapply</code> vektör olarak çıktı vermektedir. <code>sapply</code> fonksiyonun ürettiği değerlere göre matris veya liste olarak ta çıktı verebilir:</p>
+<pre class="r"><code>sapply(mpc, summary)</code></pre>
+<pre><code>##                4        6     8
+## Min.    21.40000 17.80000 10.40
+## 1st Qu. 22.80000 18.65000 14.40
+## Median  26.00000 19.70000 15.20
+## Mean    26.66364 19.74286 15.10
+## 3rd Qu. 30.40000 21.00000 16.25
+## Max.    33.90000 21.40000 19.20</code></pre>
+<p>Şayet fonksiyon R’ın yapılandırdığı bir biçimde sonuç veriyorsa bu sonucu listede saklamak daha doğru olacağından <code>lapply</code> kullanılmalıdır:</p>
+<pre class="r"><code>lapply(mpc, t.test)</code></pre>
+<pre><code>## $`4`
+## 
+##  One Sample t-test
+## 
+## data:  X[[i]]
+## t = 19.609, df = 10, p-value = 2.603e-09
+## alternative hypothesis: true mean is not equal to 0
+## 95 percent confidence interval:
+##  23.63389 29.69338
+## sample estimates:
+## mean of x 
+##  26.66364 
+## 
+## 
+## $`6`
+## 
+##  One Sample t-test
+## 
+## data:  X[[i]]
+## t = 35.936, df = 6, p-value = 3.097e-08
+## alternative hypothesis: true mean is not equal to 0
+## 95 percent confidence interval:
+##  18.39853 21.08718
+## sample estimates:
+## mean of x 
+##  19.74286 
+## 
+## 
+## $`8`
+## 
+##  One Sample t-test
+## 
+## data:  X[[i]]
+## t = 22.07, df = 13, p-value = 1.093e-11
+## alternative hypothesis: true mean is not equal to 0
+## 95 percent confidence interval:
+##  13.62187 16.57813
+## sample estimates:
+## mean of x 
+##      15.1</code></pre>
+</div>
+<div id="bir-fonksiyonu-matris-veya-data-frame-satırlarınasütunlarına-nasıl-uygularım" class="section level2">
+<h2>Bir fonksiyonu matris veya data frame satırlarına/sütunlarına nasıl uygularım?</h2>
+<p>Bir fonksiyonu matris veya data frame üzerine uygulayabilmek için <code>apply</code> fonksiyonunu kullanırız. Aşağıda önce bir matris üretip ardından satır ortalamalarını hesaplayalım:</p>
+<pre class="r"><code>mtx &lt;- matrix(sample(100:1000,20),4,5)
+rownames(mtx) &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;)
+colnames(mtx) &lt;- c(&quot;X1&quot;,&quot;X2&quot;,&quot;X3&quot;,&quot;X4&quot;,&quot;X5&quot;)
+apply(mtx, 1, mean)</code></pre>
+<pre><code>##     A     B     C     D 
+## 656.0 408.4 743.0 677.4</code></pre>
+<pre class="r"><code>apply(mtx, 2, mean)</code></pre>
+<pre><code>##     X1     X2     X3     X4     X5 
+## 581.75 598.25 521.50 723.25 681.25</code></pre>
+<p><code>apply</code> ilk argüman olarak hesaplama yapmak istediğimiz verisetini, ikinci argüman olarak verisetinin satırlarında işlem yapacaksak <strong>1</strong>, sütunlarında işlem yapacaksak <strong>2</strong> değerini ve son olarakta fonksiyonu almaktadır.</p>
+<p>Aynı işlemi data frame üzerinde de yapabiliriz. Ancak numerik olmayan sütunları önceden ayıklamamız gerekir. Numerik olmayan veri tipleri olması halinde farklı sonuçlar ortaya çıkabilir.</p>
+<pre class="r"><code>apply(mtcars,2,mean)</code></pre>
+<pre><code>##        mpg        cyl       disp         hp       drat         wt       qsec 
+##  20.090625   6.187500 230.721875 146.687500   3.596563   3.217250  17.848750 
+##         vs         am       gear       carb 
+##   0.437500   0.406250   3.687500   2.812500</code></pre>
+<p><code>lapply</code> ve <code>sapply</code> girdi olarak liste kabul ettiğinden ve data frame bir çeşit liste olduğundan bu fonksiyonlarla kullanılabilir. Çıktı türleri bir önceki maddede analatıldığı gibi olacaktır.</p>
+<pre class="r"><code>str(lapply(mtcars,mean))</code></pre>
+<pre><code>## List of 11
+##  $ mpg : num 20.1
+##  $ cyl : num 6.19
+##  $ disp: num 231
+##  $ hp  : num 147
+##  $ drat: num 3.6
+##  $ wt  : num 3.22
+##  $ qsec: num 17.8
+##  $ vs  : num 0.438
+##  $ am  : num 0.406
+##  $ gear: num 3.69
+##  $ carb: num 2.81</code></pre>
+<pre class="r"><code>sapply(mtcars,mean)</code></pre>
+<pre><code>##        mpg        cyl       disp         hp       drat         wt       qsec 
+##  20.090625   6.187500 230.721875 146.687500   3.596563   3.217250  17.848750 
+##         vs         am       gear       carb 
+##   0.437500   0.406250   3.687500   2.812500</code></pre>
+<p><code>lapply</code> ve <code>sapply</code> fonksiyonlarıyla veriseti üzerinde kendi üreteceğimiz fonksiyonları da kullanabiliriz. Aşağıdaki örnekte <code>lapply</code> fonksiyonu ilk eleman olarak <code>mtcars</code> verisetindeki sütun isimlerini alıyor. Daha sonra bu sütun isimleri ürettiğimiz bir fonksiyona argüman olarak giriyor. Çıktı olarak regresyon katsayılarını alıyoruz:</p>
+<pre class="r"><code>lms &lt;- lapply(colnames(mtcars)[-1], function(x) {
+  form &lt;- paste0(&quot;mpg ~ &quot;, x)
+  lm(form, data=mtcars)$coefficient
+})
+head(lms,3)</code></pre>
+<pre><code>## [[1]]
+## (Intercept)         cyl 
+##    37.88458    -2.87579 
+## 
+## [[2]]
+## (Intercept)        disp 
+## 29.59985476 -0.04121512 
+## 
+## [[3]]
+## (Intercept)          hp 
+## 30.09886054 -0.06822828</code></pre>
+</div>
+<div id="bir-fonksiyonu-split-kullanmadan-veride-bulunan-gruplara-nasıl-uygularım" class="section level2">
+<h2>Bir fonksiyonu <code>split</code> kullanmadan veride bulunan gruplara nasıl uygularım?</h2>
+<p><code>apply</code>, <code>lapply</code>, <code>sapply</code> … evet bitmedi. Sırada <code>tapply</code> var. Bir fonksiyonu gruplara nasıl uygularım diye düşünüyorsanız, <code>tapply</code> bu işin yollarından birisi. Ancak <code>tapply</code> kullanabilmek için verisetinde gruplamayı yapabilmek için faktör türünden bir veriye ihtiyacımız var. Geçici bir çöcüm olarak <code>mtcars</code> verisetindeki <code>cyl</code> değişkenini faktör olarak kullanabiliriz:</p>
+<pre class="r"><code>tapply(mtcars$mpg, as.factor(mtcars$cyl), summary)</code></pre>
+<pre><code>## $`4`
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   21.40   22.80   26.00   26.66   30.40   33.90 
+## 
+## $`6`
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   17.80   18.65   19.70   19.74   21.00   21.40 
+## 
+## $`8`
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   10.40   14.40   15.20   15.10   16.25   19.20</code></pre>
+<p>Yukarıda bahsettiğimiz diğer fonksiyonlar gibi <code>tapply</code> çıktısı da sonuca göre değişecektir. Yukarıda her grup için tek bir sonuç geldiğinden vektör elde ettik. Birden fazla sonuç olursa çıktı liste olacaktır.</p>
+<pre class="r"><code>tapply(mtcars$mpg, as.factor(mtcars$cyl), range)</code></pre>
+<pre><code>## $`4`
+## [1] 21.4 33.9
+## 
+## $`6`
+## [1] 17.8 21.4
+## 
+## $`8`
+## [1] 10.4 19.2</code></pre>
+<p>Aynı işlemi <code>by</code> ile de gerçekleştirebiliriz. Lakin <code>tapply</code> girdi olarak vektör alırken, <code>by</code> fonksiyonu data frame almaktadır. Bu sebeple kullanacağımız fonksiyon da data frame’e uygulanabilecek bir fonksiyon olmalıdır. Aksi halde hata üretecektir.</p>
+<pre class="r"><code>by(mtcars[c(1,3,6)], mtcars$cyl, summary)</code></pre>
+<pre><code>## mtcars$cyl: 4
+##       mpg             disp              wt       
+##  Min.   :21.40   Min.   : 71.10   Min.   :1.513  
+##  1st Qu.:22.80   1st Qu.: 78.85   1st Qu.:1.885  
+##  Median :26.00   Median :108.00   Median :2.200  
+##  Mean   :26.66   Mean   :105.14   Mean   :2.286  
+##  3rd Qu.:30.40   3rd Qu.:120.65   3rd Qu.:2.623  
+##  Max.   :33.90   Max.   :146.70   Max.   :3.190  
+## ------------------------------------------------------------ 
+## mtcars$cyl: 6
+##       mpg             disp             wt       
+##  Min.   :17.80   Min.   :145.0   Min.   :2.620  
+##  1st Qu.:18.65   1st Qu.:160.0   1st Qu.:2.822  
+##  Median :19.70   Median :167.6   Median :3.215  
+##  Mean   :19.74   Mean   :183.3   Mean   :3.117  
+##  3rd Qu.:21.00   3rd Qu.:196.3   3rd Qu.:3.440  
+##  Max.   :21.40   Max.   :258.0   Max.   :3.460  
+## ------------------------------------------------------------ 
+## mtcars$cyl: 8
+##       mpg             disp             wt       
+##  Min.   :10.40   Min.   :275.8   Min.   :3.170  
+##  1st Qu.:14.40   1st Qu.:301.8   1st Qu.:3.533  
+##  Median :15.20   Median :350.5   Median :3.755  
+##  Mean   :15.10   Mean   :353.1   Mean   :3.999  
+##  3rd Qu.:16.25   3rd Qu.:390.0   3rd Qu.:4.014  
+##  Max.   :19.20   Max.   :472.0   Max.   :5.424</code></pre>
+<p>Verisetini gruplara ayırarak her iki gruba regresyon analizi de uygulayabiliriz:</p>
+<pre class="r"><code>by(mtcars, mtcars$am, function(x) lm(mpg ~ disp + wt, data = mtcars)$coefficients)</code></pre>
+<pre><code>## mtcars$am: 0
+## (Intercept)        disp          wt 
+## 34.96055404 -0.01772474 -3.35082533 
+## ------------------------------------------------------------ 
+## mtcars$am: 1
+## (Intercept)        disp          wt 
+## 34.96055404 -0.01772474 -3.35082533</code></pre>
+</div>
+<div id="bir-fonksiyonu-bir-dizi-vektöre-veya-listeye-nasıl-uygularım" class="section level2">
+<h2>Bir fonksiyonu bir dizi vektöre veya listeye nasıl uygularım?</h2>
+<p>Pek çok R fonksiyonu vektör bazlı çalışır. Yani <code>x</code> ve <code>y</code> iki vektör olarak düşünelim. <code>x + y</code> işleminde her iki vektörün elemanları sırayla toplanmakta ve vektör olarak çıktılanmaktadır. Ancak vektörler üzerinde işlem yapmayan fonksiyonlar da vardır. Bu fonksiyonları vektörler üzerinde çalıştırabilmek için <code>...pply</code> ailesinden <code>mapply</code> fonksiyonunu yardıma çağırabiliriz.</p>
+<p>Mesela aşağıda iki sayının en büyük ortak bölenini bulan bir fonksiyon var, <code>gcd</code>. Bu fonksiyona girdi, olarak iki vektör verirsek hata oluşur. Ancak <code>mapply</code> ile bunu başarabiliriz:</p>
+<pre class="r"><code>gcd &lt;- function(a,b) {
+  if (b == 0) return(a)
+  else return(gcd(b, a %% b))
+}
+
+mapply(gcd,c(1537,1653,3877), c(6731,7751,3479))</code></pre>
+<pre><code>## [1] 53  1  1</code></pre>
+<p>Burada <code>mapply</code> her iki vektörün sırasıyla 1., 2. ve 3. elemanlarını <code>gcd</code> fonksiyonuna girdi olarak vermekte ve sonucu vektör olarak sunmaktadır.</p>
+</div>

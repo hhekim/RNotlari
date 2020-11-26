@@ -1,0 +1,38 @@
+---
+title: Kutu grafiği oluşturma
+author: Hakan Hekim
+date: '2020-10-15'
+slug: [kutu-grafigi-olusturma]
+categories:
+  - Temel R
+  - Grafik
+tags:
+  - boxplot
+description: Kutu grafiği (boxplot) oluşturma yöntemleri.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/boxplot_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p>Kutu grafikleri değişkenin dağılımını görmek, bir değişkenin farklı kategorilerini birbiriyle karşılaştırmak için kullanışlı bir grafik türüdür.</p>
+<p>R’da kutu grafiği <code>boxplot()</code> fonksiyonuyla oluşturulur. <code>boxplot()</code> fonksiyonu ilk argüman olarak numerik bir vektör yahut verisetimizde yer alan sürekli bir değişken, ikinci argüman olarak genellikle factor tipinde kategorik bir değişkene ihtiyaç duymaktadır. İki değişken arasında İngilizce’de tilde olarak adlandırılan “~” işareti bulunmaktadır.</p>
+<p>İlk örnek olarak <code>mtcars</code> verisetimizdeki araçların yakıt sarfiyatını motor tipine göre karşılaştıralım:</p>
+<pre class="r"><code>boxplot(mpg~vs, data=mtcars)</code></pre>
+<p><img src="/post/2020-10-15-kutu-grafigi-olusturma/index.en_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>Görüldüğü gibi iki farklı motor tipine ait iki farklı kutu grafiği üretmiş olduk. Grafikler kullandığımız kategorik değişken için belirlediğimiz etiket değerleriyle işaretlenmiş oldular. Etiket değerlerini şu şekilde değiştirerek daha anlaşılır yapmak mümkün:</p>
+<pre class="r"><code>boxplot(mpg~vs, names = c(&quot;V-type&quot;,&quot;Straight&quot;),las=2, data=mtcars)</code></pre>
+<p><img src="/post/2020-10-15-kutu-grafigi-olusturma/index.en_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>Burada <code>names</code> parametresinin factor tipi değişkendeki kategori miktarınca etiket içermesi gerekmektedir. <code>las=2</code> parametresi ise etiket değerlerinin dikey olarak yazılmasını sağlamaktadır. 0 ile 4 arasında değer alabilen las=2 parametresinde 0 ve 1 yatay, 2 ve 3 dikey etiketler üretir.</p>
+<p>Önemli bir eksiğimiz <code>y</code> ekseninin neyi gösterdiğini tanımlayan bir etiketimizin olmaması. <code>ylab</code> parametresiyle bu eksiği giderebiliriz. Daha renkli bir grafik elde etmek için <code>col</code> parametresiyle kutu grafiklerini renklendirebiliriz:</p>
+<pre class="r"><code>boxplot(mpg~vs, names = c(&quot;V-tipi&quot;,&quot;Normal&quot;),las=2, col=c(&quot;red&quot;,&quot;blue&quot;), ylab=&quot;Yakıt sarfiyatı&quot;, data=mtcars)</code></pre>
+<p><img src="/post/2020-10-15-kutu-grafigi-olusturma/index.en_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Grafiği incelediğimizde normal motorlu araçlarının yakıt performanslarının daha iyi olduğu görülecektir. Dikkat edeceğiniz gibi <code>boxplot()</code> fonksiyonu data parametresini kabul etmekte. Bu şekilde değişken isimlerini rahatlıkla kullanabildik. data parametresini kullanmadan, classA<span class="math inline">\(fGender şeklinde &quot;\)</span>" ayracını kullanarak ta değişkenlere erişmemiz mümkündür.</p>

@@ -1,0 +1,323 @@
+---
+title: 'Tarifler: Temel Komutlar'
+author: Hakan Hekim
+date: '2020-11-09'
+slug: tarifler-temel-komutlar
+categories:
+  - Temel R
+tags:
+  - Temel Komutlar
+series:
+- Tarifler
+description: Temel R işlemlerinin tarifleri.
+featured: yes
+#toc: no
+#featureImage: /images/path/file.jpg
+thumbnail: /images/thumbs/tarif_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+R öğrenirken veya kod yazarken bazı temel işlemlerin nasıl yapıldığını unutabiliyoruz. Bunun için internette *cheat sheet* olarak adlandırılan bir iki sayfalık hatırlatma notları bulmak mümkün. Ancak bazen daha etraflı bir anlatıma ihtiyaç duyabiliyoruz. Tarifler serisini bu amaçla hazırladım. Bazısı önceki notlarımda da bulunan temel R bilgilerini derli toplu bir biçimde Tarifler serisinde bulabilirsiniz. Bu tarifleri hazırlarken büyük ölçüde **Paul Teetor**'un *R Cookbook* kitabından faydalandım.
+
+-   [Değişken ve ifadelerin değerlerini nasıl
+    öğrenirim?](#değişken-ve-ifadelerin-değerlerini-nasıl-öğrenirim)
+-   [Değişkenlere nasıl değer atarım?](#değişkenlere-nasıl-değer-atarım)
+-   [Tanımlı değişkenleri nasıl
+    listelerim?](#tanımlı-değişkenleri-nasıl-listelerim)
+-   [Tanımlı değişkenleri nasıl
+    silerim?](#tanımlı-değişkenleri-nasıl-silerim)
+-   [Nasıl yeni bir vektör
+    oluştururum?](#nasıl-yeni-bir-vektör-oluştururum)
+-   [Nasıl dizi oluştururum?](#nasıl-dizi-oluştururum)
+-   [Vektör içeriğini diğer bir vektörle yahut değerle nasıl
+    karşılatırırım?](#vektör-içeriğini-diğer-bir-vektörle-yahut-değerle-nasıl-karşılatırırım)
+-   [Vektör elemanlarını nasıl
+    seçerim?](#vektör-elemanlarını-nasıl-seçerim)
+-   [Vektörleri aritmetik işlemlerde nasıl
+    kullanırım?](#vektörleri-aritmetik-işlemlerde-nasıl-kullanırım)
+-   [Operatörler arasındaki öncelik sıralaması
+    nasıldır?](#operatörler-arasındaki-öncelik-sıralaması-nasıldır)
+-   [Kendi fonksiyonumu nasıl
+    tanımlarım?](#kendi-fonksiyonumu-nasıl-tanımlarım)
+
+## Değişken ve ifadelerin değerlerini nasıl öğrenirim?
+Değişkenin adını yazıp ENTER tuşuna basarak veya `print` fonksiyonuyla değişkenin değerini görebilirsiniz. 
+
+```{r print1}
+x <- 0.289
+y <- matrix(rnorm(4,0,1),2,2)
+x
+print(x)
+y
+print(y)
+```
+Aslında değişkenin ismini yazıp ENTER tuşuna bastığımızda R `print` fonksiyonunu çağırdığından her iki işlemde de aynı çıktıyı almaktayız.
+
+Lakin `print` fonksiyonu yalnızca bir girdi alabilmektedir. Mesela aşağıdaki komut beklenen sonucu vermeyecektir:
+
+```{r print2, eval=FALSE, include=TRUE}
+print(x,y)
+```
+Hatta aşağıdaki gibi daha okunaklı bir çıktı almak istersek hata mesajıyla karşılaşırız:
+```{r print3, echo = TRUE, eval=FALSE, message=FALSE, warning=FALSE, include=TRUE}
+print("x değişkeninin değeri:",x,", y değişkeninin değeri:",y)
+```
+Bu işlem için `cat` fonksiyonunu kullanabiliriz:
+```{r print4}
+cat("x değişkeninin değeri:",x,", y değişkeninin değeri:",y, "\n")
+```
+`cat` fonksiyonu halihazırda liste (list) veri tipini görüntülememektedir.
+
+## Değişkenlere nasıl değer atarım?
+R'da değişkeni tanımlama ihtiyacı yoktur. Değer atamak için `<-` operatörünü kullanırız.
+```{r assign1}
+x <- 0.289
+```
+Tanımladığınız değişkenler R çalışma ortamına (workspace) kaydedilecektir. R tanımladığınız bir değişkeni herhangi biçimde korumamaktadır. Yani numerik olarak tanımladığınız bir değişkeni sonradan karaktere dönüştürmeniz halinde R sıkıntı çıkarmaz. Bu durum bazı hallerde hatalara sebebiyet verebildiğinden değişkenleri kendiniz denetlemelisiniz.
+```{r assign2}
+x <- 0.289
+x
+x <- c("a", "b", "c")
+x
+```
+Bazı durumlarda değişkenleri çalışmakta olduğumuz ortama (workspace) değil de global çalışma ortamına (global environment) kaydetmemiz gerekebilir. Bu durumda `<<-` operatörünü kullanırız.
+
+Bunlara ilaveten R, `->` operatörü ile atama yapılacak değişkeni sağa yazılmasına izin verir. Aynı şekilde `=` operatörü ile de değişkenlere atama yapılabilir. Ancak bu iki operatör pek kullanılmamaktadır:
+```{r assign3}
+sqrt(11) -> x
+y = abs(11)
+x
+y
+```
+
+## Tanımlı değişkenleri nasıl listelerim?
+Çalışma ortamında tanımlı değişkenleri `ls` fonksiyonuyla listeleyebiliriz. 
+```{r ls1}
+ls()
+x <- 23.33
+y <- "elma"
+z <- list(q = c(1,2,3), w= c("a","b","c"))
+ls()
+```
+Tanımlı herhangi bir değişken yoksa `character(0)`, yani  büyüklüğünde string vektörü gelir. Tanımlı değişken varsa isimleri gelir. Değişkenlerle ilgili daha detaylı bilgiye `ls.str` fonksiyonu ile ulaşılabilir:
+```{r ls2}
+ls.str()
+```
+Çalışma ortamında gizli değişkenler olabilir. Bunlar `all.names = TRUE` parametresiyle ulaşabiliriz:
+```{r ls3}
+ls(all.names = TRUE)
+```
+Nokta ile başlayan değişkenler gizli değişkendir.
+
+## Tanımlı değişkenleri nasıl silerim?
+Değişkenleri `rm` fonksiyonuyla sileriz.
+```{r rm1}
+a <- 1
+b <- 2
+c <- 3
+ls()
+rm(a)
+ls()
+rm(b,c)
+ls()
+```
+Çalışma ortamındaki tüm değişkenleri silmek için `rm` fonksiyonunu aşağıdaki parametreyle kullanırız:
+```{r rm2}
+ls()
+rm(list=ls())
+ls()
+```
+
+## Nasıl yeni bir vektör oluştururum?
+Vektör R dilinin en basit ve en kullanışlı veri tipidir. Vektör oluşturmak için `c()` fonksiyonunu kullanırız. Vektörler rakam, metin veya mantıksal değerler içerebilir.
+```{r vector1}
+a <- c(1,2,3,4.08,5.374)
+b <- c("a", "pi", "x", "q")
+c <- c("TURE", "FALSE","FALSE")
+```
+`c()` parametre olarak vektör alması halinde aldığı vektörleri birleştirir. Vektörler varklı veri türleri içeremez. Farklı veri türlerinden vektör yapılması halinde R hepsini aynı veri türü haline getirir:
+```{r vector2}
+d <- c(a,b)
+str(d)
+```
+`c()` sadece vektörler değil diğer veri türleriyle de işlem yapabilir. Fakat sonuç beklediğiniz gibi çıkmayabileceğinden mutlaka kontrol edilmelidir.
+
+## Nasıl dizi oluştururum?
+En basit biçimde `n:m` formatıyla sayı dizisi oluşturabiliriz. Bu şekilde birer birer artan bir seri elde ederiz:
+```{r sequence1}
+0:7
+7:0
+```
+Farklı aralık değerine sahip dizi için `seq` fonksiyonu kullanılır:
+```{r sequence2}
+seq(from = 7, to = 31, by = 3)
+```
+`length.out` parametresiyle dizinin uzunluğunu belirleyebiliriz, aralık değerini R hesaplar:
+```{r sequence3}
+seq(from = 0, to = 100, length.out = 5)
+```
+Belli sayı veya sayıları tekrar etmek için `rep` fonksiyonu kullanılır:
+```{r sequence4}
+rep(3, times = 5)
+rep(3:6, times = 3)
+rep(c(1,4,9), times = 3)
+rep("x", times = 3)
+```
+
+## Vektör içeriğini diğer bir vektörle yahut değerle nasıl karşılatırırım?
+R karşılaştırma operatörleri olan `==, !=, <, >, <=, >=` ile vektörleri veya değişkenleri karşılaştırabiliriz. Karşılaştırma sonucu her vektör elemanı için bir mantıksal değer görüntülenir.
+
+```{r comp1}
+a <- 3
+a == pi
+a != pi
+a < pi
+a > pi
+a <= pi
+a >= pi
+```
+Aynı biçimde iki vektörü karşılaştırmakta mümkündür. Bu durumda R vektörlerin elemanlarını sırayla karşılaştırır, yani birinci elemanları, ikinci elemanları vs gibi ve sonucu verir:
+```{r comp2}
+a <- c(1,2,3,4,5)
+b <- c(1,3,5,7,9)
+a == b
+a != b
+a < b
+a > b
+a <= b
+a >= b
+```
+Eşit uzunlukta olmayan vektörler karşılaştırıldığında, küçük olan vektörün son elemanı karşılaştırıldıktan sonra sıra tekrardan başa döner. Örneğin `a` vektörü 5, `b` vektörü 3 eleman içeriyorsa; üçüncü elemanlar karşılaştırıldıktan sonra `a` vektörünün 4. elemanıyla `b` vektörünün 1. elemanı, `a` vektörünün 5. elemanıyla `b` vektörünün 2. elemanı karşılaştırılır. Sonuç uyarı mesajıyla birlikte gelir. Bir vektör tek bir değerle de karşılaştırılabilir. Bu durumda vektörün her bir elemanı sırayla değerle karşılaştırılarak sonuç verilir.
+```{r comp3}
+a <- c(1,2,3,4,5)
+b <- c(1,5,9)
+a == b
+a == 3
+```
+Karşılaştırma sonucunda herhangi bir `TURE` sonuç olup olmadığını `any` ile, bütün sonuçların `TURE` olup olmadığını `all` ile kontrol edebiliriz. Vektör büyüklükleri farklı olması halinde uyarı mesajı gelecektir.
+```{r comp4}
+a <- c(1,2,3,4,5)
+b <- c(1,3,5,7,9)
+c <- c(1,2,3)
+any(a == b)
+all(a == b)
+any(a == c)
+all(a == c)
+```
+
+## Vektör elemanlarını nasıl seçerim?
+Köşeli parantez kullanarak istediğimiz bir vektör elemanını sırasını belirterek seçebiliriz. İlk vektör elemanının sıra numarası 1'dir. Birden fazla sıra numarası belirtmek mümkündür:
+```{r select1}
+a <- c(1,2,3,4,5)
+a[1]
+a[1:3]
+a[c(1,3,5)]
+```
+Sıra numarasını negatif işareti (-) ile belirtmek, o sıradaki elemanı hariç tutmak anlamına gelir:
+```{r select2}
+a <- c(1,2,3,4,5)
+a[-1]
+a[-(1:3)]
+a[c(-1,-3,-5)]
+```
+Karşılaştırma operatörlari kullanarak seçim yapabiliriz:
+```{r select3}
+a <- c(1,2,3,4,5)
+a < 4
+a[a < 4]
+```
+Aynı biçimde belirli şartları karşılayan elemanları mantıksal karşılaştırma yoluyla seçebiliriz:
+```{r select4}
+a <- c(1,2,3,4,5)
+a %% 2 == 1
+a[a %% 2 == 1]
+```
+`%%` operatörü bölme işleminde kalanı verir. `a %% 2 == 1` ile vektör elemanlarının tek sayı olup olmadığını sorguladık, `a[a %% 2 == 1]` ile tek sayıları seçtik.
+
+Karşılaştırma operatörleriyle her türlü seçim işlemi gerçekleştirebiliriz:
+```{r select5}
+a <- c(18.92, 14.27, 19.75, 14.89, 23.79, 15.83, 15.94, 2.51, 25.02, 20.07)
+# ortalama değerden küçük elemanları seçebiliriz
+a[a < mean(a)]
+# belirli yüzdelik dilimlerdeki elmanları seçebiliriz
+a[a < quantile(a,0.05) | a > (quantile(a,0.95))]
+# ortalamadan iki standart sapmadan daha küçük veya büyük olan elemanlar
+a[abs(a-mean(a)) > 2*sd(a)]
+# NA veya NULL olmayan elemanları seçme
+a[!is.na(a) & !is.null(a) ]
+```
+
+## Vektörleri aritmetik işlemlerde nasıl kullanırım?
+Vektörlerle aritmetik işlem yapıldığında vektör elemanlarının hepsi teker teker işleme girer:
+```{r arith1}
+a <- c(1,2,3,4,5)
+b <- c(6,7,8,9,10)
+a+b
+a-b
+a*b
+a/b
+a^b
+```
+Vektörler ile tek bir sayı işlem yapıldığından, vektörün bütün elemanları verilen sayıyla işleme girer:
+```{r arith2}
+a <- c(1,2,3,4,5)
+a * 5
+```
+Vektörlerle yapabileceğimiz aritmetik işlemler sadece bunlarla sınırlı değildir:
+```{r arith3}
+a <- c(1,2,3,4,5)
+sqrt(a)
+log(a)
+sin(a)
+factorial(a)
+factorial(a[length(a)])
+```
+## Operatörler arasındaki öncelik sıralaması nasıldır?
+R operatörler arasında aşağıdaki öncelik sırasını gözetmektedir. Aynı öncelik sıralamasındaki operatörlerden solda yer alan diğer(ler)ine göre önceliklidir:
+
+|Operatör           |Anlamı                                   |
+|:------------------|:----------------------------------------|
+|[ [[               |Seçme                                    |
+|:: :::             |Değişkenlere erişim                      |
+|$ @                |Component extraction, slot extraction    |
+|^                  |Üs alma (sağdan sola)                    |
+|- +                |Artı, eksi                               |
+|:                  |Dizi oluşturma                           |
+|%*any*%            |Özel operatörler                         |
+|*/                 |Çarpma, bölme                            |
+|+-                 |Toplama, çıkartma                        |
+|== != < > <= >=    |Karşılaştırma                            |
+|!                  |Mantıksal "değil" operatörü              |
+|& &&               |Mantıksal ve                             |
+|| ||               |Mantıksal veya                           |
+|~                  |Formül                                   |
+|-> ->>             |Sağ yönlü atama                          |
+|=                  |Sol yönlü atama                          |
+|<- <<-             |Sol yönlü atama                          |
+|?                  |Yardım                                   |
+
+İki yüzde (%) işareti arasında yer alan operatörlere binary operatör adı verilir. Kullanıcılar da binary operatör tanımlayabilir. Bu operatörlerden bazıları ve kullanışı şu şşekildedir:
+
+```{r presidence1}
+# %% modula operatörüdür, bölme işleminde kalanı verir
+739 %% 17
+# %/% bölme işleminde sonucu tamsayı olarak verir
+739 %/% 17
+# %in% soldaki ögenin sağdakinde yer alıp olmadığını kontrol eder
+a <- c(1,3,5,7,9)
+c(4,5) %in% a
+```
+
+## Kendi fonksiyonumu nasıl tanımlarım?
+Yeni fonksiyonlar basitçe şu şekilde tanımlanır:
+
+> function(parametre~1~, ..., parametre~n~) ifade
+
+Şayet fonksiyon ifadesi bir satırı aşıyorsa dalgalı parantez ({}) içerisine alınır. Fonksiyon tanımlanırken bir isim verilerek sonradan o isimle yazacağımız kodun herhangi bir yerinde kullanılabilir:
+```{r function1}
+mymean <- function(x) max(cumsum(x)) / length(x)
+mean(1:100)
+```
