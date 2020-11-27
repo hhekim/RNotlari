@@ -26,3 +26,8 @@
   name = "Nedir?"
   url = "about/"
   weight = -107
+  
+[[main]]
+  name = "HH"
+  url = "cv/"
+  weight = -104
