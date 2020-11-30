@@ -52,6 +52,12 @@ introDescription = "Technologist, perpetual student, teacher, continual incremen
 # Google analytics Id
 ga_analytics = "G-PBT333V3VF"
 
+# sitemap
+[sitemap]
+  changefreq = "monthly"
+  priority = 0.5
+  filename = "sitemap.xml"
+
 # Baidu analytics Id
 # baidu_analytics = "XXXXXXXX"
 
