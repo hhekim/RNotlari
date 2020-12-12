@@ -5,7 +5,7 @@ aliases:
 - blog
 - showcase
 - docs
-author: Hugo Authors
+author: Hakan Hekim
 tags:
 - index
 title: Posts

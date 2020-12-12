@@ -22,7 +22,6 @@ category = "categories"
 tag = "tags"
 series = "series"
 
-
 [markup]
   [markup.goldmark]
     [markup.goldmark.renderer]
