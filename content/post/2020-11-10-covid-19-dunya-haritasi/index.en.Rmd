@@ -23,7 +23,7 @@ John Hopkins Üniversitesi'nin Covid-19 verilerini `Leaflet` ile dünya haritas�
 
 [https://hhekim.shinyapps.io/Covid19/](https://hhekim.shinyapps.io/Covid19/)
 
-Mobilde, küçük ekranlarda görüntü çok iyi değil.
+Mobilde, küçük ekranlarda çok iyi değil.
 
 Kaynak kodları [GitHub ambarında](https://github.com/hhekim/Covid19).
 
