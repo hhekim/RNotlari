@@ -1,0 +1,239 @@
+---
+title: 'Tarifler: String (Metin) İşlemleri'
+author: Hakan Hekim
+date: '2020-12-15'
+slug: tarifler-string-metin-islemleri
+categories:
+  - Istatistik
+  - Metin Analizi
+tags:
+  - Strings
+  - stringr
+description: Temel R ve stringr paketleriyle string işlemleri.
+featured: yes
+thumbnail: /images/thumbs/tarif_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+String işlemleri temel R paketindeki fonksiyonlarla yapılabildiği gibi `tidyverse` içerisinde yer alan `stringr` paketiyle de benzer işlemler gerçekleştirilebilir. Aşağıdaki örneklerde hem temel R hem de `stringr` paketini kullanacağız.
+
+-   [String uzunluğunu öğrenmek](#string-uzunluğunu-öğrenmek)
+-   [Birden fazla string'i birleştirmek](#birden-fazla-stringi-birleştirmek)
+-   [Bir string'i parçalara ayırmak](#bir-stringi-parçalara-ayırmak)
+-   [String içerisinde geçen bir ifadeyi başkasıyla         değiştirmek](#string-içerisinde-geçen-bir-ifadeyi-başkasıyla-değiştirmek)
+-   [BÜYÜK/küçük harf dönüştürme](#büyükküçük-harf-dönüştürme)
+-   [String'leri sıralamak](#Stringleri-sıralamak)
+-   [Bir string'i belli bir karaktere göre parçalara ayırmak](#Bir-stringi-belli-bir-karaktere-göre-parçalara-ayırmak)
+-   [`stringr` paketiyle string içerisinde arama yapmak](#stringr-paketiyle-string-içerisinde-arama-yapmak)
+
+
+## String uzunluğunu öğrenmek
+
+Bir string içerisinde kaç karakter bulunduğunu `nchar()` fonksiyonuyla öğrenebiliriz:
+
+```{r}
+a <- "Merhaba"
+nchar(a)
+```
+
+```{r}
+a <- c("Ali", "Veli", "Kırk dokuz", "Elli", NA)
+nchar(a)
+```
+
+`NA` veri olmadığı anlamına geldiğinden uzunluk olarak ta `NA` sonucu vermektedir.
+
+Aynı işlem `stringr` paketiyle `str_length()` fonksiyonuyla yapılır:
+
+```{r}
+library(stringr)
+str_length(a)
+```
+
+`NA` içeren değerleri `"NA"`  olarak (yani string formatında) görmek için `str_replace_na()` fonksiyonunu kullanabiliriz:
+
+```{r}
+str_replace_na(a)
+```
+
+
+## Birden fazla string'i birleştirmek
+
+İki string'i `paste()` fonksiyonuyla birleştirebiliriz:
+
+```{r}
+a <- "Merhaba"
+b <- "Dostum"
+paste(a,b)
+```
+
+Yukarıda `paste()` fonksiyonu a ve b arasına boşluk bırakmaktadır. Araya gelecek karakteri belirlemek mümkün:
+
+```{r}
+paste(a,b, sep="-")
+```
+
+a veya b birden çok elemanı olan vektör olması halinde şöyle bir sonuç ortaya çıkmaktadır:
+
+```{r}
+a <- c("Ali","Veli","Ayşe")
+b <- "nereye gittin?"
+paste(a,b, sep=", ")
+```
+
+Aynı işlem `stringr` paketinde `str_c()` fonksiyonuyla yapılır:
+
+```{r}
+str_c(a,b,sep = ", ")
+```
+
+Birden fazla string içeren bir vektörü tek bir string haline `collapse` ile çevirebiliriz:
+
+```{r}
+str_c(a, collapse = ", ")
+```
+
+
+## Bir string'i parçalara ayırmak
+
+`substr()` fonksiyonu verilen stringi başlangıç ve bitiş değerlerine göre parçalamaktadır:
+
+```{r}
+a <- "karamazov"
+substr(a, 1, 4)
+```
+
+Girdinin vektör olması durumunda, her bir eleman parçalanır:
+
+```{r}
+a <- c("dostoyevski", "karamazov", "kardeşler")
+substr(a, 1, 4)
+```
+
+`nchar()` kelime büyüklüğüne göre işlem yapılabilir:
+
+```{r}
+a <- c("dostoyevski", "karamazov", "kardeşler")
+substr(a, nchar(a)-4, nchar(a))
+```
+
+Aynı işlem `stringr` paketinde `str_sub()` ile yapılır:
+
+```{r}
+str_sub(a, 1, 4)
+```
+
+
+## String içerisinde geçen bir ifadeyi başkasıyla değiştirmek
+
+`sub()` ve `gsub()` fonksiyonları kelime içerisindeki bir ifadeyi başka bir ifadeyle değiştirir. `sub()` ilk rastladığı ifadeyi değiştirirken, `gsub()` bulduğu bitin ifadeleri değiştirir.
+
+```{r}
+sub("ek","aş", "tekerlek")
+gsub("ek","aş", "tekerlek")
+```
+
+
+## BÜYÜK/küçük harf dönüştürme
+
+`toupper()` ve `tolower()` fonksiyonlarıyla büyük/küçük harf değişimleri yapılabilir:
+
+```{r}
+a <- c("dostoyevski", "karamazov", "kardeşler")
+a <- toupper(a)
+a
+```
+
+```{r}
+tolower(a)
+```
+
+Aynı işlem `stringr` paketinde `str_to_upper()` ve `str_to_lower()` ile yapılır:
+
+```{r}
+a <- c("dostoyevski", "karamazov", "kardeşler")
+a <- str_to_upper(a)
+a
+```
+
+```{r}
+str_to_lower(a)
+```
+
+`stringr` paketinde büyük/küçük harf dönüşümü yaparken dil belirleyebiliriz. Bilindiği gibi Türkçe "i" harfi İngilizce tabanlı bir sistemde "I" olarak büyük harfe dönüşecek, "I" harfi de "i" olarak dönüşecektir. Bunun önüne geçmek için `locale` argümanı kullanabiliriz:
+
+```{r}
+a <- c("ilişki", "ılık")
+str_to_upper(a)
+str_to_upper(a, locale = "tr")
+```
+
+```{r}
+a <- c("İLİŞKİ", "ILIK")
+str_to_lower(a)
+str_to_lower(a, locale = "tr")
+```
+
+
+## String'leri sıralamak
+
+`sort()` fonksiyonuyla string'leri sıralayabiliriz. `order()` fonksiyonu string'lerin index değerlerini sıralar
+
+```{r}
+a <- c("zeynep", "leyla", "kemal","tarık")
+sort(a)
+order(a)
+```
+
+Aynı işlem `stringr` paketinde `str_sort()` ve `str_order()` ile yapılır:
+
+```{r}
+a <- c("zeynep", "leyla", "kemal","tarık")
+str_sort(a)
+str_order(a)
+```
+
+`str_sort()` ve `str_order()` fonksiyonları da `locale` argümanı almaktadır.
+
+
+## Bir string'i belli bir karaktere göre parçalara ayırmak
+
+`strsplit()` ile string'i belli bir karaktere göre parçalara ayırabiliriz. `strsplit()` fonksiyonu çıktı olarak bir liste verir.
+
+```{r}
+a <- "İstanbul, Türkiye"
+strsplit(a, ", ")
+```
+
+Görüldüğü gibi `strsplit()` ", " ifadesini çıkartarak string'i parçalıyor. 
+
+`strsplit()` fonksiyonu değer olarak Regular Expression (regexp) kullanıldığında çok daha kullanışlı olacaktır. Mesela aşağıdaki regexp ifadesi başında "el" veya "er" olan kelimeleri bölüyor.
+
+```{r}
+a <- c("elma","eldiven","erişte","ense")
+strsplit(a, "^e[lr]")
+```
+
+Bu örnekte ise başında "el" veya "er" ifadesi olan kelimeler bölünüyor.
+
+```{r}
+a <- c("İstanbul,Türkiye", "İstanbul/Türkiye","İstanbul-Türkiye")
+strsplit(a, "[,/-]")
+```
+
+
+## `stringr` paketiyle string içerisinde arama yapmak
+
+`str_view()` ve `str_view_all()` fonksiyonlarıyla string içerisinde arama yapabiliriz. Bunlardan `str_view()` ilk rastladığını getirirken `str_view_all()` hepsini getirir.
+
+```{r}
+a <- c("Bir berber bir berbere bre berber gel beraber bir berber dükkanı açalım demiş")
+str_view(a, "ber")
+str_view_all(a, "ber")
+```
+
+Bu fonksiyonlar regular expression dediğimiz sembolik ifadelerle birleştirilerek etkili arama işlemleri yapılabilir.
+

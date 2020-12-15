@@ -1,0 +1,195 @@
+---
+title: 'Tarifler: String (Metin) İşlemleri'
+author: Hakan Hekim
+date: '2020-12-15'
+slug: tarifler-string-metin-islemleri
+categories:
+  - Istatistik
+  - Metin Analizi
+tags:
+  - Strings
+  - stringr
+description: Temel R ve stringr paketleriyle string işlemleri.
+featured: yes
+thumbnail: /images/thumbs/tarif_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<link href="/rmarkdown-libs/str_view/str_view.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/str_view-binding/str_view.js"></script>
+
+
+<p>String işlemleri temel R paketindeki fonksiyonlarla yapılabildiği gibi <code>tidyverse</code> içerisinde yer alan <code>stringr</code> paketiyle de benzer işlemler gerçekleştirilebilir. Aşağıdaki örneklerde hem temel R hem de <code>stringr</code> paketini kullanacağız.</p>
+<ul>
+<li><a href="#string-uzunluğunu-öğrenmek">String uzunluğunu öğrenmek</a></li>
+<li><a href="#birden-fazla-stringi-birleştirmek">Birden fazla string’i birleştirmek</a></li>
+<li><a href="#bir-stringi-parçalara-ayırmak">Bir string’i parçalara ayırmak</a></li>
+<li><a href="#string-içerisinde-geçen-bir-ifadeyi-başkasıyla-değiştirmek">String içerisinde geçen bir ifadeyi başkasıyla değiştirmek</a></li>
+<li><a href="#büyükküçük-harf-dönüştürme">BÜYÜK/küçük harf dönüştürme</a></li>
+<li><a href="#Stringleri-sıralamak">String’leri sıralamak</a></li>
+<li><a href="#Bir-stringi-belli-bir-karaktere-göre-parçalara-ayırmak">Bir string’i belli bir karaktere göre parçalara ayırmak</a></li>
+<li><a href="#stringr-paketiyle-string-içerisinde-arama-yapmak"><code>stringr</code> paketiyle string içerisinde arama yapmak</a></li>
+</ul>
+<div id="string-uzunluğunu-öğrenmek" class="section level2">
+<h2>String uzunluğunu öğrenmek</h2>
+<p>Bir string içerisinde kaç karakter bulunduğunu <code>nchar()</code> fonksiyonuyla öğrenebiliriz:</p>
+<pre class="r"><code>a &lt;- &quot;Merhaba&quot;
+nchar(a)</code></pre>
+<pre><code>## [1] 7</code></pre>
+<pre class="r"><code>a &lt;- c(&quot;Ali&quot;, &quot;Veli&quot;, &quot;Kırk dokuz&quot;, &quot;Elli&quot;, NA)
+nchar(a)</code></pre>
+<pre><code>## [1]  3  4 10  4 NA</code></pre>
+<p><code>NA</code> veri olmadığı anlamına geldiğinden uzunluk olarak ta <code>NA</code> sonucu vermektedir.</p>
+<p>Aynı işlem <code>stringr</code> paketiyle <code>str_length()</code> fonksiyonuyla yapılır:</p>
+<pre class="r"><code>library(stringr)
+str_length(a)</code></pre>
+<pre><code>## [1]  3  4 10  4 NA</code></pre>
+<p><code>NA</code> içeren değerleri <code>"NA"</code> olarak (yani string formatında) görmek için <code>str_replace_na()</code> fonksiyonunu kullanabiliriz:</p>
+<pre class="r"><code>str_replace_na(a)</code></pre>
+<pre><code>## [1] &quot;Ali&quot;        &quot;Veli&quot;       &quot;Kırk dokuz&quot; &quot;Elli&quot;       &quot;NA&quot;</code></pre>
+</div>
+<div id="birden-fazla-stringi-birleştirmek" class="section level2">
+<h2>Birden fazla string’i birleştirmek</h2>
+<p>İki string’i <code>paste()</code> fonksiyonuyla birleştirebiliriz:</p>
+<pre class="r"><code>a &lt;- &quot;Merhaba&quot;
+b &lt;- &quot;Dostum&quot;
+paste(a,b)</code></pre>
+<pre><code>## [1] &quot;Merhaba Dostum&quot;</code></pre>
+<p>Yukarıda <code>paste()</code> fonksiyonu a ve b arasına boşluk bırakmaktadır. Araya gelecek karakteri belirlemek mümkün:</p>
+<pre class="r"><code>paste(a,b, sep=&quot;-&quot;)</code></pre>
+<pre><code>## [1] &quot;Merhaba-Dostum&quot;</code></pre>
+<p>a veya b birden çok elemanı olan vektör olması halinde şöyle bir sonuç ortaya çıkmaktadır:</p>
+<pre class="r"><code>a &lt;- c(&quot;Ali&quot;,&quot;Veli&quot;,&quot;Ayşe&quot;)
+b &lt;- &quot;nereye gittin?&quot;
+paste(a,b, sep=&quot;, &quot;)</code></pre>
+<pre><code>## [1] &quot;Ali, nereye gittin?&quot;  &quot;Veli, nereye gittin?&quot; &quot;Ayşe, nereye gittin?&quot;</code></pre>
+<p>Aynı işlem <code>stringr</code> paketinde <code>str_c()</code> fonksiyonuyla yapılır:</p>
+<pre class="r"><code>str_c(a,b,sep = &quot;, &quot;)</code></pre>
+<pre><code>## [1] &quot;Ali, nereye gittin?&quot;  &quot;Veli, nereye gittin?&quot; &quot;Ayşe, nereye gittin?&quot;</code></pre>
+<p>Birden fazla string içeren bir vektörü tek bir string haline <code>collapse</code> ile çevirebiliriz:</p>
+<pre class="r"><code>str_c(a, collapse = &quot;, &quot;)</code></pre>
+<pre><code>## [1] &quot;Ali, Veli, Ayşe&quot;</code></pre>
+</div>
+<div id="bir-stringi-parçalara-ayırmak" class="section level2">
+<h2>Bir string’i parçalara ayırmak</h2>
+<p><code>substr()</code> fonksiyonu verilen stringi başlangıç ve bitiş değerlerine göre parçalamaktadır:</p>
+<pre class="r"><code>a &lt;- &quot;karamazov&quot;
+substr(a, 1, 4)</code></pre>
+<pre><code>## [1] &quot;kara&quot;</code></pre>
+<p>Girdinin vektör olması durumunda, her bir eleman parçalanır:</p>
+<pre class="r"><code>a &lt;- c(&quot;dostoyevski&quot;, &quot;karamazov&quot;, &quot;kardeşler&quot;)
+substr(a, 1, 4)</code></pre>
+<pre><code>## [1] &quot;dost&quot; &quot;kara&quot; &quot;kard&quot;</code></pre>
+<p><code>nchar()</code> kelime büyüklüğüne göre işlem yapılabilir:</p>
+<pre class="r"><code>a &lt;- c(&quot;dostoyevski&quot;, &quot;karamazov&quot;, &quot;kardeşler&quot;)
+substr(a, nchar(a)-4, nchar(a))</code></pre>
+<pre><code>## [1] &quot;evski&quot; &quot;mazov&quot; &quot;eşler&quot;</code></pre>
+<p>Aynı işlem <code>stringr</code> paketinde <code>str_sub()</code> ile yapılır:</p>
+<pre class="r"><code>str_sub(a, 1, 4)</code></pre>
+<pre><code>## [1] &quot;dost&quot; &quot;kara&quot; &quot;kard&quot;</code></pre>
+</div>
+<div id="string-içerisinde-geçen-bir-ifadeyi-başkasıyla-değiştirmek" class="section level2">
+<h2>String içerisinde geçen bir ifadeyi başkasıyla değiştirmek</h2>
+<p><code>sub()</code> ve <code>gsub()</code> fonksiyonları kelime içerisindeki bir ifadeyi başka bir ifadeyle değiştirir. <code>sub()</code> ilk rastladığı ifadeyi değiştirirken, <code>gsub()</code> bulduğu bitin ifadeleri değiştirir.</p>
+<pre class="r"><code>sub(&quot;ek&quot;,&quot;aş&quot;, &quot;tekerlek&quot;)</code></pre>
+<pre><code>## [1] &quot;taşerlek&quot;</code></pre>
+<pre class="r"><code>gsub(&quot;ek&quot;,&quot;aş&quot;, &quot;tekerlek&quot;)</code></pre>
+<pre><code>## [1] &quot;taşerlaş&quot;</code></pre>
+</div>
+<div id="büyükküçük-harf-dönüştürme" class="section level2">
+<h2>BÜYÜK/küçük harf dönüştürme</h2>
+<p><code>toupper()</code> ve <code>tolower()</code> fonksiyonlarıyla büyük/küçük harf değişimleri yapılabilir:</p>
+<pre class="r"><code>a &lt;- c(&quot;dostoyevski&quot;, &quot;karamazov&quot;, &quot;kardeşler&quot;)
+a &lt;- toupper(a)
+a</code></pre>
+<pre><code>## [1] &quot;DOSTOYEVSKI&quot; &quot;KARAMAZOV&quot;   &quot;KARDEŞLER&quot;</code></pre>
+<pre class="r"><code>tolower(a)</code></pre>
+<pre><code>## [1] &quot;dostoyevski&quot; &quot;karamazov&quot;   &quot;kardeşler&quot;</code></pre>
+<p>Aynı işlem <code>stringr</code> paketinde <code>str_to_upper()</code> ve <code>str_to_lower()</code> ile yapılır:</p>
+<pre class="r"><code>a &lt;- c(&quot;dostoyevski&quot;, &quot;karamazov&quot;, &quot;kardeşler&quot;)
+a &lt;- str_to_upper(a)
+a</code></pre>
+<pre><code>## [1] &quot;DOSTOYEVSKI&quot; &quot;KARAMAZOV&quot;   &quot;KARDEŞLER&quot;</code></pre>
+<pre class="r"><code>str_to_lower(a)</code></pre>
+<pre><code>## [1] &quot;dostoyevski&quot; &quot;karamazov&quot;   &quot;kardeşler&quot;</code></pre>
+<p><code>stringr</code> paketinde büyük/küçük harf dönüşümü yaparken dil belirleyebiliriz. Bilindiği gibi Türkçe “i” harfi İngilizce tabanlı bir sistemde “I” olarak büyük harfe dönüşecek, “I” harfi de “i” olarak dönüşecektir. Bunun önüne geçmek için <code>locale</code> argümanı kullanabiliriz:</p>
+<pre class="r"><code>a &lt;- c(&quot;ilişki&quot;, &quot;ılık&quot;)
+str_to_upper(a)</code></pre>
+<pre><code>## [1] &quot;ILIŞKI&quot; &quot;ILIK&quot;</code></pre>
+<pre class="r"><code>str_to_upper(a, locale = &quot;tr&quot;)</code></pre>
+<pre><code>## [1] &quot;İLİŞKİ&quot; &quot;ILIK&quot;</code></pre>
+<pre class="r"><code>a &lt;- c(&quot;İLİŞKİ&quot;, &quot;ILIK&quot;)
+str_to_lower(a)</code></pre>
+<pre><code>## [1] &quot;i̇li̇şki̇&quot; &quot;ilik&quot;</code></pre>
+<pre class="r"><code>str_to_lower(a, locale = &quot;tr&quot;)</code></pre>
+<pre><code>## [1] &quot;ilişki&quot; &quot;ılık&quot;</code></pre>
+</div>
+<div id="stringleri-sıralamak" class="section level2">
+<h2>String’leri sıralamak</h2>
+<p><code>sort()</code> fonksiyonuyla string’leri sıralayabiliriz. <code>order()</code> fonksiyonu string’lerin index değerlerini sıralar</p>
+<pre class="r"><code>a &lt;- c(&quot;zeynep&quot;, &quot;leyla&quot;, &quot;kemal&quot;,&quot;tarık&quot;)
+sort(a)</code></pre>
+<pre><code>## [1] &quot;kemal&quot;  &quot;leyla&quot;  &quot;tarık&quot;  &quot;zeynep&quot;</code></pre>
+<pre class="r"><code>order(a)</code></pre>
+<pre><code>## [1] 3 2 4 1</code></pre>
+<p>Aynı işlem <code>stringr</code> paketinde <code>str_sort()</code> ve <code>str_order()</code> ile yapılır:</p>
+<pre class="r"><code>a &lt;- c(&quot;zeynep&quot;, &quot;leyla&quot;, &quot;kemal&quot;,&quot;tarık&quot;)
+str_sort(a)</code></pre>
+<pre><code>## [1] &quot;kemal&quot;  &quot;leyla&quot;  &quot;tarık&quot;  &quot;zeynep&quot;</code></pre>
+<pre class="r"><code>str_order(a)</code></pre>
+<pre><code>## [1] 3 2 4 1</code></pre>
+<p><code>str_sort()</code> ve <code>str_order()</code> fonksiyonları da <code>locale</code> argümanı almaktadır.</p>
+</div>
+<div id="bir-stringi-belli-bir-karaktere-göre-parçalara-ayırmak" class="section level2">
+<h2>Bir string’i belli bir karaktere göre parçalara ayırmak</h2>
+<p><code>strsplit()</code> ile string’i belli bir karaktere göre parçalara ayırabiliriz. <code>strsplit()</code> fonksiyonu çıktı olarak bir liste verir.</p>
+<pre class="r"><code>a &lt;- &quot;İstanbul, Türkiye&quot;
+strsplit(a, &quot;, &quot;)</code></pre>
+<pre><code>## [[1]]
+## [1] &quot;İstanbul&quot; &quot;Türkiye&quot;</code></pre>
+<p>Görüldüğü gibi <code>strsplit()</code> “,” ifadesini çıkartarak string’i parçalıyor.</p>
+<p><code>strsplit()</code> fonksiyonu değer olarak Regular Expression (regexp) kullanıldığında çok daha kullanışlı olacaktır. Mesela aşağıdaki regexp ifadesi başında “el” veya “er” olan kelimeleri bölüyor.</p>
+<pre class="r"><code>a &lt;- c(&quot;elma&quot;,&quot;eldiven&quot;,&quot;erişte&quot;,&quot;ense&quot;)
+strsplit(a, &quot;^e[lr]&quot;)</code></pre>
+<pre><code>## [[1]]
+## [1] &quot;&quot;   &quot;ma&quot;
+## 
+## [[2]]
+## [1] &quot;&quot;      &quot;diven&quot;
+## 
+## [[3]]
+## [1] &quot;&quot;     &quot;işte&quot;
+## 
+## [[4]]
+## [1] &quot;ense&quot;</code></pre>
+<p>Bu örnekte ise başında “el” veya “er” ifadesi olan kelimeler bölünüyor.</p>
+<pre class="r"><code>a &lt;- c(&quot;İstanbul,Türkiye&quot;, &quot;İstanbul/Türkiye&quot;,&quot;İstanbul-Türkiye&quot;)
+strsplit(a, &quot;[,/-]&quot;)</code></pre>
+<pre><code>## [[1]]
+## [1] &quot;İstanbul&quot; &quot;Türkiye&quot; 
+## 
+## [[2]]
+## [1] &quot;İstanbul&quot; &quot;Türkiye&quot; 
+## 
+## [[3]]
+## [1] &quot;İstanbul&quot; &quot;Türkiye&quot;</code></pre>
+</div>
+<div id="stringr-paketiyle-string-içerisinde-arama-yapmak" class="section level2">
+<h2><code>stringr</code> paketiyle string içerisinde arama yapmak</h2>
+<p><code>str_view()</code> ve <code>str_view_all()</code> fonksiyonlarıyla string içerisinde arama yapabiliriz. Bunlardan <code>str_view()</code> ilk rastladığını getirirken <code>str_view_all()</code> hepsini getirir.</p>
+<pre class="r"><code>a &lt;- c(&quot;Bir berber bir berbere bre berber gel beraber bir berber dükkanı açalım demiş&quot;)
+str_view(a, &quot;ber&quot;)</code></pre>
+<div id="htmlwidget-1" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"html":"<ul>\n  <li>Bir <span class='match'>ber<\/span>ber bir berbere bre berber gel beraber bir berber dükkanı açalım demiş<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view_all(a, &quot;ber&quot;)</code></pre>
+<div id="htmlwidget-2" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"html":"<ul>\n  <li>Bir <span class='match'>ber<\/span><span class='match'>ber<\/span> bir <span class='match'>ber<\/span><span class='match'>ber<\/span>e bre <span class='match'>ber<\/span><span class='match'>ber<\/span> gel <span class='match'>ber<\/span>a<span class='match'>ber<\/span> bir <span class='match'>ber<\/span><span class='match'>ber<\/span> dükkanı açalım demiş<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<p>Bu fonksiyonlar regular expression dediğimiz sembolik ifadelerle birleştirilerek etkili arama işlemleri yapılabilir.</p>
+</div>
