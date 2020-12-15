@@ -4,7 +4,7 @@ author: Hakan Hekim
 date: '2020-10-01'
 aliases:
   - about-us
-  - about-hugo
+  - about-rnotlari
   - contact
 description: R Notları nedir
 ---

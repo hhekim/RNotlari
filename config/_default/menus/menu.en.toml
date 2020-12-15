@@ -27,6 +27,11 @@
   url = "about/"
   weight = -107
   
+[[main]]
+  name = "İletişim"
+  url = "iletisim/"
+  weight = -104
+  
 #[[main]]
 #  name = "HH"
 #  url = "cv/"
