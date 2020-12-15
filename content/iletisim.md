@@ -9,13 +9,9 @@ aliases:
 description: Sorularınız, yardım talepleriniz vs.
 ---
 
-> İletişim: rnotlari[[at]]gmail.com
+> **İletişim:** <span style="color: red;">rnotlari[[at]]gmail.com</span>
 
-> R ile ilgili soru ve yardım isteklerinize vakit müsait oldukça cevap verebilirim.
-
-> Her tür veri analizi hizmet taleplerinizi gönderebilirsiniz. Gönderdiğiniz bilgileri inceleyerek en kısa sürede size dönüş yaparım.
-
-> Hizmet alabileceğiniz konu başlıkları:
+> R ile ilgili soru ve yardım isteklerinizi yazabilirsiniz. Ayrıca aşağıdaki alanlarda analiz ve danışmanlık hizmeti verilir:
 
 >- İstatistik
   + Veri temizleme
