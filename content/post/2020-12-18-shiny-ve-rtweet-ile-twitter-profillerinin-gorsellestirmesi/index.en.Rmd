@@ -30,5 +30,5 @@ Uygulama ilk yüklendiğinde Twitter'ın kurucusu Jack Dorsey'in profilini göst
 
 REST API üzerinden çekilen verilerle daha farklı ve kompleks analizler yapmak ta mümkün. Şiimdilik bu kadar.
 
-![](/post/2020-12-18-shiny-ve-rtweet-ile-twitter-profillerinin-gorsellestirmesi/tw_profileapp.png)
+![](/post/2020-12-18-shiny-ve-rtweet-ile-twitter-profillerinin-gorsellestirmesi/index.en_files/tw_profileapp.png)
 
