@@ -9,6 +9,8 @@ categories:
 tags:
   - Strings
   - stringr
+series:
+- Tarifler
 description: Temel R ve stringr paketleriyle string işlemleri.
 featured: yes
 thumbnail: /images/thumbs/tarif_tn.jpg

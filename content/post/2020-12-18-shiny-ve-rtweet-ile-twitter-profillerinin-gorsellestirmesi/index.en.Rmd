@@ -1,0 +1,34 @@
+---
+title: Shiny ve rtweet ile Twitter profillerinin görselleştirmesi
+author: Hakan Hekim
+date: '2020-12-18'
+slug: shiny-ve-rtweet-ile-twitter-profillerinin-gorsellestirmesi
+categories:
+  - Shiny
+  - Grafik
+tags:
+  - Sosyal Medya
+  - rtweet
+  - Shiny
+  - Grafik
+description: rtweet paketiyle geliştirilmiş bir sosyal medya (Twitter) analiz uygulaması.
+featured: yes
+thumbnail: /images/thumbs/rtweet_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+`rtweet` Twitter'ın REST API üzerinden veri çekmeye yarayan çok kullanışlı bir R paketi. Paketi özellikle kullanışlı kılan şey, birkaç fonksiyonla Twitter verilerini dataframe olarak bilgisayarınıza kolayca indirebilmeniz. Paketle ilgili temel kullanım bilgilerini [burada](https://docs.ropensci.org/rtweet/) bulabilirsiniz.
+
+Twitter kullanıcı profillerini sorgulamaya ve bazı metrikleri tablo ve grafik olarak görsellemeye yarayan bir Shiny uygulaması yazdım. Uygulamaya bir süreliğine [buradan](https://hhekim.shinyapps.io/twprofile/) erişebilirsiniz.
+
+Uygulama, kullanıcı adı ile sorgulanan profilin timeline'ında bulunan son 3.000 tweet'ini `rtweet` ile indiriyor. En fazla kullandığı #hashtag ve @mention'ları listeliyor. Tweet trafiği, hangi saatlerde tweet attığı ve en fazla retweet yaptığı kullanıcıları grafik olarak gösteriyor.
+
+Uygulama ilk yüklendiğinde Twitter'ın kurucusu Jack Dorsey'in profilini gösteriyor ve yanlış bir kullanıcı adı girilmesi durumunda da yine @jack'e geri dönüyor. Twitter REST API üzerinden ne kadar sorgu yapılabileceği rate limits ile belirlenmiş. Bu yüzden sorgu sayısı limiti dolunca uygulama çalışmayacaktır.
+
+REST API üzerinden çekilen verilerle daha farklı ve kompleks analizler yapmak ta mümkün. Şiimdilik bu kadar.
+
+![](/post/2020-12-18-shiny-ve-rtweet-ile-twitter-profillerinin-gorsellestirmesi/tw_profileapp.png)
+

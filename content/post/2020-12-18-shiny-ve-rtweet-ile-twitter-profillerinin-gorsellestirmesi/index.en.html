@@ -1,0 +1,33 @@
+---
+title: Shiny ve rtweet ile Twitter profillerinin görselleştirmesi
+author: Hakan Hekim
+date: '2020-12-18'
+slug: shiny-ve-rtweet-ile-twitter-profillerinin-gorsellestirmesi
+categories:
+  - Shiny
+  - Grafik
+tags:
+  - Sosyal Medya
+  - rtweet
+  - Shiny
+  - Grafik
+description: rtweet paketiyle geliştirilmiş bir sosyal medya (Twitter) analiz uygulaması.
+featured: yes
+thumbnail: /images/thumbs/rtweet_tn.jpg
+shareImage: /logos/slogo.jpeg
+codeMaxLines: 10
+codeLineNumbers: no
+figurePositionShow: yes
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+
+
+<p><code>rtweet</code> Twitter’ın REST API üzerinden veri çekmeye yarayan çok kullanışlı bir R paketi. Paketi özellikle kullanışlı kılan şey, birkaç fonksiyonla Twitter verilerini dataframe olarak bilgisayarınıza kolayca indirebilmeniz. Paketle ilgili temel kullanım bilgilerini <a href="https://docs.ropensci.org/rtweet/">burada</a> bulabilirsiniz.</p>
+<p>Twitter kullanıcı profillerini sorgulamaya ve bazı metrikleri tablo ve grafik olarak görsellemeye yarayan bir Shiny uygulaması yazdım. Uygulamaya bir süreliğine <a href="https://hhekim.shinyapps.io/twprofile/">buradan</a> erişebilirsiniz.</p>
+<p>Uygulama, kullanıcı adı ile sorgulanan profilin timeline’ında bulunan son 3.000 tweet’ini <code>rtweet</code> ile indiriyor. En fazla kullandığı #hashtag ve <span class="citation">@mention</span>’ları listeliyor. Tweet trafiği, hangi saatlerde tweet attığı ve en fazla retweet yaptığı kullanıcıları grafik olarak gösteriyor.</p>
+<p>Uygulama ilk yüklendiğinde Twitter’ın kurucusu Jack Dorsey’in profilini gösteriyor ve yanlış bir kullanıcı adı girilmesi durumunda da yine <span class="citation">@jack</span>’e geri dönüyor. Twitter REST API üzerinden ne kadar sorgu yapılabileceği rate limits ile belirlenmiş. Bu yüzden sorgu sayısı limiti dolunca uygulama çalışmayacaktır.</p>
+<p>REST API üzerinden çekilen verilerle daha farklı ve kompleks analizler yapmak ta mümkün. Şiimdilik bu kadar.</p>
+<p><img src="/post/2020-12-18-shiny-ve-rtweet-ile-twitter-profillerinin-gorsellestirmesi/tw_profileapp.png" /></p>

@@ -8,6 +8,8 @@ tags:
   - dataframe
   - Liste
   - vector
+series:
+- Tarifler
 slug: tarif-veri-yapilari
 description: Temel R işlemlerinin tarifleri.
 featured: yes
