@@ -40,7 +40,7 @@ tff_page %>%
   html_table(fill=TRUE) -> x 
 
 i <- 41 
-while(i <= 54){ 
+while(i <= 70){ 
   tff_page %>% 
     html_nodes("table") %>% 
     .[[i]] %>% 
@@ -57,7 +57,7 @@ head(x,5)
 
 İkinci aşamada elde ettiğimiz verisetini, *edge list*’e çevireceğiz:
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 x[,2] <- lapply(x$X2, function (k) k <- gsub("-","",x$X2)) 
 N <- length(x$X2) 
 xnew <- data.frame(team1=character(),
@@ -116,7 +116,7 @@ Yukarıdaki çıktıda yer alan Network attributes’e baktığımızda; 21 tak�
 
 Şimdi network verisini bir `sociograph` ile gösterelim:
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 deg <- degree(netplays, cmode = "outdegree", rescale = TRUE) 
 par(mar=c(0,0,0,0)) 
 gplot(netplays, gmode="digraph", mode="fruchtermanreingold", usearrows=TRUE, 
@@ -126,11 +126,11 @@ gplot(netplays, gmode="digraph", mode="fruchtermanreingold", usearrows=TRUE,
       edge.col=brewer.pal(netplays %e% "avrg", name = "Reds"),jitter = TRUE)
 ```
 
-Bu grafikte gplot vertex ve takım ismi büyüklüklerini takımların galibiyet miktarına göre ayarlıyor. Sıralamada yukarıda yer alan takımlar grafiğin ortasında, sonlarda yer alan takımlar kenarlarda yer almakta. Takımlar arasındaki bağlantı net skora göre açıktan koyuya doğru değişiyor. Koyu kırmızı bağlantılar farklı galibiyetleri gösteriyor.
+Bu grafikte gplot vertex ve takım ismi büyüklüklerini takımların galibiyet miktarına göre ayarlıyor. Üst sıralardaki takımlar daha büyük gsteriliyor. Takımlar arasındaki bağlantı net skora göre açıktan koyuya doğru değişiyor. Koyu kırmızı bağlantılar farklı galibiyetleri gösteriyor. Oklar galib takımdan mağlup takıma doğru gidiyor.
 
 Aşağıda mode parametresini değiştirerek dairesel bir grafik oluşturdum:
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 deg <- degree(netplays, cmode = "outdegree", rescale = TRUE) 
 par(mar=c(0,0,0,0)) 
 gplot(netplays, gmode="digraph", mode="circle", usearrows=TRUE, 

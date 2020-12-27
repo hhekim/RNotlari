@@ -36,7 +36,9 @@ const panelHide = 'panel_hide';
 const panelFrom = 'panel_from';
 const panelBox = 'panel_box';
 const fullHeight = 'initial';
-const highlightWrap = 'highlight_wrap'
+const highlightWrap = 'highlight_wrap';
+
+
 
 function wrapOrphanedPreElements() {
   const pres = elems('pre');

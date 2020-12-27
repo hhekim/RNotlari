@@ -18,6 +18,7 @@ codeLineNumbers: no
 figurePositionShow: yes
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 <link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
 <script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
 
@@ -38,7 +39,7 @@ tff_page %&gt;%
   html_table(fill=TRUE) -&gt; x 
 
 i &lt;- 41 
-while(i &lt;= 54){ 
+while(i &lt;= 70){ 
   tff_page %&gt;% 
     html_nodes(&quot;table&quot;) %&gt;% 
     .[[i]] %&gt;% 
@@ -57,10 +58,8 @@ head(x,5)</code></pre>
 ## 5 FATİH KARAGÜMRÜK A.Ş. 3 - 0             YENİ MALATYASPOR</code></pre>
 <p>İlk satırda müsabaka sonuçlarının yer aldığı sayfayı <em>url</em> değişkenine atıyorum. Sonra sayfayı <em>tff_page</em> değişkenine <em>read_html</em> fonksiyonunu kullanarak liste olarak indiriyorum. Son olarak sayfanın html koduna bakarak almak istediğim kısmı bulup while döngüsüyle bu kısımları dataframe’e çeviriyorum. Şayet siz bu kodu çalıştırırken sayfanın yapısı değişmişse, kodun bu kısmınının güncellenmesi gerekir.</p>
 <p>İkinci aşamada elde ettiğimiz verisetini, <em>edge list</em>’e çevireceğiz:</p>
-<pre class="r"><code>x[,2] &lt;- lapply(x$X2, function (k) k &lt;- gsub(&quot;-&quot;,&quot;&quot;,x$X2)) </code></pre>
-<pre><code>## Warning in `[&lt;-.data.frame`(`*tmp*`, , 2, value = list(c(&quot;1 2&quot;, &quot;0 2&quot;, :
-## provided 80 variables to replace 1 variables</code></pre>
-<pre class="r"><code>N &lt;- length(x$X2) 
+<pre class="r"><code>x[,2] &lt;- lapply(x$X2, function (k) k &lt;- gsub(&quot;-&quot;,&quot;&quot;,x$X2)) 
+N &lt;- length(x$X2) 
 xnew &lt;- data.frame(team1=character(),
                    team2=character(),
                    avrg=numeric(),
@@ -119,9 +118,9 @@ netplays</code></pre>
 ##   loops = FALSE 
 ##   multiple = FALSE 
 ##   bipartite = FALSE 
-##   total edges= 53 
+##   total edges= 106 
 ##     missing edges= 0 
-##     non-missing edges= 53 
+##     non-missing edges= 106 
 ## 
 ##  Vertex attribute names: 
 ##     vertex.names 
@@ -138,11 +137,8 @@ gplot(netplays, gmode=&quot;digraph&quot;, mode=&quot;fruchtermanreingold&quot;,
       vertex.cex=deg*15, label.cex = deg*20, arrowhead.cex = 0.7, 
       edge.lwd=(netplays %e% &quot;avrg&quot;)/2, 
       edge.col=brewer.pal(netplays %e% &quot;avrg&quot;, name = &quot;Reds&quot;),jitter = TRUE)</code></pre>
-<pre><code>## Warning in if (n &lt; 3) {: the condition has length &gt; 1 and only the first element
-## will be used</code></pre>
-<pre><code>## Warning in brewer.pal(netplays %e% &quot;avrg&quot;, name = &quot;Reds&quot;): minimal value for n is 3, returning requested palette with 3 different levels</code></pre>
 <p><img src="/post/2020-11-11-r-ile-sosyal-network-analizi/index.en_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p>Bu grafikte gplot vertex ve takım ismi büyüklüklerini takımların galibiyet miktarına göre ayarlıyor. Sıralamada yukarıda yer alan takımlar grafiğin ortasında, sonlarda yer alan takımlar kenarlarda yer almakta. Takımlar arasındaki bağlantı net skora göre açıktan koyuya doğru değişiyor. Koyu kırmızı bağlantılar farklı galibiyetleri gösteriyor.</p>
+<p>Bu grafikte gplot vertex ve takım ismi büyüklüklerini takımların galibiyet miktarına göre ayarlıyor. Üst sıralardaki takımlar daha büyük gsteriliyor. Takımlar arasındaki bağlantı net skora göre açıktan koyuya doğru değişiyor. Koyu kırmızı bağlantılar farklı galibiyetleri gösteriyor. Oklar galib takımdan mağlup takıma doğru gidiyor.</p>
 <p>Aşağıda mode parametresini değiştirerek dairesel bir grafik oluşturdum:</p>
 <pre class="r"><code>deg &lt;- degree(netplays, cmode = &quot;outdegree&quot;, rescale = TRUE) 
 par(mar=c(0,0,0,0)) 
@@ -151,8 +147,5 @@ gplot(netplays, gmode=&quot;digraph&quot;, mode=&quot;circle&quot;, usearrows=TR
       vertex.cex=deg*15, label.cex = deg*20, arrowhead.cex = 0.7, 
       edge.lwd=(netplays %e% &quot;avrg&quot;)/2, 
       edge.col=brewer.pal(netplays %e% &quot;avrg&quot;, name = &quot;Reds&quot;),jitter = TRUE)</code></pre>
-<pre><code>## Warning in if (n &lt; 3) {: the condition has length &gt; 1 and only the first element
-## will be used</code></pre>
-<pre><code>## Warning in brewer.pal(netplays %e% &quot;avrg&quot;, name = &quot;Reds&quot;): minimal value for n is 3, returning requested palette with 3 different levels</code></pre>
 <p><img src="/post/2020-11-11-r-ile-sosyal-network-analizi/index.en_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p><em>Vertex</em>’lere takımlarla ilgili, <em>edge</em>’lere maçlarla ilgili birçok özellik işlenerek, ligin çok farklı yönlerini görselleştiren grafikler çizmek mümkün. Bu notta sadece kitabın kapağını biraz aralayıp R ile yapabileceklerimizi bir miktar göstermek istedim.</p>
