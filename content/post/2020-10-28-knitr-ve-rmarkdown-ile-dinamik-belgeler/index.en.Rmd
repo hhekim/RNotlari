@@ -9,7 +9,7 @@ tags:
   - knitr
   - rmarkdown
 description: knitr paketini kullanarak Rmarkdown ve LATEX dökümanlar oluşturmak.
-featured: yes
+featured: no
 #toc: no
 #featureImage: /images/path/file.jpg
 thumbnail: /images/thumbs/knitr_tn.jpg

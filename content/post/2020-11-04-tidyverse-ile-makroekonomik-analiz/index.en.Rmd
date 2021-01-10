@@ -9,7 +9,7 @@ tags:
   - ggplot2
   - tidyverse
 description: tidyverse ve ameco paketlerini kullanarak makroekonomik analiz.
-featured: yes
+featured: no
 #toc: no
 #featureImage: /images/path/file.jpg
 thumbnail: /images/thumbs/tidyverse_tn.jpg

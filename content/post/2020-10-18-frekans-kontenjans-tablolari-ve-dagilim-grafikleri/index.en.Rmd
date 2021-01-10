@@ -9,7 +9,7 @@ categories:
 tags:
   - scatter plot
 description: Frekans ve kontenjans tablosu üretme, dağılım grafiği çizme.
-featured: yes
+featured: no
 #toc: no
 #featureImage: /images/path/file.jpg
 thumbnail: /images/thumbs/scatter_tn.jpg

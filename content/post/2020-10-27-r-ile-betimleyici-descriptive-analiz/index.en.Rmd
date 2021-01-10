@@ -10,7 +10,7 @@ tags:
   - Betimleyici
   - Descriptive
 description: İlave yöntemler.
-featured: yes
+featured: no
 #toc: no
 #featureImage: /images/path/file.jpg
 #thumbnail: /images/path/thumbnail.png

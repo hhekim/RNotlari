@@ -8,7 +8,7 @@ categories:
 tags:
   - functional programming
 description: R'ın en güçlü özelliklerinden fonksiyonel programlamaya ilişkin tarifler içerir.
-featured: yes
+featured: no
 thumbnail: /images/thumbs/tarif_tn.jpg
 shareImage: /logos/slogo.jpeg
 codeMaxLines: 10
@@ -16,6 +16,7 @@ codeLineNumbers: no
 figurePositionShow: yes
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 <link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
 <script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
 
@@ -123,10 +124,10 @@ rownames(mtx) &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;)
 colnames(mtx) &lt;- c(&quot;X1&quot;,&quot;X2&quot;,&quot;X3&quot;,&quot;X4&quot;,&quot;X5&quot;)
 apply(mtx, 1, mean)</code></pre>
 <pre><code>##     A     B     C     D 
-## 656.0 408.4 743.0 677.4</code></pre>
+## 728.6 503.6 385.0 501.2</code></pre>
 <pre class="r"><code>apply(mtx, 2, mean)</code></pre>
 <pre><code>##     X1     X2     X3     X4     X5 
-## 581.75 598.25 521.50 723.25 681.25</code></pre>
+## 673.50 341.00 464.75 633.50 535.25</code></pre>
 <p><code>apply</code> ilk argüman olarak hesaplama yapmak istediğimiz verisetini, ikinci argüman olarak verisetinin satırlarında işlem yapacaksak <strong>1</strong>, sütunlarında işlem yapacaksak <strong>2</strong> değerini ve son olarakta fonksiyonu almaktadır.</p>
 <p>Aynı işlemi data frame üzerinde de yapabiliriz. Ancak numerik olmayan sütunları önceden ayıklamamız gerekir. Numerik olmayan veri tipleri olması halinde farklı sonuçlar ortaya çıkabilir.</p>
 <pre class="r"><code>apply(mtcars,2,mean)</code></pre>

@@ -10,7 +10,7 @@ tags:
 slug:
   - cok-degiskenli-regresyon-modeli
 description: R ile çok değişkenli regresyon modeli hesaplanması ve sonuçların yorumlanması.
-featured: yes
+featured: no
 thumbnail: /images/thumbs/multireg_tn.jpg
 shareImage: /logos/slogo.jpeg
 codeMaxLines: 10

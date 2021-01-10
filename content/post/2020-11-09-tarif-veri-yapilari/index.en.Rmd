@@ -12,7 +12,7 @@ series:
 - Tarifler
 slug: tarif-veri-yapilari
 description: Temel R işlemlerinin tarifleri.
-featured: yes
+featured: no
 thumbnail: /images/thumbs/tarif_tn.jpg
 shareImage: /logos/slogo.jpeg
 codeMaxLines: 10

@@ -9,7 +9,7 @@ tags:
   - GIS
   - Choropleth
 description: R ile Türkiye haritası çizimi ve renk tonlarıyla veri yerleştirme.
-featured: yes
+featured: no
 #toc: no
 #featureImage: /images/path/file.jpg
 thumbnail: /images/thumbs/tr-se_tn.jpg

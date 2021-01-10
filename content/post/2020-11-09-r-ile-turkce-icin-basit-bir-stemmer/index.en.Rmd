@@ -8,7 +8,7 @@ categories:
 tags:
   - Stemmer
 description: Türkçe kelimelerin köklerini ayırmayı sağlayan bir stemmer denemesi.
-featured: yes
+featured: no
 #toc: no
 #featureImage: /images/path/file.jpg
 thumbnail: /images/thumbs/stem_tn.jpg

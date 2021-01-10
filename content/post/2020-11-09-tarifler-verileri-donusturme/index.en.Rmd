@@ -8,7 +8,7 @@ categories:
 tags:
   - functional programming
 description: R'ın en güçlü özelliklerinden fonksiyonel programlamaya ilişkin tarifler içerir.
-featured: yes
+featured: no
 thumbnail: /images/thumbs/tarif_tn.jpg
 shareImage: /logos/slogo.jpeg
 codeMaxLines: 10

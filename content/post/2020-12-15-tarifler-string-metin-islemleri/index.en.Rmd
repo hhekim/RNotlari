@@ -12,7 +12,7 @@ tags:
 series:
 - Tarifler
 description: Temel R ve stringr paketleriyle string işlemleri.
-featured: yes
+featured: no
 thumbnail: /images/thumbs/tarif_tn.jpg
 shareImage: /logos/slogo.jpeg
 codeMaxLines: 10

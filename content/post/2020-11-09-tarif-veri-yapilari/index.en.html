@@ -12,7 +12,7 @@ series:
 - Tarifler
 slug: tarif-veri-yapilari
 description: Temel R işlemlerinin tarifleri.
-featured: yes
+featured: no
 thumbnail: /images/thumbs/tarif_tn.jpg
 shareImage: /logos/slogo.jpeg
 codeMaxLines: 10
@@ -144,11 +144,11 @@ c &lt;- sample(x = 5:10, size = 12, replace = TRUE)
 d &lt;- stack(list(ankara = a, izmir = b, urfa = c))
 head(d, 5)</code></pre>
 <pre><code>##   values    ind
-## 1      6 ankara
+## 1      5 ankara
 ## 2      7 ankara
-## 3      6 ankara
-## 4      5 ankara
-## 5      7 ankara</code></pre>
+## 3      9 ankara
+## 4      9 ankara
+## 5      8 ankara</code></pre>
 <p><code>stack</code> fonksiyonu liste veri tipi girdi istediğinden öncelikle vektörleri liste haline dönüştürdüm. Sonuç olarak değerleri barındıran <code>values</code> sütunu ve kategorileri barındıran <code>ind</code> sütunundan oluşan bir data frame elde ettim.</p>
 </div>
 <div id="nasıl-liste-oluştururum" class="section level2">
@@ -271,15 +271,15 @@ lst</code></pre>
 <pre class="r"><code>vec &lt;- round(rnorm(12,5,2), digits = 1)
 matrix(vec,3,4)</code></pre>
 <pre><code>##      [,1] [,2] [,3] [,4]
-## [1,]  5.1  6.3  3.3  8.4
-## [2,]  8.9  4.4  6.9  1.4
-## [3,]  4.3  5.1  3.7  4.3</code></pre>
+## [1,]  6.9  8.0  7.2  4.6
+## [2,]  6.0  5.9  5.4  3.8
+## [3,]  9.7  2.3  6.8  2.7</code></pre>
 <p><code>vec</code> vektörü matrise dönüştürülürken veriler sırasıyla sütunlar esas alınarak yazılır. Yani önce birinci, ardından ikinci ve sonraki sütunlar oluşturulur. Verisi satır temelli yazmak için <code>byrow</code> parametresine <code>TRUE</code> değerini atamalıyız.</p>
 <pre class="r"><code>matrix(vec,3,4,byrow = TRUE)</code></pre>
 <pre><code>##      [,1] [,2] [,3] [,4]
-## [1,]  5.1  8.9  4.3  6.3
-## [2,]  4.4  5.1  3.3  6.9
-## [3,]  3.7  8.4  1.4  4.3</code></pre>
+## [1,]  6.9  6.0  9.7  8.0
+## [2,]  5.9  2.3  7.2  5.4
+## [3,]  6.8  4.6  3.8  2.7</code></pre>
 <p>Herhangi bir veri içermeyen boş bir matris te üretebiliriz:</p>
 <pre class="r"><code>matrix(NA,3,4)</code></pre>
 <pre><code>##      [,1] [,2] [,3] [,4]
@@ -290,10 +290,10 @@ matrix(vec,3,4)</code></pre>
 <pre class="r"><code>dim(vec) &lt;- c(4,3)
 vec</code></pre>
 <pre><code>##      [,1] [,2] [,3]
-## [1,]  5.1  4.4  3.7
-## [2,]  8.9  5.1  8.4
-## [3,]  4.3  3.3  1.4
-## [4,]  6.3  6.9  4.3</code></pre>
+## [1,]  6.9  5.9  6.8
+## [2,]  6.0  2.3  4.6
+## [3,]  9.7  7.2  3.8
+## [4,]  8.0  5.4  2.7</code></pre>
 </div>
 <div id="matrisin-satır-ve-sütunlarına-nasıl-başlık-verebilirim" class="section level2">
 <h2>Matrisin satır ve sütunlarına nasıl başlık verebilirim?</h2>
@@ -304,34 +304,34 @@ rownames(vec) &lt;- c(&quot;X&quot;,&quot;Y&quot;,&quot;Z&quot;)
 colnames(vec) &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;)
 vec</code></pre>
 <pre><code>##     A   B   C   D
-## X 4.5 8.0 3.9 6.6
-## Y 6.2 3.2 4.8 5.3
-## Z 4.1 5.6 6.5 5.8</code></pre>
+## X 1.6 3.4 4.4 4.2
+## Y 4.5 6.0 5.8 1.9
+## Z 2.5 5.8 3.2 4.9</code></pre>
 <p>Matrisleri başlıklandırmanın avantajlı tarafı, başlıkları kullanarak matris elemanlarını seçebiliriz:</p>
 <pre class="r"><code>vec[&quot;Y&quot;,&quot;C&quot;]</code></pre>
-<pre><code>## [1] 4.8</code></pre>
+<pre><code>## [1] 5.8</code></pre>
 </div>
 <div id="matrisin-sadece-bir-satır-veya-sütununu-nasıl-seçebilirim" class="section level2">
 <h2>Matrisin sadece bir satır veya sütununu nasıl seçebilirim?</h2>
 <p>Matriste yer alan bir veriyi seçerken matrisin adından sonra köşeli parantez içerisinde önce satır sonra sütun başlığını veya indisini belirtmemiz gerekir:</p>
 <pre class="r"><code>vec[2,3] # veya vec[&quot;Y&quot;,&quot;C&quot;]</code></pre>
-<pre><code>## [1] 4.8</code></pre>
+<pre><code>## [1] 5.8</code></pre>
 <p>Bir satır seçerken yapmamız gereken satır bilgisini yazıp sütun bilgisini boş bırakmak olacaktır. Aynı biçimde tek bir sütun seçerken yapmamız gereken sütun bilgisini yazıp, satır bilgisini boş bırakmaktır:</p>
 <pre class="r"><code>vec[2,] # ikinci satırı seçer</code></pre>
 <pre><code>##   A   B   C   D 
-## 6.2 3.2 4.8 5.3</code></pre>
+## 4.5 6.0 5.8 1.9</code></pre>
 <pre class="r"><code>vec[,3] # üçüncü sütunu seçer</code></pre>
 <pre><code>##   X   Y   Z 
-## 3.9 4.8 6.5</code></pre>
+## 4.4 5.8 3.2</code></pre>
 <p>Bu seçim işlemi bir vektör üretecektir. Tek satırlı veya sütunlu matris elde etmek için <code>drop=FALSE</code> parametresini eklemeliyiz:</p>
 <pre class="r"><code>vec[2,,drop=FALSE] # ikinci satırı seçer</code></pre>
-<pre><code>##     A   B   C   D
-## Y 6.2 3.2 4.8 5.3</code></pre>
+<pre><code>##     A B   C   D
+## Y 4.5 6 5.8 1.9</code></pre>
 <pre class="r"><code>vec[,3,drop=FALSE] # üçüncü sütunu seçer</code></pre>
 <pre><code>##     C
-## X 3.9
-## Y 4.8
-## Z 6.5</code></pre>
+## X 4.4
+## Y 5.8
+## Z 3.2</code></pre>
 </div>
 <div id="vektör-olarak-kaydedilmiş-değişkenleri-data-frame-sütunları-olarak-birleştirmek-istiyorum-nasıl-yaparım" class="section level2">
 <h2>Vektör olarak kaydedilmiş değişkenleri data frame sütunları olarak birleştirmek istiyorum, nasıl yaparım?</h2>
@@ -343,57 +343,57 @@ var4 &lt;- round(rnorm(10,15,2), digits = 1)
 df1 &lt;- data.frame(var1,var2,var3,var4)
 df1</code></pre>
 <pre><code>##    var1 var2 var3 var4
-## 1   5.1  9.4    B 14.8
-## 2   6.9  8.3    B 17.1
-## 3   3.0  9.7    A 15.4
-## 4   4.0  7.4    A 17.7
-## 5   5.0 11.6    B 14.8
-## 6   7.4  9.7    B 14.8
-## 7   7.8  8.9    A 13.9
-## 8   7.5  8.6    B 18.0
-## 9   5.2 10.8    B 15.2
-## 10  6.9  9.1    A 15.8</code></pre>
+## 1   1.5 10.4    A 14.8
+## 2   4.9 11.9    A 16.8
+## 3   4.5  8.6    A 19.0
+## 4   3.4  8.4    B 18.0
+## 5   3.5  8.8    A 15.8
+## 6   3.4  9.0    B 19.6
+## 7   8.4 11.9    A 16.1
+## 8   2.7  8.2    B 11.5
+## 9   6.3 13.6    B 17.1
+## 10  4.7  9.6    B 19.1</code></pre>
 <p>Görüldüğü üzere R sütun başlıklarını değişken ismi olarak aldı. İstersek değişken adlarını kendimiz belirleyebiliriz:</p>
 <pre class="r"><code>df1 &lt;- data.frame(height=var1,length=var2,type=var3,width=var4)
 df1</code></pre>
 <pre><code>##    height length type width
-## 1     5.1    9.4    B  14.8
-## 2     6.9    8.3    B  17.1
-## 3     3.0    9.7    A  15.4
-## 4     4.0    7.4    A  17.7
-## 5     5.0   11.6    B  14.8
-## 6     7.4    9.7    B  14.8
-## 7     7.8    8.9    A  13.9
-## 8     7.5    8.6    B  18.0
-## 9     5.2   10.8    B  15.2
-## 10    6.9    9.1    A  15.8</code></pre>
+## 1     1.5   10.4    A  14.8
+## 2     4.9   11.9    A  16.8
+## 3     4.5    8.6    A  19.0
+## 4     3.4    8.4    B  18.0
+## 5     3.5    8.8    A  15.8
+## 6     3.4    9.0    B  19.6
+## 7     8.4   11.9    A  16.1
+## 8     2.7    8.2    B  11.5
+## 9     6.3   13.6    B  17.1
+## 10    4.7    9.6    B  19.1</code></pre>
 <p>Verimiz farklı farklı vektörlerde değil de bir listede depolanmışsa <code>as.data.frame</code> fonksiyonundan faydalanabiliriz:</p>
 <pre class="r"><code>lst &lt;- list(height=var1,length=var2,type=var3,width=var4)
 lst</code></pre>
 <pre><code>## $height
-##  [1] 5.1 6.9 3.0 4.0 5.0 7.4 7.8 7.5 5.2 6.9
+##  [1] 1.5 4.9 4.5 3.4 3.5 3.4 8.4 2.7 6.3 4.7
 ## 
 ## $length
-##  [1]  9.4  8.3  9.7  7.4 11.6  9.7  8.9  8.6 10.8  9.1
+##  [1] 10.4 11.9  8.6  8.4  8.8  9.0 11.9  8.2 13.6  9.6
 ## 
 ## $type
-##  [1] &quot;B&quot; &quot;B&quot; &quot;A&quot; &quot;A&quot; &quot;B&quot; &quot;B&quot; &quot;A&quot; &quot;B&quot; &quot;B&quot; &quot;A&quot;
+##  [1] &quot;A&quot; &quot;A&quot; &quot;A&quot; &quot;B&quot; &quot;A&quot; &quot;B&quot; &quot;A&quot; &quot;B&quot; &quot;B&quot; &quot;B&quot;
 ## 
 ## $width
-##  [1] 14.8 17.1 15.4 17.7 14.8 14.8 13.9 18.0 15.2 15.8</code></pre>
+##  [1] 14.8 16.8 19.0 18.0 15.8 19.6 16.1 11.5 17.1 19.1</code></pre>
 <pre class="r"><code>df1 &lt;- as.data.frame(lst)
 df1</code></pre>
 <pre><code>##    height length type width
-## 1     5.1    9.4    B  14.8
-## 2     6.9    8.3    B  17.1
-## 3     3.0    9.7    A  15.4
-## 4     4.0    7.4    A  17.7
-## 5     5.0   11.6    B  14.8
-## 6     7.4    9.7    B  14.8
-## 7     7.8    8.9    A  13.9
-## 8     7.5    8.6    B  18.0
-## 9     5.2   10.8    B  15.2
-## 10    6.9    9.1    A  15.8</code></pre>
+## 1     1.5   10.4    A  14.8
+## 2     4.9   11.9    A  16.8
+## 3     4.5    8.6    A  19.0
+## 4     3.4    8.4    B  18.0
+## 5     3.5    8.8    A  15.8
+## 6     3.4    9.0    B  19.6
+## 7     8.4   11.9    A  16.1
+## 8     2.7    8.2    B  11.5
+## 9     6.3   13.6    B  17.1
+## 10    4.7    9.6    B  19.1</code></pre>
 <p>Listeyi data frame’e çevirirken liste elemanlarının tanımlayıcı birer adının olması önem arzediyor, yoksa anormal sonuçlar alabilirsiniz.</p>
 <p>Görüldüğü gibi her iki işlem de eldeki veriyi sütun olarak kullandı.</p>
 </div>
@@ -404,69 +404,69 @@ df1</code></pre>
 for (i in 1:10) lst[[i]] &lt;- c(rnorm(4,10,1))
 lst</code></pre>
 <pre><code>## [[1]]
-## [1] 11.251485  8.698299  9.473758 10.623140
+## [1]  9.604798 10.781800  9.801167 10.741509
 ## 
 ## [[2]]
-## [1]  7.662480  9.987512 11.051744 10.286428
+## [1] 10.747974 11.614187  9.838524 12.590411
 ## 
 ## [[3]]
-## [1] 12.241338  9.965930  9.566060  9.268808
+## [1]  8.600719 10.340999 10.246600 11.283672
 ## 
 ## [[4]]
-## [1] 11.214778  8.887397  9.758800 10.169945
+## [1] 11.302173 10.259163  9.387929  9.978455
 ## 
 ## [[5]]
-## [1] 11.074191 10.321144  9.360097 11.033364
+## [1] 10.914550 10.051102  9.542133  9.265938
 ## 
 ## [[6]]
-## [1] 10.547227  9.784248  8.958752 10.147186
+## [1]  9.786961 10.662776 10.032204 10.114873
 ## 
 ## [[7]]
-## [1] 10.230668 11.776249  9.710019  9.284933
+## [1] 10.551356  9.339384 10.968024  9.186852
 ## 
 ## [[8]]
-## [1]  8.832810 11.627705 10.183920  9.596111
+## [1] 10.705681  9.921886 10.833917 11.543438
 ## 
 ## [[9]]
-## [1]  9.665556 10.282382  9.396492 10.457773
+## [1]  9.559891 10.493529  8.865914  9.145936
 ## 
 ## [[10]]
-## [1] 8.691028 9.500706 9.622174 6.988201</code></pre>
+## [1] 9.096407 9.777289 9.559224 8.810655</code></pre>
 <p>Şimdi sıra vektörleri <code>rbind</code> ile satır satır birleştirmeye geldi. Liste elemanlarını topluca data frame altında birleştirebilmek için <code>do.call</code> fonksiyonunu kullanacağız. <code>do.call</code> fonksiyonuna ilk parametre olarak herhangi bir fonksiyonu atayabiliriz. Ardından fonksiyona girmesini istediğimiz parametreleri liste olarak verebiliriz. <code>do.call</code> ilk parametredeki fonksiyonu, ikinci parametredeki nesnelerle çalıştırır. <code>rbind</code> ile oluşturduğumuz matrisi <code>data.frame</code> fonksiyonuyla data framee çeviriyoruz:</p>
 <pre class="r"><code>df2 &lt;- data.frame(do.call(rbind, lst))
 df2</code></pre>
 <pre><code>##           X1        X2        X3        X4
-## 1  11.251485  8.698299  9.473758 10.623140
-## 2   7.662480  9.987512 11.051744 10.286428
-## 3  12.241338  9.965930  9.566060  9.268808
-## 4  11.214778  8.887397  9.758800 10.169945
-## 5  11.074191 10.321144  9.360097 11.033364
-## 6  10.547227  9.784248  8.958752 10.147186
-## 7  10.230668 11.776249  9.710019  9.284933
-## 8   8.832810 11.627705 10.183920  9.596111
-## 9   9.665556 10.282382  9.396492 10.457773
-## 10  8.691028  9.500706  9.622174  6.988201</code></pre>
+## 1   9.604798 10.781800  9.801167 10.741509
+## 2  10.747974 11.614187  9.838524 12.590411
+## 3   8.600719 10.340999 10.246600 11.283672
+## 4  11.302173 10.259163  9.387929  9.978455
+## 5  10.914550 10.051102  9.542133  9.265938
+## 6   9.786961 10.662776 10.032204 10.114873
+## 7  10.551356  9.339384 10.968024  9.186852
+## 8  10.705681  9.921886 10.833917 11.543438
+## 9   9.559891 10.493529  8.865914  9.145936
+## 10  9.096407  9.777289  9.559224  8.810655</code></pre>
 </div>
 <div id="mevcut-bir-data-framee-nasıl-yeni-bir-satır-eklerim" class="section level2">
 <h2>Mevcut bir data frame’e nasıl yeni bir satır eklerim?</h2>
 <p>Önce elimizdeki yeni veriyi bir data frame’e çevirip sonra <code>rbind</code> ile iki data frame’i birleştiririz:</p>
 <pre class="r"><code>(new_vec &lt;- rnorm(4,10,1))</code></pre>
-<pre><code>## [1] 10.977418 11.215732  8.138011  9.996208</code></pre>
+<pre><code>## [1] 10.389983 11.073376  9.485565 10.821270</code></pre>
 <pre class="r"><code>temp_df &lt;- (new_vec)
 df2 &lt;- rbind(df2,temp_df)
 df2</code></pre>
 <pre><code>##           X1        X2        X3        X4
-## 1  11.251485  8.698299  9.473758 10.623140
-## 2   7.662480  9.987512 11.051744 10.286428
-## 3  12.241338  9.965930  9.566060  9.268808
-## 4  11.214778  8.887397  9.758800 10.169945
-## 5  11.074191 10.321144  9.360097 11.033364
-## 6  10.547227  9.784248  8.958752 10.147186
-## 7  10.230668 11.776249  9.710019  9.284933
-## 8   8.832810 11.627705 10.183920  9.596111
-## 9   9.665556 10.282382  9.396492 10.457773
-## 10  8.691028  9.500706  9.622174  6.988201
-## 11 10.977418 11.215732  8.138011  9.996208</code></pre>
+## 1   9.604798 10.781800  9.801167 10.741509
+## 2  10.747974 11.614187  9.838524 12.590411
+## 3   8.600719 10.340999 10.246600 11.283672
+## 4  11.302173 10.259163  9.387929  9.978455
+## 5  10.914550 10.051102  9.542133  9.265938
+## 6   9.786961 10.662776 10.032204 10.114873
+## 7  10.551356  9.339384 10.968024  9.186852
+## 8  10.705681  9.921886 10.833917 11.543438
+## 9   9.559891 10.493529  8.865914  9.145936
+## 10  9.096407  9.777289  9.559224  8.810655
+## 11 10.389983 11.073376  9.485565 10.821270</code></pre>
 <p>Bu işlem esnasında dikkat edilmesi gereken bir husus şudur; şayet <code>df2</code> data frame’inin değişkenlerinin kendi atadığımız isimleri olsaydı, eklediğimiz data frame’in değişken isimleri de aynı olmalı idi, aksi halde işlem hatalı olacaktır.</p>
 </div>
 <div id="boş-bir-data-frame-oluşturmak-istiyorum-nasıl-yapabilirim" class="section level2">
@@ -488,66 +488,66 @@ head(df3,5)</code></pre>
 <p>Yukarıda listelere ilişkin olarak söylediğimiz husus data frme için de geçerlidir. Hatırlarsanız liste elemanlarını seçerken, tek köşeli parantez (<code>x[n]</code>) liste, çift köşeli parantez (<code>x[[n]]</code>) ve dolar işareti (<code>x$n</code>) vektör olarak çıktı veriyordu. Aynı biçimde data frame’lerde de tek köşeli parantez (<code>x[n]</code>) data frame, çift köşeli parantez (<code>x[[n]]</code>) ve dolar işareti (<code>x$n</code>) vektör olarak çıktı vermektedir.</p>
 <p>Bu genel kural, fakat aşağıda istisnai durumlar gelecek, buna dikkat ederseniz data frame’lerde seçim işlemini öğrenirken daha az acı çekersiniz.</p>
 <pre class="r"><code>df2[[1]]</code></pre>
-<pre><code>##  [1] 11.251485  7.662480 12.241338 11.214778 11.074191 10.547227 10.230668
-##  [8]  8.832810  9.665556  8.691028 10.977418</code></pre>
+<pre><code>##  [1]  9.604798 10.747974  8.600719 11.302173 10.914550  9.786961 10.551356
+##  [8] 10.705681  9.559891  9.096407 10.389983</code></pre>
 <pre class="r"><code>df2[1]</code></pre>
 <pre><code>##           X1
-## 1  11.251485
-## 2   7.662480
-## 3  12.241338
-## 4  11.214778
-## 5  11.074191
-## 6  10.547227
-## 7  10.230668
-## 8   8.832810
-## 9   9.665556
-## 10  8.691028
-## 11 10.977418</code></pre>
+## 1   9.604798
+## 2  10.747974
+## 3   8.600719
+## 4  11.302173
+## 5  10.914550
+## 6   9.786961
+## 7  10.551356
+## 8  10.705681
+## 9   9.559891
+## 10  9.096407
+## 11 10.389983</code></pre>
 <pre class="r"><code>df2[,1]</code></pre>
-<pre><code>##  [1] 11.251485  7.662480 12.241338 11.214778 11.074191 10.547227 10.230668
-##  [8]  8.832810  9.665556  8.691028 10.977418</code></pre>
+<pre><code>##  [1]  9.604798 10.747974  8.600719 11.302173 10.914550  9.786961 10.551356
+##  [8] 10.705681  9.559891  9.096407 10.389983</code></pre>
 <p>Yukarıda <code>df2[[1]]</code> vektör, <code>df2[1]</code> data frame ve matris notasyonu kullandığımız <code>df2[,1]</code> vektör olarak çıktı vermektedir. İllaki data frame istiyorsak bunu <code>df2[,1, drop=FALSE]</code> ile başarabiliriz (sadece matris notasyonunda).</p>
 <pre class="r"><code>df2[,1, drop=FALSE]</code></pre>
 <pre><code>##           X1
-## 1  11.251485
-## 2   7.662480
-## 3  12.241338
-## 4  11.214778
-## 5  11.074191
-## 6  10.547227
-## 7  10.230668
-## 8   8.832810
-## 9   9.665556
-## 10  8.691028
-## 11 10.977418</code></pre>
+## 1   9.604798
+## 2  10.747974
+## 3   8.600719
+## 4  11.302173
+## 5  10.914550
+## 6   9.786961
+## 7  10.551356
+## 8  10.705681
+## 9   9.559891
+## 10  9.096407
+## 11 10.389983</code></pre>
 <p>Birden fazla sütun seçmek istiyorsak vektör biçiminde çıktı alamayız. Dolayısyla çift köşeli parantez (<code>x[[n]]</code>) yapısını kullanamayız. Birden fazla değişken seçerken matris notasyonunu kullanmalıyız. Yani, <code>[satır,sütun]</code> biçiminde yazmalıyız. Satırların tamamını ve belli sütunları seçeceksek, satır değerini boş bırakmalı ve virgülü unutmamalıyız, <code>[,sütun]</code> şeklinde. Sütunların tamamını ve belli satırları seçeceksek bunun tersini yapmalıyız,<code>[satır,]</code>. Sütunlar ardışıksa <code>başlangıç:bitiş</code> şeklinde seri oluşturabilir veya <code>c(sütun, sütun)</code> seklinde seçim yapabiliriz.</p>
 <pre class="r"><code>df2[,c(1,3)]</code></pre>
 <pre><code>##           X1        X3
-## 1  11.251485  9.473758
-## 2   7.662480 11.051744
-## 3  12.241338  9.566060
-## 4  11.214778  9.758800
-## 5  11.074191  9.360097
-## 6  10.547227  8.958752
-## 7  10.230668  9.710019
-## 8   8.832810 10.183920
-## 9   9.665556  9.396492
-## 10  8.691028  9.622174
-## 11 10.977418  8.138011</code></pre>
+## 1   9.604798  9.801167
+## 2  10.747974  9.838524
+## 3   8.600719 10.246600
+## 4  11.302173  9.387929
+## 5  10.914550  9.542133
+## 6   9.786961 10.032204
+## 7  10.551356 10.968024
+## 8  10.705681 10.833917
+## 9   9.559891  8.865914
+## 10  9.096407  9.559224
+## 11 10.389983  9.485565</code></pre>
 <pre class="r"><code>df2[1:5,c(1,3)]</code></pre>
-<pre><code>##         X1        X3
-## 1 11.25148  9.473758
-## 2  7.66248 11.051744
-## 3 12.24134  9.566060
-## 4 11.21478  9.758800
-## 5 11.07419  9.360097</code></pre>
+<pre><code>##          X1        X3
+## 1  9.604798  9.801167
+## 2 10.747974  9.838524
+## 3  8.600719 10.246600
+## 4 11.302173  9.387929
+## 5 10.914550  9.542133</code></pre>
 <pre class="r"><code>df2[1:5,]</code></pre>
-<pre><code>##         X1        X2        X3        X4
-## 1 11.25148  8.698299  9.473758 10.623140
-## 2  7.66248  9.987512 11.051744 10.286428
-## 3 12.24134  9.965930  9.566060  9.268808
-## 4 11.21478  8.887397  9.758800 10.169945
-## 5 11.07419 10.321144  9.360097 11.033364</code></pre>
+<pre><code>##          X1       X2        X3        X4
+## 1  9.604798 10.78180  9.801167 10.741509
+## 2 10.747974 11.61419  9.838524 12.590411
+## 3  8.600719 10.34100 10.246600 11.283672
+## 4 11.302173 10.25916  9.387929  9.978455
+## 5 10.914550 10.05110  9.542133  9.265938</code></pre>
 <p>Data frame’ler, R’da en sık kullanılan veri yapılarından olduğundan biraz vakit harcayıp bu kuralları anlamak daha sonraki çalışmalarda size zaman kazandıracak ve böylelikle anlaşılmaz hata mesajlarını çözmeye çabalamaktan kurtulup akıl sağlığınızı korumuş olacaksınız.</p>
 </div>
 <div id="data-frame-sütunlarını-sütun-değişken-isimleriyle-nasıl-seçebilirim" class="section level2">
@@ -556,108 +556,109 @@ head(df3,5)</code></pre>
 <pre class="r"><code>colnames(df2) &lt;- c(&quot;world&quot;,&quot;moon&quot;,&quot;mars&quot;,&quot;saturn&quot;)
 # Vektör biçiminde çıktı
 df2[[&quot;world&quot;]]</code></pre>
-<pre><code>##  [1] 11.251485  7.662480 12.241338 11.214778 11.074191 10.547227 10.230668
-##  [8]  8.832810  9.665556  8.691028 10.977418</code></pre>
+<pre><code>##  [1]  9.604798 10.747974  8.600719 11.302173 10.914550  9.786961 10.551356
+##  [8] 10.705681  9.559891  9.096407 10.389983</code></pre>
 <pre class="r"><code>df2$world</code></pre>
-<pre><code>##  [1] 11.251485  7.662480 12.241338 11.214778 11.074191 10.547227 10.230668
-##  [8]  8.832810  9.665556  8.691028 10.977418</code></pre>
+<pre><code>##  [1]  9.604798 10.747974  8.600719 11.302173 10.914550  9.786961 10.551356
+##  [8] 10.705681  9.559891  9.096407 10.389983</code></pre>
 <pre class="r"><code>df2[&quot;world&quot;]    # Data frame biçiminde çıktı</code></pre>
 <pre><code>##        world
-## 1  11.251485
-## 2   7.662480
-## 3  12.241338
-## 4  11.214778
-## 5  11.074191
-## 6  10.547227
-## 7  10.230668
-## 8   8.832810
-## 9   9.665556
-## 10  8.691028
-## 11 10.977418</code></pre>
+## 1   9.604798
+## 2  10.747974
+## 3   8.600719
+## 4  11.302173
+## 5  10.914550
+## 6   9.786961
+## 7  10.551356
+## 8  10.705681
+## 9   9.559891
+## 10  9.096407
+## 11 10.389983</code></pre>
 <p>Birden fazla sütun seçebiliriz:</p>
 <pre class="r"><code>df2[c(&quot;moon&quot;, &quot;world&quot;, &quot;mars&quot;)]    # Data frame biçiminde çıktı</code></pre>
 <pre><code>##         moon     world      mars
-## 1   8.698299 11.251485  9.473758
-## 2   9.987512  7.662480 11.051744
-## 3   9.965930 12.241338  9.566060
-## 4   8.887397 11.214778  9.758800
-## 5  10.321144 11.074191  9.360097
-## 6   9.784248 10.547227  8.958752
-## 7  11.776249 10.230668  9.710019
-## 8  11.627705  8.832810 10.183920
-## 9  10.282382  9.665556  9.396492
-## 10  9.500706  8.691028  9.622174
-## 11 11.215732 10.977418  8.138011</code></pre>
+## 1  10.781800  9.604798  9.801167
+## 2  11.614187 10.747974  9.838524
+## 3  10.340999  8.600719 10.246600
+## 4  10.259163 11.302173  9.387929
+## 5  10.051102 10.914550  9.542133
+## 6  10.662776  9.786961 10.032204
+## 7   9.339384 10.551356 10.968024
+## 8   9.921886 10.705681 10.833917
+## 9  10.493529  9.559891  8.865914
+## 10  9.777289  9.096407  9.559224
+## 11 11.073376 10.389983  9.485565</code></pre>
 <p>Matris notasyonu kullanabiliriz. Tek sütur seçmemiz halinde vektör biçiminde çıktı alırız. Yukarıdaki gibi <code>drop=FALSE</code> parametresiyle data frame olarak çıktı alabiliriz:</p>
 <pre class="r"><code>df2[,&quot;moon&quot;]    # Vektör biçiminde çıktı</code></pre>
-<pre><code>##  [1]  8.698299  9.987512  9.965930  8.887397 10.321144  9.784248 11.776249
-##  [8] 11.627705 10.282382  9.500706 11.215732</code></pre>
+<pre><code>##  [1] 10.781800 11.614187 10.340999 10.259163 10.051102 10.662776  9.339384
+##  [8]  9.921886 10.493529  9.777289 11.073376</code></pre>
 <pre class="r"><code>df2[,&quot;moon&quot;, drop=FALSE]    # Vektör biçiminde çıktı</code></pre>
 <pre><code>##         moon
-## 1   8.698299
-## 2   9.987512
-## 3   9.965930
-## 4   8.887397
-## 5  10.321144
-## 6   9.784248
-## 7  11.776249
-## 8  11.627705
-## 9  10.282382
-## 10  9.500706
-## 11 11.215732</code></pre>
+## 1  10.781800
+## 2  11.614187
+## 3  10.340999
+## 4  10.259163
+## 5  10.051102
+## 6  10.662776
+## 7   9.339384
+## 8   9.921886
+## 9  10.493529
+## 10  9.777289
+## 11 11.073376</code></pre>
 <p>Matris notasyonuyla birden fazla satır seçilirse yine vektör şeklinde çıktı gelir. Data frame isteniyorsa <code>drop=FALSE</code> burada da kullanılabilir:</p>
 <pre class="r"><code>df2[1:5,&quot;moon&quot;]    # Vektör biçiminde çıktı</code></pre>
-<pre><code>## [1]  8.698299  9.987512  9.965930  8.887397 10.321144</code></pre>
+<pre><code>## [1] 10.78180 11.61419 10.34100 10.25916 10.05110</code></pre>
 <p>Matris notasyonuyla birden fazla sütun seçilirse data frame şeklinde çıktı gelir:</p>
 <pre class="r"><code>df2[1:5, c(&quot;moon&quot;,&quot;saturn&quot;)]    # Vektör biçiminde çıktı</code></pre>
-<pre><code>##        moon    saturn
-## 1  8.698299 10.623140
-## 2  9.987512 10.286428
-## 3  9.965930  9.268808
-## 4  8.887397 10.169945
-## 5 10.321144 11.033364</code></pre>
+<pre><code>##       moon    saturn
+## 1 10.78180 10.741509
+## 2 11.61419 12.590411
+## 3 10.34100 11.283672
+## 4 10.25916  9.978455
+## 5 10.05110  9.265938</code></pre>
 </div>
 <div id="sütun-seçim-işlemini-daha-pratik-yapamaz-mıyız" class="section level2">
 <h2>Sütun seçim işlemini daha pratik yapamaz mıyız?</h2>
 <p>İlk başlayanlar için yukarıda anlatılan seçme işlemleri çok karışık gelebilir. Çok şükür sütun seçim işlemini kolaylaştıracak bir fonksiyon mevcut, <code>subset()</code>:</p>
 <pre class="r"><code>subset(df2, select=c(moon,saturn))</code></pre>
 <pre><code>##         moon    saturn
-## 1   8.698299 10.623140
-## 2   9.987512 10.286428
-## 3   9.965930  9.268808
-## 4   8.887397 10.169945
-## 5  10.321144 11.033364
-## 6   9.784248 10.147186
-## 7  11.776249  9.284933
-## 8  11.627705  9.596111
-## 9  10.282382 10.457773
-## 10  9.500706  6.988201
-## 11 11.215732  9.996208</code></pre>
+## 1  10.781800 10.741509
+## 2  11.614187 12.590411
+## 3  10.340999 11.283672
+## 4  10.259163  9.978455
+## 5  10.051102  9.265938
+## 6  10.662776 10.114873
+## 7   9.339384  9.186852
+## 8   9.921886 11.543438
+## 9  10.493529  9.145936
+## 10  9.777289  8.810655
+## 11 11.073376 10.821270</code></pre>
 <p><code>subset()</code> ile data frame üzerinde filtreleme de yapabiliriz. Mesela <code>world</code> değeri 9’dan küçük olan <code>moon</code> ve <code>saturn</code> değişkenlerini seçelim:</p>
 <pre class="r"><code>subset(df2, select=c(moon,saturn), subset = (world &lt; 9))</code></pre>
-<pre><code>##         moon    saturn
-## 2   9.987512 10.286428
-## 8  11.627705  9.596111
-## 10  9.500706  6.988201</code></pre>
+<pre><code>##     moon   saturn
+## 3 10.341 11.28367</code></pre>
 <p><code>world</code> değişkeninin ortalamasından büyük olan <code>moon</code> ve <code>saturn</code> değişkenlerini seçelim:</p>
 <pre class="r"><code>subset(df2, select=c(moon,saturn), subset = (moon &gt; mean(world) &amp; saturn &gt; mean(world)))</code></pre>
-<pre><code>##       moon   saturn
-## 5 10.32114 11.03336
-## 9 10.28238 10.45777</code></pre>
+<pre><code>##        moon   saturn
+## 1  10.78180 10.74151
+## 2  11.61419 12.59041
+## 3  10.34100 11.28367
+## 6  10.66278 10.11487
+## 11 11.07338 10.82127</code></pre>
 <p>İstemediğimiz bir sütun/sütunları başına (<code>-</code>) koyarak hariç tutabiliriz:</p>
 <pre class="r"><code>subset(df2, select=-c(moon,saturn))</code></pre>
 <pre><code>##        world      mars
-## 1  11.251485  9.473758
-## 2   7.662480 11.051744
-## 3  12.241338  9.566060
-## 4  11.214778  9.758800
-## 5  11.074191  9.360097
-## 6  10.547227  8.958752
-## 7  10.230668  9.710019
-## 8   8.832810 10.183920
-## 9   9.665556  9.396492
-## 10  8.691028  9.622174
-## 11 10.977418  8.138011</code></pre>
+## 1   9.604798  9.801167
+## 2  10.747974  9.838524
+## 3   8.600719 10.246600
+## 4  11.302173  9.387929
+## 5  10.914550  9.542133
+## 6   9.786961 10.032204
+## 7  10.551356 10.968024
+## 8  10.705681 10.833917
+## 9   9.559891  8.865914
+## 10  9.096407  9.559224
+## 11 10.389983  9.485565</code></pre>
 <p>Ancak data frame üzerinde daha incelikli seçimler yapabilmek için konuma göre seçim yapma işleminde ustalaşmak gerekmektedir.</p>
 </div>
 <div id="data-framede-bulunan-değişken-isimlerini-nasıl-değiştirebilirim" class="section level2">
@@ -667,16 +668,16 @@ df2[[&quot;world&quot;]]</code></pre>
 colnames(df4) &lt;- c(&quot;age&quot;,&quot;weight&quot;,&quot;height&quot;)
 df4</code></pre>
 <pre><code>##    age weight height
-## 1   99     72     78
-## 2   54     91     75
-## 3   65     96     82
-## 4   57     85     77
-## 5   95     59     58
-## 6   50     93     63
-## 7   70     70     74
-## 8   95     68     78
-## 9   94     72     63
-## 10  77     67     98</code></pre>
+## 1   95     89     83
+## 2   79     65     68
+## 3   61     83     82
+## 4   86     83     67
+## 5   97     52     97
+## 6  100     63     92
+## 7   70     92     57
+## 8   65     93     84
+## 9   60     90     97
+## 10  60     94     92</code></pre>
 </div>
 <div id="data-frameimde-na-değerleri-var-ve-fonksiyonlar-hatalı-sonuç-veriyor-ne-yapabilirim" class="section level2">
 <h2>Data frame’imde <code>NA</code> değerleri var ve fonksiyonlar hatalı sonuç veriyor, ne yapabilirim?</h2>
@@ -689,28 +690,28 @@ for(i in 1:7){
 }
 df5</code></pre>
 <pre><code>##    X1 X2 X3
-## 1  67 77 61
-## 2  82 99 70
-## 3  98 93 54
-## 4  NA 81 71
-## 5  93 92 NA
-## 6  77 89 51
-## 7  68 71 NA
-## 8  NA NA 84
-## 9  99 88 86
-## 10 62 90 NA</code></pre>
+## 1  98 NA 84
+## 2  59 75 86
+## 3  86 NA 86
+## 4  NA 67 98
+## 5  61 63 59
+## 6  76 84 NA
+## 7  50 71 69
+## 8  NA 93 51
+## 9  86 63 NA
+## 10 78 92 NA</code></pre>
 <p><code>na.rm</code> parametresini kullanmayınca sonuçta <code>NA</code> olarak geliyor:</p>
 <pre class="r"><code>mean(df5$X1)</code></pre>
 <pre><code>## [1] NA</code></pre>
 <pre class="r"><code>mean(df5$X1, na.rm=TRUE)</code></pre>
-<pre><code>## [1] 80.75</code></pre>
+<pre><code>## [1] 74.25</code></pre>
 <p>Yahut <code>na.omit fonksiyonuyla</code>, <code>NA</code> içeren bütün satırları kaldırabiliriz:</p>
 <pre class="r"><code>colSums(df5)</code></pre>
 <pre><code>## X1 X2 X3 
 ## NA NA NA</code></pre>
 <pre class="r"><code>colSums(na.omit(df5))</code></pre>
 <pre><code>##  X1  X2  X3 
-## 423 446 322</code></pre>
+## 170 209 214</code></pre>
 </div>
 <div id="iki-veya-daha-fazla-data-framei-birleştirmek-istiyorum-nasıl-yaparım" class="section level2">
 <h2>İki veya daha fazla data frame’i birleştirmek istiyorum, nasıl yaparım?</h2>

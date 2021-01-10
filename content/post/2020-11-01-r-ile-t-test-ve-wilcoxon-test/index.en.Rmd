@@ -9,7 +9,7 @@ tags:
   - t-test
   - wilcoxon
 description: R ile t-test ve Wilcoxon test uygulaması.
-featured: yes
+featured: no
 #toc: no
 #featureImage: /images/path/file.jpg
 thumbnail: /images/thumbs/tdist_tn.jpg

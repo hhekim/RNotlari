@@ -8,7 +8,7 @@ categories:
 tags:
   - LaTeX
 description: R ile betimleyici analiz sonuçlarını LATEX ortamına aktaran bir fonksiyon.
-featured: yes
+featured: no
 #toc: no
 #featureImage: /images/path/file.jpg
 thumbnail: /images/thumbs/LaTeX_tn.jpg
@@ -18,6 +18,7 @@ codeLineNumbers: no
 figurePositionShow: yes
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 <link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
 <script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
 
@@ -37,8 +38,8 @@ apadesc &lt;- function(x){
   xtable(dfdestats, caption = &quot;Betimsel İstatistikler&quot;) 
 }
 apadesc(mtcars)</code></pre>
-<pre><code>## % latex table generated in R 4.0.2 by xtable 1.8-4 package
-## % Wed Nov 25 19:50:24 2020
+<pre><code>## % latex table generated in R 4.0.3 by xtable 1.8-4 package
+## % Sun Jan 10 18:33:45 2021
 ## \begin{table}[ht]
 ## \centering
 ## \begin{tabular}{rrrrrrrrr}
@@ -71,7 +72,7 @@ apadesc(mtcars)</code></pre>
 <pre class="r"><code>stargazer(mtcars, title = &quot;Betimsel İstatistikler&quot;)</code></pre>
 <pre><code>## 
 ## % Table created by stargazer v.5.2.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-## % Date and time: Wed, Nov 25, 2020 - 19:50:24
+## % Date and time: Sun, Jan 10, 2021 - 18:33:45
 ## \begin{table}[!htbp] \centering 
 ##   \caption{Betimsel İstatistikler} 
 ##   \label{} 
@@ -101,8 +102,8 @@ apadesc(mtcars)</code></pre>
 <p>Her iki paket te doğrusal regresyon modeli gibi farklı analizlerin sonuçlarını içeren nesneleri algılayarak tablo üretebilmektedir:</p>
 <pre class="r"><code>dmodel &lt;- with(mtcars, lm(mpg ~ disp + wt))
 xtable(dmodel)</code></pre>
-<pre><code>## % latex table generated in R 4.0.2 by xtable 1.8-4 package
-## % Wed Nov 25 19:50:24 2020
+<pre><code>## % latex table generated in R 4.0.3 by xtable 1.8-4 package
+## % Sun Jan 10 18:33:45 2021
 ## \begin{table}[ht]
 ## \centering
 ## \begin{tabular}{rrrrr}
@@ -118,7 +119,7 @@ xtable(dmodel)</code></pre>
 <pre class="r"><code>stargazer(dmodel)</code></pre>
 <pre><code>## 
 ## % Table created by stargazer v.5.2.2 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
-## % Date and time: Wed, Nov 25, 2020 - 19:50:24
+## % Date and time: Sun, Jan 10, 2021 - 18:33:45
 ## \begin{table}[!htbp] \centering 
 ##   \caption{} 
 ##   \label{} 

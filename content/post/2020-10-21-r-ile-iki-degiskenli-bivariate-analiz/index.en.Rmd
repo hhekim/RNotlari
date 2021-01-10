@@ -8,7 +8,7 @@ categories:
 tags:
   - Istatistik
 description: R ile iki değişken arasında ilişkiyi inceleme yöntemleri.
-featured: yes
+featured: no
 #toc: no
 #featureImage: /images/path/file.jpg
 #thumbnail: /images/path/thumbnail.png

@@ -9,7 +9,7 @@ tags:
   - Olasılık
   - Olasılık Dağılımları
 description: Yaygın kullanlan istatistiksel dağılımlara yönelik hesaplamalar.
-featured: yes
+featured: no
 #toc: no
 #featureImage: /images/path/file.jpg
 thumbnail: /images/thumbs/probdist_tn.jpg

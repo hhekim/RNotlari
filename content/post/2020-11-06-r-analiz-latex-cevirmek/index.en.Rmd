@@ -8,7 +8,7 @@ categories:
 tags:
   - LaTeX
 description: R ile betimleyici analiz sonuçlarını LATEX ortamına aktaran bir fonksiyon.
-featured: yes
+featured: no
 #toc: no
 #featureImage: /images/path/file.jpg
 thumbnail: /images/thumbs/LaTeX_tn.jpg
