@@ -17,7 +17,8 @@ codeMaxLines: 10
 codeLineNumbers: no
 figurePositionShow: yes
 ---
-[Güncelleme: 16.03.2021]
+
+*Güncelleme: 16.03.2021*
 
 R ile sosyal network analizi yapmamızı sağlayan iki temel paket var statnet ve igraph. Bu notta bu paketleri kullanarak bir network objesi oluşturup grafiğini çizeceğiz. Network analizi yöntemiyle incelenemiyecek şey yok gibi. Bu yazıda süper lig takımlarının 2019-2020 sezonu galibiyetlerini inceleyeceğiz. Öncelikle kullanacağımız paketleri yükleyelim:
 

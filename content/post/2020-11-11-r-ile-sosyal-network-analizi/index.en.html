@@ -18,11 +18,10 @@ codeLineNumbers: no
 figurePositionShow: yes
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
-<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
-<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
+<script src="{{< blogdown/postref >}}index.en_files/header-attrs/header-attrs.js"></script>
 
 
+<p><em>Güncelleme: 16.03.2021</em></p>
 <p>R ile sosyal network analizi yapmamızı sağlayan iki temel paket var statnet ve igraph. Bu notta bu paketleri kullanarak bir network objesi oluşturup grafiğini çizeceğiz. Network analizi yöntemiyle incelenemiyecek şey yok gibi. Bu yazıda süper lig takımlarının 2019-2020 sezonu galibiyetlerini inceleyeceğiz. Öncelikle kullanacağımız paketleri yükleyelim:</p>
 <pre class="r"><code>library(tidyverse) 
 library(rvest) 
@@ -39,7 +38,7 @@ tff_page %&gt;%
   html_table(fill=TRUE) -&gt; x 
 
 i &lt;- 41 
-while(i &lt;= 70){ 
+while(i &lt;= 98){ 
   tff_page %&gt;% 
     html_nodes(&quot;table&quot;) %&gt;% 
     .[[i]] %&gt;% 
@@ -48,7 +47,7 @@ while(i &lt;= 70){
   i &lt;- i + 2 
 }
 #Bazı maçlar oynanmadığından 0-0 olarak elle girdim
-x$X2[x$X2 == &quot;-&quot;] &lt;- &quot;0 - 0&quot;
+#x$X2[x$X2 == &quot;-&quot;] &lt;- &quot;0 - 0&quot;
 head(x,5)</code></pre>
 <pre><code>##                      X1    X2                           X3
 ## 1  ÇAYKUR RİZESPOR A.Ş. 1 - 2              FENERBAHÇE A.Ş.
@@ -116,11 +115,11 @@ netplays</code></pre>
 ##   directed = TRUE 
 ##   hyper = FALSE 
 ##   loops = FALSE 
-##   multiple = FALSE 
+##   multiple = TRUE 
 ##   bipartite = FALSE 
-##   total edges= 115 
+##   total edges= 218 
 ##     missing edges= 0 
-##     non-missing edges= 115 
+##     non-missing edges= 218 
 ## 
 ##  Vertex attribute names: 
 ##     vertex.names 
@@ -137,7 +136,7 @@ gplot(netplays, gmode=&quot;digraph&quot;, mode=&quot;fruchtermanreingold&quot;,
       vertex.cex=deg*15, label.cex = deg*20, arrowhead.cex = 0.7, 
       edge.lwd=(netplays %e% &quot;avrg&quot;)/2, 
       edge.col=brewer.pal(netplays %e% &quot;avrg&quot;, name = &quot;Reds&quot;),jitter = TRUE)</code></pre>
-<p><img src="/post/2020-11-11-r-ile-sosyal-network-analizi/index.en_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>Bu grafikte gplot vertex ve takım ismi büyüklüklerini takımların galibiyet miktarına göre ayarlıyor. Üst sıralardaki takımlar daha büyük gsteriliyor. Takımlar arasındaki bağlantı net skora göre açıktan koyuya doğru değişiyor. Koyu kırmızı bağlantılar farklı galibiyetleri gösteriyor. Oklar galib takımdan mağlup takıma doğru gidiyor.</p>
 <p>Aşağıda mode parametresini değiştirerek dairesel bir grafik oluşturdum:</p>
 <pre class="r"><code>deg &lt;- degree(netplays, cmode = &quot;outdegree&quot;, rescale = TRUE) 
@@ -147,5 +146,5 @@ gplot(netplays, gmode=&quot;digraph&quot;, mode=&quot;circle&quot;, usearrows=TR
       vertex.cex=deg*15, label.cex = deg*20, arrowhead.cex = 0.7, 
       edge.lwd=(netplays %e% &quot;avrg&quot;)/2, 
       edge.col=brewer.pal(netplays %e% &quot;avrg&quot;, name = &quot;Reds&quot;),jitter = TRUE)</code></pre>
-<p><img src="/post/2020-11-11-r-ile-sosyal-network-analizi/index.en_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p><em>Vertex</em>’lere takımlarla ilgili, <em>edge</em>’lere maçlarla ilgili birçok özellik işlenerek, ligin çok farklı yönlerini görselleştiren grafikler çizmek mümkün. Bu notta sadece kitabın kapağını biraz aralayıp R ile yapabileceklerimizi bir miktar göstermek istedim.</p>
