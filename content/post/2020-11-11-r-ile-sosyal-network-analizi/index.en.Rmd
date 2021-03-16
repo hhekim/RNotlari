@@ -17,6 +17,7 @@ codeMaxLines: 10
 codeLineNumbers: no
 figurePositionShow: yes
 ---
+[Güncelleme: 16.03.2021]
 
 R ile sosyal network analizi yapmamızı sağlayan iki temel paket var statnet ve igraph. Bu notta bu paketleri kullanarak bir network objesi oluşturup grafiğini çizeceğiz. Network analizi yöntemiyle incelenemiyecek şey yok gibi. Bu yazıda süper lig takımlarının 2019-2020 sezonu galibiyetlerini inceleyeceğiz. Öncelikle kullanacağımız paketleri yükleyelim:
 
@@ -40,7 +41,7 @@ tff_page %>%
   html_table(fill=TRUE) -> x 
 
 i <- 41 
-while(i <= 70){ 
+while(i <= 98){ 
   tff_page %>% 
     html_nodes("table") %>% 
     .[[i]] %>% 
@@ -49,7 +50,7 @@ while(i <= 70){
   i <- i + 2 
 }
 #Bazı maçlar oynanmadığından 0-0 olarak elle girdim
-x$X2[x$X2 == "-"] <- "0 - 0"
+#x$X2[x$X2 == "-"] <- "0 - 0"
 head(x,5)
 ```
 
