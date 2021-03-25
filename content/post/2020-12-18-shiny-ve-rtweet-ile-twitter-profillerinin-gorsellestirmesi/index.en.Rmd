@@ -22,7 +22,7 @@ figurePositionShow: yes
 
 `rtweet` Twitter'ın REST API üzerinden veri çekmeye yarayan çok kullanışlı bir R paketi. Paketi özellikle kullanışlı kılan şey, birkaç fonksiyonla Twitter verilerini dataframe olarak bilgisayarınıza kolayca indirebilmeniz. Paketle ilgili temel kullanım bilgilerini [burada](https://docs.ropensci.org/rtweet/) bulabilirsiniz.
 
-Twitter kullanıcı profillerini sorgulamaya ve bazı metrikleri tablo ve grafik olarak görsellemeye yarayan bir Shiny uygulaması yazdım. Uygulamaya bir süreliğine [buradan](https://hhekim.shinyapps.io/twprofile/) erişebilirsiniz.
+Twitter kullanıcı profillerini sorgulamaya ve bazı metrikleri tablo ve grafik olarak görsellemeye yarayan bir Shiny uygulaması yazdım. ~~Uygulamaya bir süreliğine [buradan](https://hhekim.shinyapps.io/twprofile/) erişebilirsiniz.~~
 
 Uygulama, kullanıcı adı ile sorgulanan profilin timeline'ında bulunan son 3.000 tweet'ini `rtweet` ile indiriyor. En fazla kullandığı #hashtag ve @mention'ları listeliyor. Tweet trafiği, hangi saatlerde tweet attığı ve en fazla retweet yaptığı kullanıcıları grafik olarak gösteriyor.
 
